@@ -1,0 +1,218 @@
+topsrc = @top_srcdir@
+docsrc = $(topsrc)/doc
+
+MAKE = @MAKE@
+
+GUIDE = gretl-guide.pdf
+REF = gretl-ref.pdf
+HANSL = hansl-primer.pdf
+KBD = gretl-keys.pdf
+ALTGUIDE = gretl-guide-a4.pdf
+ALTREF = gretl-ref-a4.pdf
+ALTHANSL = hansl-primer-a4.pdf
+ALTKBD = gretl-keys-a4.pdf
+
+TEXSRC = cli.tex \
+	criteria.tex \
+	graphs.tex \
+	modes.tex \
+	persistent.tex \
+	sampling.tex \
+	trouble.tex \
+	looping.tex \
+	starting.tex \
+	discrete.tex \
+	appendices.tex \
+	matrices.tex \
+	introduction.tex \
+	datafiles.tex \
+	join.tex \
+	robust_vcv.tex \
+	panel.tex \
+	dpanel.tex \
+	genr.tex \
+	biblio.tex \
+	mle.tex \
+	gmm.tex \
+	probit.tex \
+	nls.tex \
+	timeseries.tex \
+	forecast.tex \
+	vecm.tex \
+	kalman.tex \
+	functions.tex \
+	gretltex.tex \
+	cheatsheet.tex \
+	reftables.tex \
+	cmdref.tex \
+	funcref.tex \
+	comments.tex \
+	optarg.tex \
+	quantreg.tex \
+	odbc.tex \
+	gretlR.tex \
+	gretlOx.tex \
+	gretlOctave.tex \
+	gretlStata.tex \
+	gretlPython.tex \
+	datatypes.tex \
+	df.tex \
+	var.tex \
+	tsfilter.tex \
+	numerical.tex \
+	nonparam.tex \
+	system.tex \
+	operators.tex \
+	realtime.tex \
+	hp-hello.tex \
+	hp-matrices.tex \
+	hp-output.tex \
+	hp-bundles.tex \
+	hp-numerical.tex \
+	hp-ctrlflow.tex \
+	hp-functions.tex \
+	hp-dataset.tex \
+	hp-series.tex \
+	hp-estimate.tex \
+	hp-further.tex
+
+BIBSRC = gretl.bib gretl.bst
+
+STYSRC = $(docsrc)/gretl.sty.in
+
+ALLSRC = $(wildcard $(docsrc)/tex/*.tex) $(STYSRC)
+
+all: $(GUIDE) $(REF) $(HANSL) $(ALTGUIDE) $(ALTREF) $(ALTHANSL)
+
+$(GUIDE): gretl-guide.tex links textables date.tex $(STYSRC) $(BIBSRC)
+	pdflatex $<
+	bibtex gretl-guide
+	pdflatex $<
+	bibtex gretl-guide
+	pdflatex $<
+	pdflatex $<
+
+$(REF): gretl-ref.tex links cmdtex functex textables topiclist \
+	date.tex $(STYSRC) $(BIBSRC)
+	pdflatex $<
+	bibtex gretl-ref
+	pdflatex $<
+	bibtex gretl-ref
+	pdflatex $<
+	pdflatex $<
+
+$(HANSL): hansl-primer.tex links \
+	date.tex $(STYSRC)
+	pdflatex $<
+	pdflatex $<
+
+$(KBD): gretl-keys.tex links $(STYSRC)
+	pdflatex $<
+
+$(ALTGUIDE): gretl-guide-a4.tex links textables date.tex $(STYSRC) $(BIBSRC)
+	pdflatex $<
+	bibtex gretl-guide-a4
+	pdflatex $<
+	bibtex gretl-guide-a4
+	pdflatex $<
+	pdflatex $<
+
+$(ALTREF): gretl-ref-a4.tex links cmdtex functex textables topiclist \
+	date.tex $(STYSRC) $(BIBSRC)
+	pdflatex $<
+	bibtex gretl-ref-a4
+	pdflatex $<
+	bibtex gretl-ref-a4
+	pdflatex $<
+	pdflatex $<
+
+$(ALTHANSL): hansl-primer-a4.tex links \
+	date.tex $(STYSRC)
+	pdflatex $<
+	pdflatex $<
+
+$(ALTKBD): gretl-keys-a4.tex links $(STYSRC)
+	pdflatex $<
+
+gretl-guide.tex:
+	if [ ! -f $@ ] ; then ln -sf $(docsrc)/tex/$@ . ; fi
+
+gretl-ref.tex:
+	if [ ! -f $@ ] ; then ln -sf $(docsrc)/tex/$@ . ; fi
+
+hansl-primer.tex:
+	if [ ! -f $@ ] ; then ln -sf $(docsrc)/tex/$@ . ; fi
+
+gretl-keys.tex:
+	if [ ! -f $@ ] ; then ln -sf $(docsrc)/tex/$@ . ; fi
+
+letter: $(GUIDE) $(REF) $(HANSL) $(KBD)
+
+a4: $(ALTGUIDE) $(ALTREF) $(ALTHANSL) $(ALTKBD)
+
+gretl-guide-a4.tex: $(docsrc)/tex/gretl-guide.tex ../commands/us2a4
+	../commands/us2a4 < $< > $@
+
+gretl-ref-a4.tex: $(docsrc)/tex/gretl-ref.tex ../commands/us2a4
+	../commands/us2a4 < $< > $@
+
+hansl-primer-a4.tex: $(docsrc)/tex/hansl-primer.tex ../commands/us2a4
+	../commands/us2a4 < $< > $@
+
+gretl-keys-a4.tex: $(docsrc)/tex/gretl-keys.tex ../commands/us2a4
+	../commands/us2a4 < $< > $@
+
+.PHONY : links cmdtex functex textables alt onepass refpass topiclist install clean
+
+links:
+	rm -f gretl.sty && ln -s ../gretl.sty ./gretl.sty
+	rm -f gretl-lite.sty && ln -s ../gretl-lite.sty ./gretl-lite.sty
+	rm -f figures && ln -s $(docsrc)/figures ./figures
+	for f in $(TEXSRC) ; do \
+	if [ ! -f $$f ] ; then ln -sf $(docsrc)/tex/$$f . ; fi ; done
+	for f in $(BIBSRC) ; do \
+	if [ ! -f $$f ] ; then ln -sf $(docsrc)/tex/$$f . ; fi ; done
+
+cmdtex:
+	$(MAKE) -C ../commands cmdtex
+
+topiclist:
+	$(MAKE) -C ../commands topiclist_en
+
+textables:
+	$(MAKE) -C ../commands textables
+
+functex:
+	$(MAKE) -C ../commands functex
+
+../commands/us2a4:
+	$(MAKE) -C ../commands us2a4
+
+date.tex: $(ALLSRC)
+	LANG=en_US date "+%B, %Y" > $@
+
+alt: gretl-guide-a4.pdf gretl-ref-a4.pdf
+
+onepass: gretl-guide.tex links textables
+	pdflatex $<
+
+refpass: gretl-ref.tex links cmdtex textables functex topiclist
+	pdflatex $<
+
+hanslpass: hansl-primer.tex links
+	pdflatex $<
+
+bibpass: onepass refpass
+	bibtex gretl-guide
+	bibtex gretl-ref
+
+clean:
+	rm -f *.aux *.log *.out *.toc *.pdf *.bbl *.blg
+	rm -f refbody.tex funcbody.tex cmdtopics.tex
+	rm -f gretl-guide-a4.tex gretl-ref-a4.tex hansl-primer-a4.tex gretl-keys-a4.tex
+	rm -f ../commands/textables ../commands/topiclist_en 
+	rm -f ../commands/cmdtex ../commands/functex
+
+distclean: clean
+	rm -rf CVS
+

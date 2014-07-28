@@ -1,0 +1,340 @@
+\chapter{Special functions in genr}
+\label{chap-genr}
+
+\section{Introduction}
+\label{genr-intro}
+
+The \cmd{genr} command provides a flexible means of defining new
+variables.  It is documented in the \GCR.  This chapter offers a more
+expansive discussion of some of the special functions available via
+\verb+genr+ and some of the finer points of the command.
+    
+\section{Long-run variance}
+\label{sec:lrvar}
+
+As is well known, the variance of the average of $T$ random variables
+$x_1, x_2, \ldots, x_T$ with equal variance $\sigma^2$ equals
+$\sigma^2/T$ if the data are uncorrelated. In this case, the sample
+variance of $x_t$ over the sample size provides a consistent estimator.
+
+If, however, there is serial correlation among the $x_t$s, the
+variance of $\bar{X} = T^{-1} \sum_{t=1}^T x_t$ must be estimated
+differently. One of the most widely used statistics for this purpose
+is a nonparametric kernel estimator with the Bartlett kernel defined
+as
+\begin{equation}
+  \label{eq:scalar-lrvar}
+  \hat{\omega}^2(k) = T^{-1} \sum_{t=k}^{T-k} \left[ \sum_{i=-k}^k w_i (x_t -
+  \bar{X}) (x_{t-i} - \bar{X}) \right] ,
+\end{equation}
+where the integer $k$ is known as the window size and the $w_i$ terms
+are the so-called \emph{Bartlett weights}, defined as $w_i = 1 -
+\frac{|i|}{k + 1}$. It can be shown that, for $k$ large enough,
+$\hat{\omega}^2(k)/T$ yields a consistent estimator of the variance of
+$\bar{X}$.
+
+\app{Gretl} implements this estimator by means of the function
+\texttt{lrvar()}, which takes two arguments: the series whose long-run
+variance must be estimated and the scalar $k$. If $k$ is negative, the
+popular choice $T^{1/3}$ is used.
+
+\section{Cumulative densities and p-values}
+\label{sec:genr-cdf}
+
+The two functions \cmd{cdf} and \cmd{pvalue} provide complementary
+means of examining values from several probability distributions: the
+standard normal, Student's $t$, $\chi^2$, $F$, gamma, and binomial.
+The syntax of these functions is set out in the \GCR; here we expand
+on some subtleties.
+
+The cumulative density function or CDF for a random variable
+is the integral of the variable's density from its lower limit
+(typically either $-\infty$ or 0) to any specified value $x$.  The
+p-value (at least the one-tailed, right-hand p-value as returned by
+the \cmd{pvalue} function) is the complementary probability, the
+integral from $x$ to the upper limit of the distribution, typically
+$+\infty$.  
+
+In principle, therefore, there is no need for two distinct functions:
+given a CDF value $p_0$ you could easily find the corresponding
+p-value as $1-p_0$ (or vice versa).  In practice, with
+finite-precision computer arithmetic, the two functions are not
+redundant.  This requires a little explanation.  In \app{gretl}, as in
+most statistical programs, floating point numbers are represented as
+``doubles'' --- double-precision values that typically have a storage
+size of eight bytes or 64 bits.  Since there are only so many bits
+available, only so many floating-point numbers can be represented:
+\textit{doubles do not model the real line}.  Typically doubles can
+represent numbers over the range (roughly) $\pm 1.7977 \times
+10^{308}$, but only to about 15 digits of precision.
+
+Suppose you're interested in the left tail of the $\chi^2$ distribution
+with 50 degrees of freedom: you'd like to know the CDF value for $x =
+0.9$.  Take a look at the following interactive session: 
+\begin{code}
+? genr p1 = cdf(X, 50, 0.9)
+Generated scalar p1 (ID 2) = 8.94977e-35
+? genr p2 = pvalue(X, 50, 0.9)
+Generated scalar p2 (ID 3) = 1
+? genr test = 1 - p2
+Generated scalar test (ID 4) = 0
+\end{code}
+
+The \cmd{cdf} function has produced an accurate value, but the
+\cmd{pvalue} function gives an answer of 1, from which it is not
+possible to retrieve the answer to the CDF question.  This may seem
+surprising at first, but consider: if the value of \texttt{p1} above
+is correct, then the correct value for \texttt{p2} is $1 - 8.94977
+\times 10^{-35}$.  But there's no way that value can be represented as
+a double: that would require over 30 digits of precision.
+
+Of course this is an extreme example.  If the $x$ in question is not
+too far off into one or other tail of the distribution, the \cmd{cdf}
+and \cmd{pvalue} functions will in fact produce complementary
+answers, as shown below:
+\begin{code}
+? genr p1 = cdf(X, 50, 30)
+Generated scalar p1 (ID 2) = 0.0111648
+? genr p2 = pvalue(X, 50, 30)
+Generated scalar p2 (ID 3) = 0.988835
+? genr test = 1 - p2
+Generated scalar test (ID 4) = 0.0111648
+\end{code}
+But the moral is that if you want to examine extreme values
+you should be careful in selecting the function you need, in the
+knowledge that values very close to zero can be represented as doubles
+while values very close to 1 cannot.
+
+
+\section{Retrieving internal variables}
+\label{sec:genr-internal}
+
+The \cmd{genr} command provides a means of retrieving various values
+calculated by the program in the course of estimating models or
+testing hypotheses.  The variables that can be retrieved in this way
+are listed in the \GCR; here we say a bit more about the special
+variables \dollar{test} and \dollar{pvalue}.
+
+These variables hold, respectively, the value of the last test
+statistic calculated using an explicit testing command and the p-value
+for that test statistic.  If no such test has been performed at the
+time when these variables are referenced, they will produce the
+missing value code.  The ``explicit testing commands'' that work in
+this way are as follows: \cmd{add} (joint test for the significance of
+variables added to a model); \cmd{adf} (Augmented Dickey--Fuller test,
+see below); \cmd{arch} (test for ARCH); \cmd{chow} (Chow test for a
+structural break); \cmd{coeffsum} (test for the sum of specified
+coefficients); \cmd{cusum} (the Harvey--Collier $t$-statistic);
+\cmd{kpss} (KPSS stationarity test, no p-value available);
+\cmd{lmtest} (see below); \cmd{meantest} (test for difference of
+means); \cmd{omit} (joint test for the significance of variables
+omitted from a model); \cmd{reset} (Ramsey's RESET); \cmd{restrict}
+(general linear restriction); \cmd{runs} (runs test for randomness);
+\cmd{testuhat} (test for normality of residual); and \cmd{vartest}
+(test for difference of variances). In most cases both a \dollar{test}
+and a \dollar{pvalue} are stored; the exception is the KPSS test, for
+which a p-value is not currently available.
+    
+An important point to notice about this mechanism is that the internal
+variables \dollar{test} and \dollar{pvalue} are over-written each time
+one of the tests listed above is performed.  If you want to reference
+these values, you must do so at the correct point in the sequence of
+\app{gretl} commands.  
+
+A related point is that some of the test commands generate, by
+default, more than one test statistic and p-value; in these cases only
+the last values are stored. To get proper control over the retrieval
+of values via \dollar{test} and \dollar{pvalue} you should formulate
+the test command in such a way that the result is unambiguous.  This
+comment applies in particular to the \cmd{adf} and \cmd{lmtest}
+commands.
+
+\begin{itemize}
+\item By default, the \cmd{adf} command generates three variants of
+  the Dickey--Fuller test: one based on a regression including a
+  constant, one using a constant and linear trend, and one using a
+  constant and a quadratic trend.  When you wish to reference
+  \dollar{test} or \dollar{pvalue} in connection with this command, you
+  can control the variant that is recorded by using one of the flags
+  \option{nc}, \option{c}, \option{ct} or \option{ctt} with
+  \verb+adf+.
+\item By default, the \cmd{lmtest} command (which must follow an OLS
+  regression) performs several diagnostic tests on the regression in
+  question.  To control what is recorded in \dollar{test} and
+  \dollar{pvalue} you should limit the test using one of the flags
+  \option{logs}, \option{autocorr}, \option{squares} or
+  \option{white}.
+\end{itemize}
+
+As an aid in working with values retrieved using \dollar{test} and
+\dollar{pvalue}, the nature of the test to which these values relate is
+written into the descriptive label for the generated variable.  You
+can read the label for the variable using the \cmd{label} command
+(with just one argument, the name of the variable), to check that you
+have retrieved the right value.  The following interactive session
+illustrates this point.
+
+\begin{code}
+? adf 4 x1 --c
+Augmented Dickey-Fuller tests, order 4, for x1
+sample size 59
+unit-root null hypothesis: a = 1
+  test with constant
+  model: (1 - L)y = b0 + (a-1)*y(-1) + ... + e
+  estimated value of (a - 1): -0.216889
+  test statistic: t = -1.83491
+  asymptotic p-value 0.3638
+P-values based on MacKinnon (JAE, 1996)
+? genr pv = $pvalue
+Generated scalar pv (ID 13) = 0.363844
+? label pv    
+  pv=Dickey-Fuller pvalue (scalar)
+\end{code}
+%$
+
+\section{The discrete Fourier transform}
+\label{sec:genr-fft}
+
+The discrete Fourier transform can be best thought of as a linear,
+invertible transform of a complex vector. Hence, if $\mathbf{x}$ is an
+$n$-dimensional vector whose $k$-th element is $x_k = a_k + i b_k$,
+then the output of the discrete Fourier transform is a vector
+$\mathbf{f} = \mathcal{F}(\mathbf{x})$ whose $k$-th element is
+\[
+  f_k = \sum_{j=0}^{n-1} e^{-i \omega(j,k) } x_j 
+\]
+where $\omega(j,k) = 2 \pi i \frac{j k}{n}$. Since the transformation
+is invertible, the vector $\mathbf{x}$ can be recovered from
+$\mathbf{f}$ via the so-called inverse transform
+\[
+  x_k = \frac{1}{n} \sum_{j=0}^{n-1} e^{i \omega(j,k) } f_j .
+\]
+
+The Fourier transform is used in many diverse situations
+on account of this key property: the convolution of two vectors can be
+performed efficiently by multiplying the elements of their Fourier
+transforms and inverting the result.  If
+\[
+  z_k = \sum_{j=1}^n x_j y_{k-j} ,
+\]
+then
+\[
+  \mathcal{F}(\mathbf{z}) = \mathcal{F}(\mathbf{x}) \odot
+  \mathcal{F}(\mathbf{y}) .
+\]
+That is, $\mathcal{F}(\mathbf{z})_k = \mathcal{F}(\mathbf{x})_k
+\mathcal{F}(\mathbf{y})_k$.
+
+For computing the Fourier transform, \app{gretl} uses the external
+library \texttt{fftw3}: see \cite{frigo05}. This guarantees
+extreme speed and accuracy. In fact, the CPU time needed to perform
+the transform is $O(n \log n)$ for any $n$. This is why the array of
+numerical techniques employed in \texttt{fftw3} is commonly known as
+the \emph{Fast} Fourier Transform.
+
+\app{Gretl} provides two matrix functions\footnote{See chapter
+  \ref{chap:matrices}.} for performing the Fourier transform and its
+inverse: \texttt{fft} and \texttt{ffti}. In fact, \app{gretl}'s
+implementation of the Fourier transform is somewhat more specialized:
+the input to the \texttt{fft} function is understood to be real.
+Conversely, \texttt{ffti} takes a complex argument and delivers a real
+result. For example:
+\begin{code}
+x1 = { 1 ; 2 ; 3 }
+# perform the transform
+f = fft(a)
+# perform the inverse transform
+x2 = ffti(f)
+\end{code}
+yields
+\[
+  x_1 = \left[ \begin{array}{c} 1 \\ 2 \\ 3 \end{array} \right] 
+  \qquad
+  f = \left[ \begin{array}{rr} 
+      6 & 0 \\ -1.5 & 0.866 \\ -1.5 & -0.866 
+   \end{array} \right] 
+  \qquad
+  x_2 = \left[ \begin{array}{c} 1 \\ 2 \\ 3 \end{array} \right] 
+\]
+where the first column of \emph{f} holds the real part and the second
+holds the complex part. In general, if the input to \texttt{fft} has
+$n$ columns, the output has $2n$ columns, where the real parts are
+stored in the odd columns and the complex parts in the even
+ones. Should it be necessary to compute the Fourier transform on
+several vectors with the same number of elements, it is numerically more
+efficient to group them into a matrix rather than invoking
+\texttt{fft} for each vector separately.
+
+As an example, consider the multiplication of two polynomials:
+\begin{eqnarray*}
+  a(x) & = & 1 + 0.5 x \\
+  b(x) & = & 1 + 0.3 x - 0.8 x^2 \\
+  c(x) = a(x) \cdot b(x) & = & 1 + 0.8 x - 0.65 x^2 - 0.4 x^3
+\end{eqnarray*}
+The coefficients of the polynomial $c(x)$ are the convolution of the
+coefficients of $a(x)$ and $b(x)$; the following \app{gretl} code fragment
+illustrates how to compute the coefficients of $c(x)$:
+\begin{code}
+# define the two polynomials
+a = { 1, 0.5, 0, 0 }'
+b = { 1, 0.3, -0.8, 0 }'
+# perform the transforms
+fa = fft(a)
+fb = fft(b)
+# complex-multiply the two transforms 
+fc = cmult(fa, fb)
+# compute the coefficients of c via the inverse transform
+c = ffti(fc)
+\end{code}
+
+Maximum efficiency would have been achieved by grouping \texttt{a} and
+\texttt{b} into a matrix.  The computational advantage is so little in
+this case that the exercise is a bit silly, but the following
+alternative may be preferable for a large number of
+rows/columns:
+\begin{code}
+# define the two polynomials
+a = { 1 ; 0.5; 0 ; 0 }
+b = { 1 ; 0.3 ; -0.8 ; 0 }
+# perform the transforms jointly
+f = fft(a ~ b)
+# complex-multiply the two transforms 
+fc = cmult(f[,1:2], f[,3:4])
+# compute the coefficients of c via the inverse transform
+c = ffti(fc)
+\end{code}
+
+Traditionally, the Fourier transform in econometrics has been mostly
+used in time-series analysis, the periodogram being the best known
+example. Example script \ref{scr:pergm-fft} shows how to compute the
+periodogram of a time series via the \texttt{fft} function.
+
+\begin{script}[htbp]
+  \caption{Periodogram via the Fourier transform}
+  \label{scr:pergm-fft}
+\begin{scode}
+nulldata 50
+# generate an AR(1) process
+series e = normal()
+series x = 0
+x = 0.9*x(-1) + e
+# compute the periodogram
+scale = 2*pi*$nobs
+X = { x }
+F = fft(X)
+S = sumr(F.^2)
+S = S[2:($nobs/2)+1]/scale
+omega = seq(1,($nobs/2))' .* (2*pi/$nobs)
+omega = omega ~ S
+# compare the built-in command
+pergm x  
+print omega
+\end{scode}
+\end{script}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "gretl-guide"
+%%% End: 
+

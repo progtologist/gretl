@@ -1,0 +1,371 @@
+\chapter{Sub-sampling a dataset}
+\label{sampling}
+
+\section{Introduction}
+\label{sample-intro}
+
+Some subtle issues can arise here; this chapter attempts to explain
+the issues.
+
+A sub-sample may be defined in relation to a full dataset in two
+different ways: we will refer to these as ``setting'' the sample and
+``restricting'' the sample; these methods are discussed in
+sections~\ref{sec:sample-set} and~\ref{sec:sample-restrict}
+respectively. In addition section~\ref{sec:smpl-panel} discusses some
+special issues relating to panel data, and
+section~\ref{sec:resampling} covers resampling with replacement,
+which is useful in the context of bootstrapping test statistics.
+
+The following discussion focuses on the command-line approach. But you
+can also invoke the methods outlined here via the items under the
+\textsf{Sample} menu in the GUI program.
+
+
+\section{Setting the sample}
+\label{sec:sample-set}
+
+By ``setting'' the sample we mean defining a sub-sample simply by
+means of adjusting the starting and/or ending point of the current
+sample range.  This is likely to be most relevant for time-series
+data.  For example, one has quarterly data from 1960:1 to 2003:4, and
+one wants to run a regression using only data from the 1970s.  A
+suitable command is then
+
+\begin{code}
+smpl 1970:1 1979:4
+\end{code}
+
+Or one wishes to set aside a block of observations at the end of the
+data period for out-of-sample forecasting.  In that case one might do
+
+\begin{code}
+smpl ; 2000:4
+\end{code}
+
+where the semicolon is shorthand for ``leave the starting observation
+unchanged''.  (The semicolon may also be used in place of the second
+parameter, to mean that the ending observation should be unchanged.)
+By ``unchanged'' here, we mean unchanged relative to the last
+\verb+smpl+ setting, or relative to the full dataset if no sub-sample
+has been defined up to this point. For example, after
+
+\begin{code}
+smpl 1970:1 2003:4
+smpl ; 2000:4
+\end{code}
+
+the sample range will be 1970:1 to 2000:4.  
+
+An incremental or relative form of setting the sample range is also
+supported.  In this case a relative offset should be given, in the
+form of a signed integer (or a semicolon to indicate no change), for
+both the starting and ending point. For example
+
+\begin{code}
+smpl +1 ;
+\end{code}
+
+will advance the starting observation by one while preserving the
+ending observation, and
+
+\begin{code}
+smpl +2 -1
+\end{code}
+
+will both advance the starting observation by two and retard the
+ending observation by one.
+
+An important feature of ``setting'' the sample as described above is
+that it necessarily results in the selection of a subset of
+observations that are contiguous in the full dataset. The structure of
+the dataset is therefore unaffected (for example, if it is a quarterly
+time series before setting the sample, it remains a quarterly time
+series afterwards).
+
+\section{Restricting the sample}
+\label{sec:sample-restrict}
+
+By ``restricting'' the sample we mean selecting observations on the
+basis of some Boolean (logical) criterion, or by means of a random
+number generator.  This is likely to be most relevant for
+cross-sectional or panel data.
+
+Suppose we have data on a cross-section of individuals, recording
+their gender, income and other characteristics.  We wish to select for
+analysis only the women.  If we have a \verb+gender+ dummy variable
+with value 1 for men and 0 for women we could do
+%      
+\begin{code}
+smpl gender==0 --restrict
+\end{code}
+%
+to this effect.  Or suppose we want to restrict the sample to
+respondents with incomes over \$50,000.  Then we could use
+%
+\begin{code}
+smpl income>50000 --restrict
+\end{code}
+
+A question arises: if we issue the two commands above in sequence,
+what do we end up with in our sub-sample: all cases with income over
+50000, or just women with income over 50000? By default, the answer is
+the latter: women with income over 50000.  The second restriction
+augments the first, or in other words the final restriction is the
+logical product of the new restriction and any restriction that is
+already in place.  If you want a new restriction to replace any
+existing restrictions you can first recreate the full dataset using
+%
+\begin{code}
+smpl --full
+\end{code}
+%
+Alternatively, you can add the \verb+replace+ option to the
+\verb+smpl+ command:
+%
+\begin{code}
+smpl income>50000 --restrict --replace
+\end{code}
+
+This option has the effect of automatically re-establishing the full
+dataset before applying the new restriction.
+
+Unlike a simple ``setting'' of the sample, ``restricting'' the sample
+may result in selection of non-contiguous observations from the full
+data set.  It may therefore change the structure of the data set.
+
+This can be seen in the case of panel data.  Say we have a panel of
+five firms (indexed by the variable \verb+firm+) observed in each of
+several years (identified by the variable \verb+year+).  Then the
+restriction
+%
+\begin{code}
+smpl year==1995 --restrict
+\end{code}
+%
+produces a dataset that is not a panel, but a cross-section for the
+year 1995.  Similarly
+%
+\begin{code}
+smpl firm==3 --restrict
+\end{code}
+%
+produces a time-series dataset for firm number 3.
+
+For these reasons (possible non-contiguity in the observations,
+possible change in the structure of the data), gretl acts differently
+when you ``restrict'' the sample as opposed to simply ``setting'' it.
+In the case of setting, the program merely records the starting and
+ending observations and uses these as parameters to the various
+commands calling for the estimation of models, the computation of
+statistics, and so on. In the case of restriction, the program makes a
+reduced copy of the dataset and by default treats this reduced copy as
+a simple, undated cross-section---but see the further discussion of
+panel data in section~\ref{sec:smpl-panel}.
+
+If you wish to re-impose a time-series interpretation of the reduced
+dataset you can do so using the \cmd{setobs} command, or the GUI menu
+item ``Data, Dataset structure''.
+
+The fact that ``restricting'' the sample results in the creation of a
+reduced copy of the original dataset may raise an issue when the
+dataset is very large.  With such a dataset in memory, the creation of
+a copy may lead to a situation where the computer runs low on memory
+for calculating regression results.  You can work around this as
+follows:
+
+\begin{enumerate}
+\item Open the full data set, and impose the sample restriction.
+\item Save a copy of the reduced data set to disk.
+\item Close the full dataset and open the reduced one.
+\item Proceed with your analysis.
+\end{enumerate}
+
+\subsection{Random sub-sampling}
+\label{sample-random}
+
+Besides restricting the sample on some deterministic criterion, it may
+sometimes be useful (when working with very large datasets, or perhaps
+to study the properties of an estimator) to draw a random sub-sample
+from the full dataset.  This can be done using, for example,
+%
+\begin{code}
+smpl 100 --random
+\end{code}
+%
+to select 100 cases.  If you want the sample to be reproducible, you
+should set the seed for the random number generator first, using the
+\cmd{set} command.  This sort of sampling falls under the
+``restriction'' category: a reduced copy of the dataset is made.
+
+\section{Panel data}
+\label{sec:smpl-panel}
+
+Consider for concreteness the Arellano--Bond dataset supplied with
+gretl (\texttt{abdata.gdt}). This comprises data on 140 firms
+$(n=140$) observed over the years 1976--1984 $(T=9)$. The dataset is
+``nominally balanced'' in the sense that that the time-series length
+is the same for all countries (this being a requirement for a dataset
+to count as a panel in gretl), but in fact there are many missing
+values (\texttt{NA}s).
+
+You may want to sub-sample such a dataset in either the
+cross-sectional dimension (limit the sample to a subset of firms) or
+the time dimension (e.g.\ use data from the 1980s only). The simplest
+(but limited) way to sub-sample on firms keys off the notation used by
+gretl for panel observations. The full data range is printed as
+\texttt{1:1} (firm 1, period 1) to \texttt{140:9} (firm 140, period
+9). The effect of
+%
+\begin{code}
+smpl 1:1 80:9
+\end{code}
+%
+is to limit the sample to the first 80 firms. Note that if you instead
+tried \texttt{smpl 1:1 80:4}, gretl would insist on preserving the
+balance of the panel and would truncate the range to ``complete''
+firms, as if you had typed \texttt{smpl 1:1 79:9}.
+
+The firms in the Arellano--Bond dataset are anonymous, but suppose you
+had a panel with five named countries. With such a panel you can
+inform gretl of the names of the groups using the \cmd{setobs}
+command. For example, given
+%
+\begin{code}
+string cstr = "Portugal Italy Ireland Greece Spain"
+setobs country cstr --panel-groups 
+\end{code}
+%
+gretl creates a string-valued series named \texttt{country} with group
+names taken from the variable \texttt{cstr}. Then, to include only
+Italy and Spain you could do
+%
+\begin{code}
+smpl country=="Italy" || country=="Spain" --restrict
+\end{code}
+%
+or to exclude one country,
+%
+\begin{code}
+smpl country!="Ireland" --restrict
+\end{code}
+
+To sub-sample in the time dimension, use of \option{restrict} is
+required. For example, the Arellano--Bond dataset contains a variable
+named \texttt{YEAR} that records the year of the observations and if
+one wanted to omit the first two years of data one could do
+%
+\begin{code}
+smpl YEAR >= 1978 --restrict
+\end{code}
+%
+If a dataset does not already incude a suitable variable for this
+purpose one can use the command \texttt{genr time} to create a simple
+1-based time index.
+
+Note that if you apply a sample restriction that just selects certain
+units (firms, countries or whatever), or selects certain contiguous
+time-periods---such that $n>1$, $T>1$ and the time-series length is
+still the same across all included units---your sub-sample will still
+be interpreted by gretl as a panel.
+
+
+\subsection{Unbalancing restrictions}
+
+In some cases one wants to sub-sample according to a criterion that
+``cuts across the grain'' of a panel dataset. For instance, suppose you
+have a micro dataset with thousands of individuals observed over
+several years and you want to restrict the sample to observations on
+employed women.  
+
+If we simply extracted from the total $nT$ rows of the dataset those
+that pertain to women who were employed at time $t$ $(t = 1,\dots,T)$
+we would likely end up with a dataset that doesn't count as a panel in
+gretl (because the specific time-series length, $T_i$, would differ
+across individuals). In some contexts it might be OK that gretl
+doesn't take your sub-sample to be a panel, but if you want to apply
+panel-specific methods this is a problem. You can solve it by giving
+the \option{balanced} option with \cmd{smpl}. For example, supposing
+your dataset contained dummy variables \texttt{gender} (with the value
+1 coding for women) and \texttt{employed}, you could do
+%
+\begin{code}
+smpl gender==1 && employed==1 --restrict --balanced
+\end{code}
+%
+What exactly does this do? Well, let's say the years of your data are
+2000, 2005 and 2010, and that some women were employed in all of those
+years, giving a maximum $T_i$ value of 3. But individual 526 is a
+women who was employed only in the year 2000 ($T_i = 1$). The effect
+of the \option{balanced} option is then to insert ``padding rows'' of
+\texttt{NA}s for the years 2005 and 2010 for individual 526, and
+similarly for all individuals with $0 < T_i < 3$. Your sub-sample
+then qualifies as a panel.
+
+
+\section{Resampling and bootstrapping}
+\label{sec:resampling}
+
+Given an original data series \varname{x}, the command
+%
+\begin{code}
+series xr = resample(x)
+\end{code}
+%
+creates a new series each of whose elements is drawn at random from
+the elements of \varname{x}.  If the original series has 100
+observations, each element of \varname{x} is selected with probability
+$1/100$ at each drawing.  Thus the effect is to ``shuffle'' the
+elements of \varname{x}, with the twist that each element of
+\varname{x} may appear more than once, or not at all, in \varname{xr}.
+
+The primary use of this function is in the construction of bootstrap
+confidence intervals or p-values.  Here is a simple example.  Suppose
+we estimate a simple regression of $y$ on $x$ via OLS and find that
+the slope coefficient has a reported $t$-ratio of 2.5 with 40 degrees
+of freedom.  The two-tailed p-value for the null hypothesis that the
+slope parameter equals zero is then 0.0166, using the $t(40)$
+distribution.  Depending on the context, however, we may doubt whether
+the ratio of coefficient to standard error truly follows the $t(40)$
+distribution.  In that case we could derive a bootstrap p-value as
+shown in Example~\ref{resampling-loop}.  
+
+Under the null hypothesis that the slope with respect to $x$ is zero,
+$y$ is simply equal to its mean plus an error term.  We simulate $y$
+by resampling the residuals from the initial OLS and re-estimate the
+model.  We repeat this procedure a large number of times, and record
+the number of cases where the absolute value of the $t$-ratio is
+greater than 2.5: the proportion of such cases is our bootstrap
+p-value.  For a good discussion of simulation-based tests and
+bootstrapping, see Davidson and MacKinnon
+(\citeyear{davidson-mackinnon04}, chapter 4).
+
+\begin{script}[htbp]
+  \caption{Calculation of bootstrap p-value}
+  \label{resampling-loop}
+\begin{scode}
+ols y 0 x
+# save the residuals
+genr ui = $uhat
+scalar ybar = mean(y)
+# number of replications for bootstrap
+scalar replics = 10000
+scalar tcount = 0
+series ysim
+loop replics --quiet
+  # generate simulated y by resampling
+  ysim = ybar + resample(ui)
+  ols ysim 0 x
+  scalar tsim = abs($coeff(x) / $stderr(x))
+  tcount += (tsim > 2.5)
+endloop      
+printf "proportion of cases with |t| > 2.5 = %g\n", tcount / replics
+\end{scode}
+%$
+\end{script}
+
+    
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "gretl-guide"
+%%% End: 
+

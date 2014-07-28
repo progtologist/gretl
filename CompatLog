@@ -1,0 +1,390 @@
+version 1.9.90
+
+The "set" variable "RNG" has been removed: the RNG is the SFMT
+(Simd-oriented Fast Mersenne Twister) and the option of using
+the GLib implementation of the Mersenne Twister (which was 
+gretl's RNG up to version 1.9.3) is no longer available.
+
+Support for reading and writing data in the format of ESL,
+gretl's ancestor, has been removed.
+
+Use of "end loop" in place of "endloop" is now officially
+deprecated, and will be removed before long.
+
+2013-11-21 version 1.9.14
+
+No intentional backward-incompatible changes
+
+2013-10-24 version 1.9.13
+
+The default criterion used in connection with the --test-down
+option for the "adf" command is now the modified AIC as
+recommended by Ng and Perron (Econometrica, 2001). To obtain
+the same results as in earlier gretl versions you can specify
+--test-down=tstat.
+
+The (undocumented) way in which date identifiers (such as 
+2004:01 for January 2004) could stand in for numerical values
+in some commands has been removed. If you need the 1-based
+observation number based on such dates, use the obsnum()
+function. This applies only to contexts where the documentation
+of a command calls for a scalar numerical value; if a command
+claims to accept a date or observation string as an argument,
+it still does.
+
+The following old, undocumented command aliases have finally
+been removed:
+
+"addobs"   (use "dataset addobs")
+"import"   (use "open")
+
+2013-03-15 version 1.9.12
+
+The special treatment that supported the use of @-substitution
+in an unquoted argument to printf has been removed. For example,
+ 
+  string strvar = "some string"
+  printf "strvar = %s\n", strvar    # correct
+  printf "strvar = %s\n", "@strvar" # ugly but legal
+  printf "strvar = %s\n", @strvar   # no longer supported!
+
+2012-11-21 version 1.9.11
+
+The functions islist(), isseries() and isstring() are deprecated,
+and will be removed before long. Note that the generic isnull()
+can be used to check whether or not a function argument that has
+a default of "null" has been supplied by the caller.
+
+2012-11-05 version 1.9.10
+
+The option for specifying how to read data from a fixed format
+text file using the "open" command has been renamed from --cols
+to --fixed-cols.
+
+The built-in constants "pi" and "macheps" have been renamed as
+"$pi" and "$macheps". The old names continue to work at present 
+but they will be removed before long.
+
+The --labels option to the "setobs" command has been removed.
+Its functionality (and more) is now available via the new
+"markers" command.
+
+2012-06-01 version 1.9.9
+
+No intentional backward-incompatible changes
+
+2012-03-29 version 1.9.8
+
+In performing "$-substitution" for the index variable in the 
+context of loops, $-accessors are now protected. For example 
+"$jalpha" will now not turn into "1alpha" on the first interation 
+of a loop indexed by j.
+
+2011-12-22 version 1.9.7
+
+In cointegration analysis gretl now treats restricted exogenous 
+regressors (that is, exogenous terms that are restricted to the
+cointegration space) as per Ox and PcGive: we don't lag these
+terms in the initial OLS regressions, as we did before.
+
+The optional "ymax" parameter to the "logistic" estimation
+command is now treated as a regular option. This means that
+any scripts that use the old syntax "ymax=value" should be
+revised to use "--ymax=value".
+
+The following aliases, deprecated since gretl 1.9.0, have now 
+been removed and should be replaced as indicated:
+
+ "end if"    endif
+ "corc"      ar1
+ "hilu"      ar1 ... --hilu
+ "pwe"       ar1 ... --pwe
+ "hccm"      ols ... --jackknife
+ "lmtest"    modtest
+ "testuhat"  modtest --normality
+
+In internationalized TeX output, gretl now always uses UTF-8
+encoding (before we used the specific locale encoding on
+platforms where UTF-8 was not "native").
+
+GUI: the menu item /View/Scalars has been merged into the
+Icon view window (under /View/Icon view).
+
+2011-10-17 version 1.9.6
+
+When a new series is declared without specifying any values,
+the values default to NA, and not zero as in gretl <= 1.9.5.
+
+The "omit" command: the --wald option, which prevents the 
+replacement of the original model with the restricted version, 
+is renamed as --test-only. The undocumented behavior by which
+the --quiet option also had this effect is now gone: this
+option only affects what gets printed.
+
+2011-04-22 version 1.9.5
+
+Matrix operators: "B / A" now has the same semantics as 
+Octave/Matlab "matrix right division"; for square A, it's in
+principle equivalent to B * inv(A). Also, "\" (not previously
+defined as an operator in gretl) now serves for "matrix left 
+division". In practical terms, occurrences of B/A in existing
+gretl scripts -- where they produced, in effect, inv(A)*B --
+should be replaced by A\B to produce the same effect.
+
+2011-02-24 version 1.9.4
+
+The default random number generator has been changed from 
+GLib's implementation of the Mersenne Twister to the 
+SIMD-oriented Fast Mersenne Twister. For purposes of
+replication you can revert to the previous generator
+via the command "set RNG MT".
+
+The redundant function makemask() has been removed.
+
+The old, deprecated aliases "noecho" (use "set echo off") and
+"seed" (use "set seed") have been removed.
+
+The "sscanf" command is deprecated in favor of the function
+of the same name.
+
+2010-11-29 version 1.9.3
+
+No intentional backward-incompatible changes
+
+2010-11-03 version 1.9.2
+
+Testing for fractional integration is now factored out of
+the "pergm" command and has its own, more functional,
+command, namely "fractint".
+
+The --continue option for arima and certain other commands,
+deprecated as of version 1.9.0, is now removed; use 
+"catch" instead.
+
+The command "dataset expand" has been modified: you can no
+longer expand directly from annual to monthly data, but you
+now have the option of interpolating rather than repeating
+the lower-frequency values (for annual to quarterly or 
+quarterly to monthly expansion). 
+
+2010-06-24 version 1.9.1
+
+The old genpois function is now removed.
+
+2010-05-02 version 1.9.0
+
+Many old (and now undocumented) aliasas are now officially 
+deprecated and will be removed before long, including the 
+following:
+
+noecho   (use "set echo off")
+seed X   (use "set seed X")
+end if   (use "endif")
+corc     (use "ar1")
+hilu     (use "ar1 ... --hilu")
+pwe      (use "ar1 ... --pwe")
+hccm     (use "ols ... --jackknife")
+lmtest   (use "modtest")
+testuhat (use "modtest")
+
+The following parameters to the "set" command are now declared
+obsolete and will be removed before long: bkbp_k, bkbp_limits,
+hp_lambda. Use the optional arguments to the functions 
+bkfilt and hpfilt instead.
+
+Gretl now requires gnuplot version 4.2.0 or higher for
+graphing.  Since version 4.2 was released in March 2007,
+hopefully this should not be too onerous.
+
+The "criteria" command has been removed.  A small function
+package is available on the gretl server that replaces this
+command.
+
+The commands "graph" and "plot" have been consolidated as
+options to the new command "textplot"; but the old commands
+are retained as aliases for the present.
+
+The function genpois() is now deprecated.  Please use
+randgen() with a first argument of 'P' instead.
+
+The --continue option for the commands arma, garch, mle
+nls and gmm (which allowed continuation of script execution
+in face of an error) is now deprecated in favor of the
+new "catch" prefix, as in "catch arma 2 2 ; y".  For the
+present the --continue option remains an acceptable alias
+for the use of "catch", but this will be removed at some
+point.
+
+The internal variable "obs" used to get the year in the
+case of annual time series data, but a 1-based index in all
+other cases.  This has now been made consistent: it always
+gives the 1-based index.  Any scripts that rely on the old
+behavior with annual data can be fixed quite easily --
+substitute, e.g., "obsnum(1970)" for plain "1970" when you
+wish to compare a year against the obs series.  For example, 
+to create a dummy variable with value 1 in 1970 only:
+
+  series d70 = (obs=obsnum(1970))? 1 : 0
+
+2010-01-24 version 1.8.7
+
+The accessor $vcv is no longer available for VARs.  The
+full covariance matrix can be retrieved as 
+
+  $sigma ** $xtxinv 
+
+where "**" is the Kronecker product operator and $xtxinv
+is a newly defined accessor for X'X^{-1}.
+
+With the new (and faster) Ziggurat implementation for the
+normal RNG, gretl 1.8.7 will not produce the same sequence
+of normal samples for a given random seed as gretl <= 1.8.6.
+However, you can force backward compatibility by doing
+"set normal_rand box-muller".
+
+2009-11-25 version 1.8.6
+
+ARIMAX models (i.e. ARIMA models with non-zero order of 
+integration and including exogenous regressors): we now
+follow the practice of most ARIMA software, and apply the
+differencing operator to both the dependent variable
+and the exogenous regressors.  Previously gretl left the
+regressors in level form; you can reinstate that
+behavior via a new "arima" option, --y-diff-only.
+
+2009-10-10 version 1.8.5
+
+The --long option to the "print" command has been removed,
+along with the longdigits variable in the "set" command.
+These were long ago rendered redundant by the "printf"
+command.
+
+2009-08-28 version 1.8.4
+
+Gretl uses "to" as a syntactic element in some contexts;
+this has now been added to the list of reserved words.
+
+2009-08-10 version 1.8.3
+
+Remove redundant function strcmp: strncmp may be used with 
+the third argument omitted, or strings can be compared for
+equality directly.
+
+Remove the temporary "set" variable "protect_lists".  Lists
+given as arguments to user-defined functions are now
+always protected.
+
+Warning: although it's not recognized in the manual, we have
+up till now accepted "end if" as an alias for the correct
+termination of an "if" clause, namely "endif" (with no space).
+This is slated for removal before long; please update scripts.
+
+2009-07-08 version 1.8.2
+
+No intentional backward-incompatible changes
+
+2009-05-21 version 1.8.1
+
+The default calculation method for the Hausman test in relation
+to the random effects estimator has been reversed: we now use 
+the regression method by default, and the matrix-difference 
+method only if the --matrix-diff option is given.  For the 
+present, the --hausman-reg option has been retained but it
+does not really do anything, it just confirms the default.
+
+The command "lmtest" has been renamed as "modtest".  However,
+"lmtest" has been retained as an alias so this is not a
+true incompatibility.
+
+The gretl reference manual says that the names of gretl
+commands are reserved, and cannot be used as the names of 
+variables.  This has not been properly enforced in the past,
+but it is now.
+
+The exponentation operator, '^', now associates rightward,
+which is how it works in most mathematical software: e.g.
+
+2009-01-23 version 1.8.0
+
+The obsolete command "rhodiff" as been removed.  To create
+a quasi-differenced series (as rhodiff did), use the "genr"
+command.
+
+The obsolete mechanism "save=" for saving residuals and/or
+fitted values from system estimation has been removed; please
+use the accessors $uhat and $yhat for this purpose.
+
+The matrices returned by the accessors $sigma and $vcv for VAR
+systems now have a degrees of freedom correction.
+
+2008-09-28 version 1.7.9
+
+The "values" function no longer automatically truncates its 
+argument (series or vector) to integer.  To get the old 
+behavior for an argument x you should do values(int(x)).
+
+Generation of monthly dummy variables: these dummies are
+now named "dm1", "dm2", ... , "dm12".  Previously we tried
+to use 3-letter abbreviations for the names of the months in
+the current locale, but this is too error-prone given
+different possible character encodings and (new) support
+for languages that do not use the Roman character set.
+
+2008-08-28 version 1.7.7
+
+Ordered probit and logit: the presentation of the cut-points in
+ordered response models is now that used by Stata and R, not
+by William Greene as previously.  That is, we don't estimate a
+generic constant, but report n-1 cut points, where n is the
+number of response levels.
+
+2008-07-30 version 1.7.6
+
+List arguments to user-defined functions:
+
+In the context of a "foreach" loop across such a list, the
+accessor $i still gets the name of the variable at position i 
+in the list, but the variable is not "visible" by that name
+within the function.  To get a handle on the variable (e.g.
+for use on the right-hand side of a genr command), use the
+new syntax listname.varname.  See the chapter on functions in
+the User's Guide for details.
+
+2008-06-12 version 1.7.5
+
+$sigma and $vcv accessors:
+
+The $sigma and $vcv accessors have been changed for some model 
+types. Now $sigma always refers to a measure associated with the 
+residual variance, while $vcv always refer to the variance of
+the parameter estimates.
+
+In the case of VARs/VECMs, $vcv formerly referred to the cross-
+equation covariance of the residuals.  Now $sigma is used for
+that purpose; $vcv gets the variance of the coefficients, which
+was not previously accessible.
+
+logical operators:
+
+We are now enforcing what the gretl manual has said for quite
+some time: logical OR is represented by "||" and logical AND
+by "&&".  The single "|" is now reserved for row-wise matrix
+concatenation, and the single "&" for "taking the address of"
+a variable.  Previously we tried to guess when "|" and "&" were
+intended to represent OR and AND respectively, as in the
+original gretl syntax, but no more.
+
+2008-03-21 version 1.7.4
+
+The old "multiply" command has been removed.
+
+The old commands "corc", "hilu" and "pwe" are consolidated
+into a new one, "ar1".  The old command words remain as
+aliases but their use is deprecated.
+
+2008-02-29 version 1.7.3
+
+You cannot define a user-function having the same name as
+a built-in function.
+
+

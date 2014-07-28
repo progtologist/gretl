@@ -1,0 +1,9 @@
+# PS9.1, for Examples 9.1 and 9.2 illustrating
+# autocorrelation and the residual plot
+open data6-6
+genr time
+ols farmpop const time 
+genr ut=$uhat
+genr ut1=ut(-1)
+corr ut ut1 
+textplot ut time

@@ -1,0 +1,41 @@
+# PS3.1, for various examples in Chapter 3
+open data3-1 
+textplot 1 2 
+# learn about the ols command 	  
+help ols 
+# estimate model; --vcv is to get covariance 
+ols 1 0 2 --vcv
+# gretl saves fitted values under the name $yhat.  Copy this to phat1
+genr phat1 = $yhat
+# print values                         
+print phat1
+# gretl saves residuals under the name $uhat.  Copy this to ut 
+genr ut = $uhat 
+# another way to get fitted value is to subtract the error from the 
+# actual value of the dependent variable 
+genr yh2 = price - ut 
+# print values                         
+print yh2 
+# retrieve number of obsservations		  
+genr n = $nobs
+# retrieve ESS - Section 3.4 	  
+genr ESS = $ess
+# compute standard deviation for price 	  
+genr sdy = sd(price) 
+# compute TSS - Example 3.4 	  	  
+genr TSS = (n-1)*sdy*sdy 
+# compute RSS 			  
+genr RSS = TSS - ESS 
+# retrieve R-square 			  
+genr RSQ = $rsq
+# print values 			  
+print TSS ESS RSS RSQ
+# F-statistic in Example 3.6 	  
+genr Fc = RSS*(n-2)/ESS
+# print F-statistic 			  
+print Fc
+# graph price and phat1 against sqft - connect x to get approximate line 
+textplot price phat1 sqft 
+# Reproduce predicted averages in Table 3.1 using only 3 decimals 
+genr phat3 = 52.351+(0.139*sqft)
+print -o price phat3 

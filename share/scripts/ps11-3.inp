@@ -1,0 +1,14 @@
+# PS11.3, for Example 11.3 on exponential smoothing
+open data11-1
+genr time
+genr Y8 = TOTALEMP
+# generate lamda X sub t for lambda = 0.2
+genr X2 = TOTALEMP*0.2
+# generate autoregressive series
+genr Y8 = X2 + 0.8*Y8(-1)
+genr Y3 = TOTALEMP
+# generate lamda X_t for lambda = 0.7
+genr X7 = TOTALEMP*0.7
+# generate autoregressive series
+genr Y3 = X7 + 0.3*Y3(-1)
+print -o TOTALEMP Y8 Y3

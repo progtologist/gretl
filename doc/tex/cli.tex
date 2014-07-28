@@ -1,0 +1,61 @@
+\chapter{The command line interface}
+\label{cli}
+
+The gretl package includes the command-line program \app{gretlcli}.
+On Linux it can be run from a terminal window (xterm, rxvt, or
+similar), or at the text console.  Under MS Windows it can be run in a
+console window (sometimes inaccurately called a ``DOS box'').
+\app{gretlcli} has its own help file, which may be accessed by typing
+``help'' at the prompt. It can be run in batch mode, sending output
+directly to a file (see also the \GCR).
+    
+If \app{gretlcli} is linked to the \app{readline} library (this is
+automatically the case in the MS Windows version; also see
+Appendix~\ref{app-build}), the command line is recallable and
+editable, and offers command completion.  You can use the Up and Down
+arrow keys to cycle through previously typed commands.  On a given
+command line, you can use the arrow keys to move around, in
+conjunction with Emacs editing keystrokes.\footnote{Actually, the key
+  bindings shown below are only the defaults; they can be customized.
+  See the
+  \href{http://cnswww.cns.cwru.edu/~chet/readline/readline.html}{readline
+    manual}.} The most common of these are:
+%    
+\begin{center}
+  \begin{tabular}{cl}
+    \textit{Keystroke} & \multicolumn{1}{c}{\textit{Effect}}\\
+    \verb+Ctrl-a+ & go to start of line\\
+    \verb+Ctrl-e+ & go to end of line\\
+    \verb+Ctrl-d+ & delete character to right\\
+  \end{tabular}
+\end{center}
+%
+where ``\verb+Ctrl-a+'' means press the ``\verb+a+'' key while the
+``\verb+Ctrl+'' key is also depressed.  Thus if you want to change
+something at the beginning of a command, you \emph{don't} have to
+backspace over the whole line, erasing as you go.  Just hop to the
+start and add or delete characters.  If you type the first letters of
+a command name then press the Tab key, readline will attempt to
+complete the command name for you.  If there's a unique completion it
+will be put in place automatically.  If there's more than one
+completion, pressing Tab a second time brings up a list.
+
+Probably the most useful mode for heavy-duty work with \app{gretlcli}
+is batch (non-interactive) mode, in which the program reads and
+processes a script, and sends the output to file.  For example
+\begin{code}
+gretlcli -b scriptfile > outputfile
+\end{code}
+
+Note that \textsl{scriptfile} is treated as a program argument; only
+the output file requires redirection (\verb|>|).  Don't forget the
+\texttt{-b} (batch) switch, otherwise the program will wait for user
+input after executing the script (and if output is redirected, the
+program will appear to ``hang'').
+
+    
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "gretl-guide"
+%%% End: 
+

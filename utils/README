@@ -1,0 +1,16 @@
+This directory contains:
+
+* A C program to create a gretl database using XML data from the
+  FRED system of the Federal Reserve Bank of St Louis; in ./FRED.
+
+* A similar C program to create a gretl database using XML data
+  from the Federal Reserve Board; in ./FRB.
+
+* Some scripts for creating gretl databases out of economic data 
+  that are freely available from nber.org; in ./nber.
+
+* Apparatus for installing a gretl-mode file for editing gretl
+  scripts in emacs in ./emacs.
+
+Allin Cottrell
+cottrell@wfu.edu

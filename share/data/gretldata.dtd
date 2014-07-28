@@ -1,0 +1,75 @@
+<!--
+  Document Type Definition (DTD) for gretl data files
+ -->
+
+<!ELEMENT gretldata (description?, variables, observations, string-tables?, panel-info?)>
+<!ATTLIST gretldata
+   version      NMTOKEN #IMPLIED
+   name         NMTOKEN #IMPLIED
+   frequency    CDATA #IMPLIED
+   startobs     CDATA #IMPLIED
+   endobs       CDATA #IMPLIED
+   type         CDATA #REQUIRED
+   binary       CDATA #IMPLIED
+>
+
+<!ELEMENT description ( #PCDATA )>
+<!ATTLIST description
+   source CDATA #IMPLIED
+>
+
+<!ELEMENT variables ( variable )*>
+<!ATTLIST variables
+   count        CDATA #REQUIRED
+>
+
+<!ELEMENT variable ( #PCDATA )>
+<!ATTLIST variable
+    name           NMTOKEN #IMPLIED
+    label          CDATA   #IMPLIED
+    displayname    CDATA   #IMPLIED
+    parent         CDATA   #IMPLIED
+    transform      CDATA   #IMPLIED
+    lag            CDATA   #IMPLIED
+    compact-method CDATA   #IMPLIED
+    discrete       CDATA   #IMPLIED
+    role           CDATA   #IMPLIED
+    value          CDATA   #IMPLIED
+>
+
+<!ELEMENT observations ( obs )+>
+<!ATTLIST observations
+   count        CDATA #REQUIRED
+   missval      CDATA #IMPLIED
+   labels       CDATA #REQUIRED
+   panel-info   CDATA #IMPLIED
+>
+
+<!ELEMENT obs  ( #PCDATA )>
+<!ATTLIST obs
+   label     CDATA #IMPLIED
+   unit      NMTOKEN #IMPLIED
+   period    NMTOKEN #IMPLIED
+   id        NMTOKEN #IMPLIED
+>
+
+<!ELEMENT string-tables ( valstrings )+>
+<!ATTLIST string-tables
+   count     CDATA #REQUIRED
+>
+
+<!ELEMENT valstrings  ( #PCDATA )>
+<!ATTLIST valstrings
+   owner     CDATA #REQUIRED
+   count     CDATA #REQUIRED
+>
+
+<!ELEMENT panel-info EMPTY>
+<!ATTLIST panel-info
+   group-names    CDATA #IMPLIED
+   time-frequency CDATA #IMPLIED
+   time-start     CDATA #IMPLIED
+   skip-padding   CDATA #IMPLIED
+>
+
+

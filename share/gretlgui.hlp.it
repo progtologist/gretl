@@ -1,0 +1,1833 @@
+
+# add Tests "Aggiunge variabili al modello"
+
+Aggiunge le variabili selezionate al modello precedente e stima il nuovo modello. Viene eseguito anche un test per la significatività congiunta delle variabili aggiunte. 
+
+Accesso dal menù: Finestra del modello, /Test/ADD - Aggiungi variabili
+
+Comando script: <@ref="add">
+
+# addline Graphs "Aggiunge una linea al grafico"
+
+Questa finestra di dialogo permette di aggiungere a un grafico una linea, definita attraverso una formula che deve essere un'espressione accettabile da gnuplot. Occorre usare <@lit="x"> per indicare il valore della variabile sull'asse x. Si noti inoltre che gnuplot usa <@lit="**"> per l'elevamento a potenza, e il punto "." come separatore decimale. Esempi: 
+
+<code>          
+   10+0.35*x
+   100+5.3*x-0.12*x**2
+   sin(x)
+   exp(sqrt(pi*x))
+</code>
+
+# adf Tests "Test Dickey-Fuller aumentato"
+
+Questo comando richiede un ordine di ritardo intero; se si indica un ordine pari a zero, viene eseguito un test Dickey–Fuller standard (non aumentato). Il comando calcola una serie di test Dickey–Fuller sulla variabile selezionata, assumendo come ipotesi nulla che la variabile abbia una radice unitaria. Se si usa l'opzione di differenziazione, i test vengono condotti sulla differenza prima della variabile e la discussione che segue va riferita a questa trasformazione della variabile. 
+
+In tutti i casi, la variabile dipendente è la differenza prima della variabile specificata, <@itl="y">, e la variabile dipendente più importante è il ritardo (di ordine uno) di <@itl="y">. Il modello è costruito in modo che il coefficiente della variabile ritardata <@itl="y"> è pari a 1 meno la radice. Ad esempio, il modello con una costante può essere scritto come 
+
+  <@fig="adf1">
+
+Sotto l'ipotesi nulla di radice unitaria il coefficiente della <@itl="y"> ritardata è nullo; sotto l'alternativa che <@itl="y"> sia stazionaria il coefficiente è negativo. 
+
+Se l'ordine di ritardi, <@itl="k">, è maggiore di 0, ai regressori di ognuna delle regressioni calcolate per il test saranno aggiunti <@itl="k"> ritardi della variabile dipendente, con la precisazione che segue. Se viene selezionata la casella "test per il ritardo massimo", l'ordine selezionato verrà considerato come ordine massimo, e l'ordine da usare effettivamente sarà ricavato applicando la seguente procedura di test "all'indietro", usando il criterio scelto tramite la tendina associata. I metodi AIC e BIC modificati sono descritti in <@bib="Ng and Perron (2001);ng-perron01">; l'ordine dei ritardi viene scelto in modo da ottimizzare rispettivamente una versione modificata del Criterio di Informazione di Akaike o del Criterio Bayesiano di Schwartz. Il metodo della statistica <@itl="t"> è il seguente: 
+
+<indent>
+1. Stima la regressione Dickey–Fuller con <@itl="k"> ritardi della variabile dipendente. 
+</indent>
+
+<indent>
+2. Se questo ordine di ritardi è significativo, esegue il test con l'ordine di ritardo <@itl="k">. Altrimenti, prova il test con <@itl="k"> = <@itl="k"> – 1; se <@itl="k"> = 0, esegue il test con ordine di ritardo 0, altrimenti va al punto 1. 
+</indent>
+
+Durante il punto 2 spiegato sopra, "significativo" significa che la statistica <@itl="t"> per l'ultimo ritardo abbia un <@itl="p">-value asintotico a due code per la distribuzione normale pari a 0.10 o inferiore. 
+
+I <@itl="p-">value per questo test sono basati su MacKinnon (1996). Il codice rilevante è incluso per gentile concessione dell'autore. Nel caso del test con trend lineare usando la procedura GLS questi <@itl="P">-value non sono utilizzabili; vengono usati i valori critici contenuti nella Tabella 1 di <@bib="Elliott, Rothenberg and Stock (1996);ERS96">. 
+
+Accesso dal menù: /Variabile/Test Dickey-Fuller aumentato
+
+Comando script: <@ref="adf">
+
+# anova Statistics "ANOVA"
+
+Analisi della varianza: <@var="response"> è una serie che misura un effetto di interesse e <@var="treatment"> deve essere una variabile discreta che identifica due o più tipi di trattamento (o non trattamento). Nel caso dell'ANOVA a due vie, la variabile <@var="block"> (anch'essa discreta) identifica i valori di qualche variabile di controllo. 
+
+L'ipotesi nulla del test <@itl="F"> è che la risposta media sia invariante rispetto al tipo di trattamento; in altre parole, che il trattamento non abbia alcun effetto. Formalmente, la validità del test richiede che la varianza della risposta sia la stessa per tutti i tipi di trattamento. 
+
+Si noti che i risultati prodotti da questo comando costituiscono in realtà un sottoinsieme dell'informazione fornita dalla procedura seguente, facilmente implementabile in gretl. Create un insieme di variabili dummy associate a tutti i tipi di trattamento, tranne uno. Nel caso dell'ANOVA a due vie, create anche un insieme di variabili dummy associate a tutti i "blocchi", tranne uno. Una volta fatto questo, regredite <@var="response"> su una costante e le dummy usando <@ref="ols">. Per un'analisi a una via la tabella ANOVA può essere creata ricorrendo all'opzione <@opt="--⁠anova"> del comando <@lit="ols">. Nel caso di un'analisi a due vie il test <@itl="F"> può essere calcolato usando il comando <@ref="omit">. Per esempio, se assumiamo che <@lit="y"> sia la risposta, <@lit="xt"> identifichi il trattamento e <@lit="xb"> identifichi i blocchi: 
+
+<code>          
+   # analisi a una via
+   list dxt = dummify(xt)
+   ols y 0 dxt --anova
+   # analisi a due vie
+   list dxb = dummify(xb)
+   ols y 0 dxt dxb
+   # test di significatività congiunta di dxt
+   omit dxt --quiet
+</code>
+
+Accesso dal menù: /Model/Other linear models/ANOVA
+
+Comando script: <@ref="anova">
+
+# ar Estimation "Stima autoregressiva"
+
+Calcola le stime parametriche usando la procedura iterativa generalizzata di Cochrane–Orcutt (si veda il Capitolo 9.5 di <@bib="Ramanathan (2002);ramanathan02">. La procedura termina quando le somme dei quadrati degli errori consecutivi non differiscono per più dello 0.005 per cento, oppure dopo 20 iterazioni. 
+
+La "lista dei ritardi AR" specifica la struttura del processo dell'errore. Ad esempio, l'indicazione "1 3 4" corrisponde al processo: 
+
+  <@fig="arlags">
+
+Accesso dal menù: /Modello/Serie storiche/AR - Stima autoregressiva
+
+Comando script: <@ref="ar">
+
+# ar1 Estimation "Stima AR(1)"
+
+Calcola stime feasible GLS per un modello in cui il termine di errore segue un processo autoregressivo del prim'ordine. 
+
+Il metodo predefinito è la procedura iterativa di Cochrane–Orcutt (si veda ad esempio il capitolo 9.4 di <@bib="Ramanathan, 2002;ramanathan02">). La procedura termina quando le stime successive del coefficiente di autocorrelazione non differiscono per più di 0.001, oppure dopo 20 iterazioni. 
+
+Se si usa l'opzione <@lit="--hilu">, verrà usata la procedura di ricerca di Hildreth–Lu. I risultati sono quindi ottimizzati con la procedura iterativa di Cochrane–Orcutt, a meno che non si usi l'opzione <@lit="--no-corc"> (che viene ignorata se non viene specificata <@lit="--hilu">). 
+
+Se si usa l'opzione <@lit="--pwe">, viene usato lo stimatore di Prais–Winsten, che prevede una procedura simile a quella di Cochrane–Orcutt; la differenza è che mentre Cochrane–Orcutt tralascia la prima osservazione, Prais–Winsten ne fa uso. Per i dettagli, si veda per esempio il capitolo 13 di <@itl="Econometric Analysis"> di <@bib="Greene (2000);greene00">. 
+
+Accesso dal menù: /Modello/Serie storiche/Cochrane-Orcutt
+Accesso dal menù: /Modello/Serie storiche/Hildreth-Lu
+Accesso dal menù: /Modello/Serie storiche/Prais-Winsten
+
+Comando script: <@ref="ar1">
+
+# arbond Estimation "Modelli panel dinamici"
+
+Esegue la stima di modelli panel dinamici (ossia, modelli panel che includono uno o più ritardi della variabile dipendente) usando il metodo GMM proposto da <@bib="Arellano and Bond (1991);arellano-bond91">. Vedi, tuttavia, il comando <@ref="dpanel"> per una alternativa più avanzata e più flessibile, che offre lo stimatore GMM-SYS oltre al GMM-DIF. 
+
+La variabile dipendente andrebbe specificata in livelli; viene differenziata automaticamente, visto che lo stimatore usa la differenziazione per eliminare gli effetti individuali. Le variabili indipendenti invece non vengono differenziate automaticamente: se si intende usare le differenze (tipicamente lo si vorrà fare per le variabili quantitative, ma non ad esempio per le dummy temporali), occorrerà prima creare le variabili differenziate e poi specificarle come regressori. 
+
+Per impostazione predefinita, vengono mostrati i risultati della stima a un passo (con errori standard robusti), ma è possibile scegliere una stima a due passi. In entrambi i casi, vengono mostrati i testi per l'autocorrelazione di ordine 1 e 2, oltre al test di sovraidentificazione di Sargan. Si noti che in questo modello differenziato l'autocorrelazione del prim'ordine non contrasta con la validità del modello, mentre quella di ordine 2 viola le ipotesi statistiche che ne sono alla base. 
+
+Nel caso della stima in due passi, gli errori standard sono calcolati usando la correzione per campioni finiti suggerita da<@bib="Windmeijer (2005);windmeijer05">. Gli errori standard asintotici calcolati nel modo consueto non sono generalmente ritenuti affidabili nel caso dello stimatore a due passi, ma se per qualche motivo si vuole usarli, è possibile usare l'opzione <@lit="--asymptotic"> per disabilitare la correzione di Windmeijer. 
+
+Se si usa l'opzione <@lit="--time-dummies">, viene aggiunto ai regressori un insieme di variabili dummy temporali. Il numero di variabili dummy è pari al numero massimo dei periodi usati nella stima meno uno, per evitare la perfetta collinearità in presenza della costante. Le dummy sono specificate in livelli; se si intende usare variabili dummy sotto forma di differenze temporali, occorre definirle ed aggiungerle manualmente. 
+
+Accesso dal menù: /Model/Panel
+
+Comando script: <@ref="arbond">
+
+# arch Estimation "Modello ARCH"
+
+Questo comando è attualmente mantenuto per ragioni di compatibilità con le versioni precedenti, ma è preferibile usare lo stimatore di massima verosimiglianza disponibile mediante il comando <@ref="garch">; per un modello ARCH puro, fissate a 0 il primo parametro GARCH. 
+
+Stima il modello specificato tenendo conto della possibile eteroschedasticità condizionale autoregressiva (ARCH, Autoregressive Conditional Heteroskedasticity). Per prima cosa il modello viene stimato con OLS, quindi viene eseguita una regressione ausiliaria, in cui i quadrati dei residui della prima regressione vengono regrediti sui loro valori ritardati. Il passo finale è una stima con minimi quadrati ponderati, in cui i pesi sono i reciproci delle varianze dell'errore della regressione ausiliaria (se la varianza prevista di qualche osservazione nella regressione ausiliaria non risulta positiva, viene usato il corrispondente residuo al quadrato). 
+
+I valori <@lit="alpha"> mostrati sotto i coefficienti sono i parametri del processo ARCH stimati nella regressione ausiliaria. 
+
+Si veda anche <@ref="garch"> e <@ref="modtest"> (l'opzione <@lit="--arch">). 
+
+Accesso dal menù: /Modello/Serie storiche/ARCH
+
+Comando script: <@ref="arch">
+
+# arima Estimation "Stima ARMA/ARIMA"
+
+Stima un modello ARMA, con o senza regressori esogeni. Se l'ordine di differenziazione è maggiore di zero, il modello diventa un ARIMA. Se i dati hanno una frequenza superiore a 1, viene offerta la possibilità di includere termini stagionali. 
+
+Se si vuole includere solo alcuni specifici ritardi AR o MA (invece che tutti i ritardi fino all'ordine specificato) è possibile marcare la casella a destra del selettore e scrivere nel campo disponibile un elenco di ritardi, separati da spazi. In alternativa, se è stata definita una matrice che contiene l'insieme dei ritardi desiderati, è possibile scrivere il suo nome nel campo. 
+
+Il funzionamento predefinito utilizza la funzionalità ARMA "interna" di gretl, che usa la stima di massima verosimiglianza esatta usando il filtro di Kalman; come opzione è possibile usare la stima di massima verosimiglianza condizionale. Se è stato installato il programma X-12-ARIMA è possibile usare questo al posto del codice interno di gretl. Per i dettagli su queste opzioni si veda la <@pdf="la guida all'uso di gretl">. 
+
+Il valore AIC mostrato nei modelli ARIMA è calcolato secondo la definizione usata in X-12-ARIMA, ossia 
+
+  <@fig="aic">
+
+dove <@fig="ell"> è la log-verosimiglianza e <@itl="k"> è il numero totale di parametri stimati. Si noti che X-12-ARIMA non produce criteri di informazione come l'AIC quando la stima è effettuata col metodo della massima verosimiglianza condizionale. 
+
+Le radici AR e MA mostrate in occasione delkla stima ARMA sono basate sulla seguente rappresentazione di un processo ARMA(p,q): 
+
+<mono>          
+   (1 - a_1*L - a_2*L^2 - ... - a_p*L^p)Y =
+          c + (1 + b_1*L + b_2*L^2 + ... + b_q*L^q) e_t
+</mono>
+
+Di conseguenza le radici AR sono la soluzione di 
+
+<mono>          
+         1 - a_1*z - a_2*z^2 - ... - a_p*L^p = 0
+</mono>
+
+e la stazionarietà del processo richiede che queste radici si trovino al di fuori del cerchio di raggio unitario. 
+
+Il valore di "frequenza" mostrato insieme alle radici AR e MA è il valore di λ che risolve <@itl="z"> = <@itl="r"> * exp(i*2*π*λ)dove <@itl="z"> è la radice in questione e <@itl="r"> è il suo modulo. 
+
+Accesso dal menù: /Modello/Serie Storiche/ARIMA
+Accesso alternativo: Menù pop-up nella finestra principale (selezione singola)
+
+Comando script: <@ref="arima">
+
+# bfgs-config Estimation "BFGS options"
+
+Questa finestra di dialogo consente di controllare alcuni dettagli dell'algoritmo BFGS. Nel caso di mancata convergenza può essere utile, in certi casi, aumentare il numero massimo di iterazioni e/o il parametro di tolleranza. Tuttavia, risultati ottenuti con tolleranze molto alte dovrebbero essere considerati un po' sospetti, e va considerata la possibilità che il modello sia mal specificato. 
+
+Nella maggioranza dei casi, consigliamo l'uso dell'algoritmo BFGS standard, ma per alcuni problemi, la sua variante "a memoria limitata", L-BFGS-B, può essere più efficace. Con questo algoritmo, è possibile fissare il numero di correzioni nella matrice di memoria limitata (tra 3 e 20, default 8). 
+
+# bootstrap Tests "Opzioni bootstrap"
+
+In questa finestra di dialogo è possibile scegliere: 
+
+<indent>
+• La variabile o il coefficiente da esaminare (è possibile testare solo un coefficiente alla volta usando questo metodo). 
+</indent>
+
+<indent>
+• Il tipo di analisi da eseguire. L'intervallo di confidenza predefinito (95 per cento) è basato direttamente sui quantili delle stime bootstrap del coefficiente. La versione "studentizzata" corrisponde a quella presentata nel capitolo 5 di <@itl="Economic Theory and Methods"> (ETM) di Davidson e MacKinnon: ad ogni replicazione bootstrap, viene calcolato un rapporto <@itl="t"> come (a) la differenza tra la stima attuale del coefficiente e quella di riferimento, divisa per (b) l'errore standard di riferimento. Quindi l'intervallo di confidenza viene calcolato usando i quantili di questo rapporto t, come spiegato in ETM. L'opzione p-value si basa sulla distribuzione del rapporto <@itl="t"> bootstrap: è la proporzione delle replicazioni in cui il valore assoluto di questa statistica eccede il valore assoluto del rapporto <@itl="t"> di riferimento. 
+</indent>
+
+<indent>
+• Residui ricampionati o simulazione degli errori normali. Nel primo caso i residui originali (riscalati, come suggerito in ETM) vengono ricampionati con rimpiazzo. Nel secondo caso, vengono generati valori normali pseudo-casuali con la varianza dei residui originali. 
+</indent>
+
+<indent>
+• Il numero di replicazioni da eseguire. Si noti che quando si costruisce un intervallo di confidenza al 95 per cento è opportuno che 0.05(<@itl="B"> + 1)/2 sia un intero (dove <@itl="B"> è il numero di replicazioni), quindi gretl può aggiustare il numero scelto di replicazioni per assicurare questa condizione. 
+</indent>
+
+<indent>
+• Se produrre o no un grafico della distribuzione bootstrap. Questa opzione usa la procedura di stima kernel di gretl. 
+</indent>
+
+# boxplot Graphs "Grafici boxplot"
+
+Questo tipo di grafici (da Tukey e Chambers) mostra la distribuzione di una variabile. La "scatola" centrale (box) racchiude il 50 per cento centrale dei dati, ossia è delimitato dal primo e terzo quartile. I "baffi" (whiskers) si estendono fino un valore dato da una volta e mezzo il range interquartile a partire dai bordi della scatola. Valori esterni a tale intervallo sono considerati "outlier" e rappresentati con dei punti. Una linea trasversale sulla scatola indica la mediana, mentre un segno "+" indica la media. Se viene selezionata l'opzione di mostrare un intervallo di confidenza per la mediana, quetso viene calcolato via bootstrap e mostrato sotto forma di lnee tratteggiate orizzontali sopra e sotto la mediana. 
+
+L'opzione "factorized" permette di esaminare la distribuzione di una variabile condizionata ai valori di un fattore discreto. Ad esempio, se un dataset contiene salari e una variable binaria per il genere, si può scegliere di analizzare la distribuzione del salario condizionata al genere e visualizzare boxplot dei salri per i maschi e per le femmine uno di fianco all'altro. 
+
+Accesso dal menù: /Visualizza/Grafico/Boxplot
+
+Comando script: <@ref="boxplot">
+
+# bwfilter Transformations "Il filtro di Butterworth"
+
+Il filtro di Butterworth è un'approssimazione di un filtro ideale a onda quadra che lascia completamente passare tutte le frequenze all'interno di un certo intervallo e blocca tutte le altre. 
+
+Valori più elevati del parametro di ordine, <@itl="n">, producono una migliore approssimazione del filtro ideale ma al costo potenziale di introdurre un certo grado di instabilità numerica. Il valore di "cutoff" individua la soglia fra intervallo di frequenze lasciate passare e quello delle frequenze bloccate. Questo parametro è espresso in gradi e deve essere maggiore di 0 e minore di 180° (o π radianti, corrispondente alla frequenza massima nei dati). Valori inferiori di questa soglia producono un trend più regolare. 
+
+Se si desidera applicare questo filtro è opportuno esaminare prima il periodogramma della serie storica considerata. V. <@pdf="la guida all'uso di gretl"> per maggiori dettagli. 
+
+Accesso dal menù: /Variable/Filter/Butterworth
+
+# chow Tests "Test di Chow"
+
+Questo comando richiede un numero di osservazione (o una data, se il dataset lo consente). 
+
+Va eseguito dopo una regressione OLS e fornisce un test per l'ipotesi nulla che non esista un break strutturale del modello in corrispondenza del punto di rottura specificato. La procedura consiste nel creare una variabile dummy che vale 1 a partire dal punto di rottura specificato da <@var="osservazione"> fino alla fine del campione, 0 altrove; inoltre vengono creati dei termini di interazione tra questa dummy e i regressori originali. Viene quindi stimata una regressione che include questi termini. 
+
+Per impostazione predefinita viene calcolata una statistica <@itl="F">, prendendo la regressione aumentata come non vincolata e la regressione originale come vincolata. Se il modello originale usa uno stimatore robusto per la matrice di covarianza, come statistica test viene usato un valore chi-quadro di Wald, basato su uno stimatore robusto della matrice di covarianza della regressione aumentata. 
+
+Accesso dal menù: Finestra del modello, /Test/CHOW
+
+Comando script: <@ref="chow">
+
+# cluster Estimation "Robust variance estimation"
+
+Scegliendo la seconda opzione è necessario fornire il nome di una variabile rispetto alla quale si effettua il clustering. Questa variabile dovrebbe assumere almeno due valori diversi, ma in generale il numero dei suoi valori distinti dovrebbe essere significativamente inferiore al numero di osservazioni nell'intervallo campionario considerato. 
+
+Lo stimatore della varianza "cluster-robust" divide il campione in più sottoinsiemi o cluster sulla base dei valori assunti dalla variabile selezionata. Questo stimatore permette di evitare l'ipotesi classica che il termine d'errore sia indipendente e identicamente distribuito, perché ammette la possibilità che la sua varianza vari da un cluster all'altro e che ogni errore possa presentare un certo grado di dipendenza dagli altri errori all'interno dello stesso cluster. 
+
+# coeffsum Tests "Somma dei coefficienti"
+
+Questo comando richiede una lista di variabili, selezionate tra le variabili indipendenti di un modello. 
+
+Calcola la somma dei coefficienti delle variabili nella lista e mostra l'errore standard e il p-value per l'ipotesi nulla che la somma sia zero. 
+
+Si noti la differenza tra questo test e <@ref="omit">, che assume come ipotesi nulla l'uguaglianza a zero di <@itl="tutti"> i coefficienti di un gruppo di variabili indipendenti. 
+
+Accesso dal menù: Finestra del modello, /Test/Somma dei coefficienti
+
+Comando script: <@ref="coeffsum">
+
+# coint Tests "Test di cointegrazione di Engle-Granger"
+
+Se l'ordine di ritardo, <@itl="k">, è maggior di 0, verranno inclusi <@itl="k"> ritardi della variabile dipendente al secondo membro di ognuna delle regressioni di test, a meno che non si usi la casella "test dal massimo ordine di ritardi all'indietro": in questo caso, l'ordine specificato viene considerato come massimo e l'ordine usato effettivamente viene determinato con la procedura di test "all'indietro" descritta per il comando <@ref="adf">. 
+
+L'impostazione predefinita consiste nell'includere una costante nella regressione di cointegrazione. Se si vuole omettere la costante, o aggiungere un trend lineare o quadratico, basta selezionare le relative opzioni nella finestra di dialogo. 
+
+I <@itl="pvalue"> per questo test si basano su MacKinnon (1996). Il codice relativo è stato incluso per gentile concessione dell'autore. 
+
+Accesso dal menù: /Modello/Serie storiche/Test di cointegrazione/Engle-Granger
+
+Comando script: <@ref="coint">
+
+# coint2 Tests "Test di cointegrazione di Johansen"
+
+Esegue il test di Johansen per la cointegrazione tra le variabili elencate per l'ordine specificato di ritardi. I valori critici sono calcolati con l'approssimazione gamma di J. Doornik (Doornik, 1998). Per i dettagli su questo test, si veda Hamilton, <@itl="Time Series Analysis"> (1994), Cap. 20. Per il test traccia, vengono formiti due set di valori critici: asintotici e aggiustati per l'ampiezza campionaria. 
+
+L'inclusione di termini deterministici nel modello è controllata dai pulsanti delle opzioni. L'opzione predefinita è di includere una "costante non vincolata", che permette la presenza di un'intercetta diversa da zero nelle relazioni di cointegrazione e di un trend nei livelli delle variabili endogene. Nella letteratura originata dal lavoro di Johansen (si veda ad esempio il suo libro del 1995), si fa riferimento a questo come al "caso 3". Le prime quattro opzioni mostrate sopra, che sono mutualmente esclusive, producono rispettivamente i casi 1, 2, 4 e 5. Il significato di questi casi e i criteri per scegliere tra di essi sono spiegati nella <@pdf="la guida all'uso di gretl">. 
+
+È possibile controllare per le variabili esogene aggiungendole nel campo inferiore. Per impostazione predefinita, le variabili vengono aggiunte al modello in forma non vincolata (indicata da una lettera <@lit="N"> vicino al nome della variabile). Se si vuole che una certa variabile esogena sia vincolata allo spazio di cointegrazione, basta fare clic col tasto destro e selezionare "Vincolata" dal menu pop-up. Il simbolo vicino alla variabile diventerà una V. 
+
+Se i dati sono trimestrali o mensili, è presente anche una casella che permette di includere un gruppo di variabili dummy stagionali centrate. In tutti i casi, la casella "Mostra dettagli" permette di vedere il risultato delle regressioni ausiliarie che sono il punto di partenza per la procedura di stima di massima verosimiglianza di Johansen. 
+
+La tabella seguente fornisce un esempio di interpretazione dei risultati del test nel caso di 3 variabili. <@lit="H0"> denota l'ipotesi nulla, <@lit="H1"> l'ipotesi alternativa e <@lit="c"> il numero delle relazioni di cointegrazione. 
+
+<code>          
+                 Rango    Test traccia       Test Lmax
+                          H0     H1          H0     H1
+                 ---------------------------------------
+                  0      c = 0  c = 3       c = 0  c = 1
+                  1      c = 1  c = 3       c = 1  c = 2
+                  2      c = 2  c = 3       c = 2  c = 3
+                 ---------------------------------------
+</code>
+
+Si veda anche il comando <@ref="vecm">. 
+
+Accesso dal menù: /Modello/Serie storiche/Test di cointegrazione/Johansen
+
+Comando script: <@ref="coint2">
+
+# compact Dataset "Compattamento dei dati"
+
+Quando viene aggiunta a un dataset una serie di frequenza maggiore, occorre "compattare" la nuova serie. Ad esempio, una serie mensile deve essere compattata per adattarsi a un dataset trimestrale. 
+
+Inoltre, a volte può essere necessario compattare un intero dataset abbassandone la frequenza (ad esempio, prima di aggiungere al dataset una variabile a frequenza minore). 
+
+Ci sono quattro opzioni per il compattamento: 
+
+<indent>
+• Media: i nuovi valori saranno la media aritmetica dei corrispondenti valori della serie a frequenza maggiore. Ad esempio, il valore per il primo trimestre del 1990 sarà la media dei valori di gennaio, febbraio e marzo del 1990. 
+</indent>
+
+<indent>
+• Somma: i nuovi valori saranno la somma dei corrispondenti valori della serie a frequenza maggiore. Ad esempio, il valore per il primo trimestre sarà la somma dei valori di gennaio, febbraio e marzo. 
+</indent>
+
+<indent>
+• Valori di fine periodo: il nuovo valore è l'ultimo valore corrispondente nella serie a frequenza maggiore. Ad esempio, il valore del primo trimestre del 1990 sarà quello del marzo 1990. 
+</indent>
+
+<indent>
+• Valori di inizio periodo: il nuovo valore è il primo valore corrispondente nella serie a frequenza maggiore. Ad esempio, il valore del primo trimestre del 1990 sarà quello del gennaio 1990. 
+</indent>
+
+Se si compatta un intero dataset, il metodo di compattamento scelto diventa quello predefinito, ma se si è scelto un metodo di compattamento per una certa variabile (nel menù "Variabile/Modifica attributi") viene usato quel metodo al posto di quello predefinito. Se il metodo di compattamento è già stato scelto per tutte le variabili, non viene presentata la scelta per il metodo di compattamento predefinito. 
+
+# controlled Graphs "Grafici a dispersione con controllo"
+
+Questo comando richiede la scelta di tre variabili, una per l'asse X, una per l'asse Y e una variabile di controllo (chiamata Z). Il grafico mostra le variabili X e Y controllate per la variabile Z, ossia i residui della regressione OLS di ogni variabile su Z. 
+
+Esempio: si hanno dati sui salari, l'esperienza e il livello educativo in un campione di persone e si vuole un grafico dei salari rispetto all'educazione, controllando per l'esperienza. In questo caso, basta selezionare i salari per l'asse Y, l'educazione per l'asse X e l'esperienza come variabile di controllo: il grafico mostrerà la relazione tra le due variabili "depurate" dall'effetto dell'esperienza. 
+
+# corr Statistics "Coefficienti di correlazione"
+
+Mostra le coppie di coefficienti di correlazione (la correlazione del prodotto dei momenti di Pearson) per le variabili selezionate. Il comportamento predefinito consiste nell'usare tutte le osservazioni disponibili per calcolare ognuno dei coefficienti, ma attivando l'opportuna casella il campione verrà limitato (se necessario) in modo che per tutti i coefficienti venga usato lo stesso insieme di osservazioni. Questa opzione ha effetto solo se le diverse variabili contengono un numero diverso di valori mancanti. 
+
+Accesso dal menù: /Visualizza/Matrice di correlazione
+Accesso alternativo: Menù pop-up nella finestra principale (selezione multipla)
+
+Comando script: <@ref="corr">
+
+# corrgm Statistics "Correlogramma"
+
+Mostra i valori della funzione di autocorrelazione per la <@var="variabile"> specificata (dal nome o dal numero). I valori sono definiti come ρ(<@itl="u"><@sub="t">, <@itl="u"><@sub="t-s">) dove <@itl="u"><@sub="t"> è la <@itl="t">-esima osservazione della variabile <@itl="u"> e <@itl="s"> è il numero dei ritardi. 
+
+Vengono mostrate anche le autocorrelazioni parziali (calcolate con l'algoritmo di Durbin–Levinson), ossia al netto dell'effetto dei ritardi intermedi. Il comando produce anche un grafico del correlogramma e mostra la statistica <@itl="Q"> di Ljung–Box per testare l'ipotesi nulla che la serie sia "white noise" (priva di autocorrelazione). La statistica si distribuisce asintoticamente come chi-quadro con gradi di libertà pari al numero di ritardi specificati. 
+
+Se viene specificato un valore <@var="max-ritardo">, la lunghezza del correlogramma viene limitata al numero di ritardi specificato, altrimenti viene scelta automaticamente in funzione della frequenza dei dati e del numero di osservazioni. 
+
+Di default viene mostrato un grafico del correlogramma: un grafico gnuplot in modalità interattiva o un grafico ASCII in modalità batch. Questo comportamento può essere modificato con l'opzione <@opt="--⁠plot">. Per questa opzione i parametri accettabili sono <@lit="none"> (per eliminare il grafico); <@lit="ascii"> (per produrre un grafico in formato testo anche in modalità interattiva); <@lit="display"> (per produrre un grafico gnuplot anche in modalità batch); oppure il nome di un file. In quest'ultimo caso l'effetto è quello descritto per l'opzione <@opt="--⁠output"> del comando <@ref="gnuplot">. 
+
+Se il comando va a buon fine, gli accessori <@lit="$test"> e <@lit="$pvalue"> conterranno i valori corrispondenti per la statistica di Ljung–Box, per l'ordine <@var="max-ritardo">. Peraltro, se si vuole semplicemente calcolare la statistica <@itl="Q"> senza che il programma produca alcun output, consigliamo di usare la funzione <@xrf="ljungbox"> anziché questo comando. 
+
+Accesso dal menù: /Variabile/Correlogramma
+Accesso alternativo: Menù pop-up nella finestra principale (selezione singola)
+
+Comando script: <@ref="corrgm">
+
+# count-model Estimation "Models for count data"
+
+Il comando assume che la variabile dipendente rappresenti un conteggio del numero di volte in cui si è verificato un certo evento e deve assumere solo valori interi non negativi. Di default viene utilizzata la distribuzione di Poisson, ma il menu a tendina da' la possibilità di usare la distribuzione Binomale Negativa. (In econometria viene di solito usata la variante NegBin 2, ma è comunque disponibile anche la meno frequente NegBin 1). 
+
+Fra le opzioni è possibile aggiungere alla specificazione una variabile di "offset", un fattore di scala il cui logaritmo viene aggiunto alla funzione di regressione lineare (implicitamente con un coefficiente unitario). Questa operazione è ragionevole se si ritiene che il numero di realizzazioni dell'evento sia, a parità di tutte le altre variabili, proporzionale a un fattore noto. Per esempio, potremmo ritenere che, a parità di condizioni, il numero di incidenti stradali sia proporzionale al volume del traffico; in questo caso quest'ultimo potrebbe essere indicato come variabile di "offset" in un modello che studia il numero di incidenti. La variabile di offset deve essere strettamente positiva. 
+
+Di default, gli standard error vengono calcolati usando un'approssimazione numerica della matrice Hessiana in corrispondenza delle stime dei parametri. Se viene selezionata l'opzione "Robust standard errors" il comando calcola gli standard error QML a partire dalla matrice di covarianza "sandwich" che usa sia l'inversa dell'Hessiana che la matrice OPG. 
+
+# curve Graphs "Plot a curve"
+
+Questa finestra di dialogo permette di creare un grafico gnuplot specificando una formula, a condizione che quest'ultima sia un'espressione che gnuplot è in grado di accettare. Per indicare la variabile sull'asse orizzontale usate <@lit="x">. Si noti che gnuplot usa <@lit="**"> per indicare l'elevamento a potenza e che il separatore dei decimali deve essere ".". Esempi: 
+
+<code>          
+   10+0.35*x
+   100+5.3*x-0.12*x**2
+   sin(x)
+   exp(sqrt(pi*x))
+</code>
+
+Per inserire una nuova linea in un grafico usando questo comando, cliccate sul grafico, selezionate "Edit" e "Lines" nel menu dei comandi di modifica del grafico, e usate il pulsante "Add line". 
+
+# cusum Tests "Test CUSUM"
+
+Va eseguito dopo la stima di un modello OLS. Esegue il test CUSUM (o, se si usa l'opzione <@lit="--squares">, il test CUSUMSQ ) per la stabilità dei parametri. Viene calcolata una serie di errori di previsione per il periodo successivo, attraverso una serie di regressioni: la prima usa le prime <@itl="k"> osservazioni e viene usata per generare la previsione della variabile dipendente per l'osservazione <@itl="k"> + 1; la seconda usa le prime <@itl="k"> + 1 osservazioni per generare una previsione per l'osservazione <@itl="k"> + 2 e cos via (dove <@itl="k"> è il numero dei parametri nel modello originale). 
+
+Viene mostrata, anche graficamente, la somma cumulata degli errori scalati di previsione (o dei quadrati degli errori). L'ipotesi nulla della stabilità dei parametri è rifiutata al livello di significatività del 5 per cento se la somma cumulata va al di fuori delle bande di confidenza al 95 per cento. 
+
+Nel caso di test CUSUM, viene mostrata anche la statistica <@itl="t"> di Harvey–Collier per testare l'ipotesi nulla della stabilità dei parametri. Si veda il Capitolo 7 di <@itl="Econometric Analysis"> di Greene, per i dettagli. Per il test CUSUMSQ, la banda di confidenza al 95% è calcolata usando l'algoritmo descritto in Edgerton e Wells (1994). 
+
+Accesso dal menù: Finestra del modello, /Test/CUSUM(SQ)
+
+Comando script: <@ref="cusum">
+
+# datasort Dataset "Ordina i dati"
+
+La variabile selezionata viene usata come chiave di ordinamento per l'intero dataset. Le osservazioni di tutte le variabili sono riordinate secondo valori crescenti della variabile indicata, o secondo valori decrescenti, se si usa l'opzione "Decrescente". 
+
+# density Statistics "Stima kernel di densità"
+
+La stima kernel di densità avviene definendo un insieme di punti di riferimento distanziati in modo uniforme su un appropriato intervallo dei dati, e attribuendo ad ognuno di essi un valore di densità basato sui valori delle osservazioni circostanti. 
+
+La formula usata per calcolare la densità stimata in ognuno dei punti di riferimento <@itl="x"> è 
+
+  <@fig="kernel1">
+
+dove <@itl="n"> denota il numero delle osservazioni, <@itl="h"> è un parametro di "larghezza di banda" e <@itl="k">() è la funzione kernel. All'aumentare del parametro di banda, aumenta il livellamento della densità stimata. 
+
+È possibile usare un kernel Gaussiano (la densità normale standard) o il kernel di Epanechnikov, mentre la larghezza di banda predefinita è quella suggerita da Silverman (1986), ossia 
+
+  <@fig="kernel2">
+
+dove <@itl="s"> denota lo scarto quadratico medio dei dati e IQR denota il range interquartile. È possibile allargare o restringere la banda usando il "fattore di aggiustamento della banda": la banda effettivamente utilizzata si ottiene moltiplicando il valore di Silverman per il fattore di aggiustamento. 
+
+Per una buona discussione introduttiva della stima kernel, si veda il capitolo 15 di <@itl="Econometric Theory and Methods"> di Davidson e MacKinnon. 
+
+# dfgls Tests "Il test ADF-GLS"
+
+Il test ADF-GLS è una variante del test Dickey–Fuller per radici unitarie, per il caso in cui la variabile da testare ha media diversa da zero o esibisce un trend lineare. La differenza consiste nel fatto che la rimozione della media o del trend è eseguita secondo la procedura suggerita da Elliott, Rothenberg e Stock (1996). Questa produce un test di potenza maggiore rispetto a quello dell'approccio standard di Dickey–Fuller. 
+
+Si veda anche l'opzione <@lit="--gls"> del comando <@ref="adf">. 
+
+Accesso dal menù: /Variable/ADF-GLS test
+
+# dialog Estimation "Finestra di dialogo Modello"
+
+Per selezionare la variabile dipendente, fare clic su una variabile nella lista di sinistra e premere il pulsante "Scegli" con la freccia che punta verso il riquadro della variabile dipendente. Selezionando la casella "Imposta come predefinito", la variabile scelta verrà sempre pre-selezionata come variabile dipendente durante le prossime aperture della finestra di dialogo. Trucco: facendo doppio clic su una variabile sulla sinistra, viene selezionata come variabile dipendente e impostata come scelta predefinita. 
+
+Per selezionare le variabili indipendenti, fare clic su di esse nella lista di sinistra e premere il pulsante "Aggiungi" (o fare clic col pulsante destro del mouse). È possibile selezionare più variabili contigue trascinando il mouse; se le variabili da selezionare non sono contigue, occorre fare clic tenendo premuto il tasto <@lit="Ctrl">. 
+
+# dpanel Estimation "Dynamic panel models"
+
+Stima modelli dinamici per dati di panel (in altre parole, modelli panel con uno o più ritardi della variabile dipendente) usando il metodo GMM-DIF o quello GMM-SYS. 
+
+La variabile dipendente e i regressori dovrebbero essere indicati in livelli; il comando provvede autonomamente a differenziarli (dato che questo stimatore usa le differenze per eliminare gli effetti individuali). 
+
+Per quanto riguarda la gestione degli strumenti, si consulti la documentazione di questo comando in modalità scripting. Attualmente non è possibile specificare esplicitamente degli strumenti nella GUI: tutte le variabili indipendenti sono considerate strettamente esogene. 
+
+Di default vengono riportati (con errori standard robusti) i risultati della stima al primo stadio; la stima al secondo stadio può essere richiesta indicato l'opzione corrispondente. In entrambi i casi vengono forniti i test di autocorrelazione del primo e del secondo ordine, così come il test di sovraidentificazione di Sargan e un test di Wald della significatività congiunta dei regressori. Si noti che in questo modello nelle differenze l'autocorrelazione del primo ordine non impedisce che il modello sia valido; l'autocorrelazione al secondo ordine, tuttavia, viola le ipotesi statistiche che ne sono alla base. 
+
+Per ulteriori dettagli ed esempi, si veda <@pdf="la guida all'uso di gretl">. 
+
+Accesso dal menù: /Model/Panel/Dynamic panel model
+
+Comando script: <@ref="dpanel">
+
+# expand Dataset "Espansione dei dati"
+
+Se si vuole aggiungere a un dataset una serie di frequenza inferiore, è necessario "espandere" la nuova serie. Ad esempio, una serie trimestrale dovrà essere espansa per essere aggiunta a un dataset mensile. Altre volte occorrerà espandere un intero dataset a una frequenza superiore prima di aggiungervi una serie che ha una frequenza superiore. 
+
+L'operazione di espansione dei dati è riservata gli utenti "esperti": occorre sapere bene cosa si sta facendo. Quando si combinano serie di frequenza diversa nello stesso dataset, di solito è più consigliabile compattare i dati ad alta frequenza piuttosto che espandere quelli a bassa frequenza 
+
+Ciò premesso, gretl offre due opzioni: valori ad altra frequenza possono essere espansi usando il metodo di <@bib="Chow e Lin (1971);chowlin71"> oppure ripetendo i dati a frequenza più bassa per il numero necessario di volte. 
+
+Il metodo di Chow–Lin è basato su una regressione su costante e trend quadratico; il disturbo è assunto AR(1). Questa procedura richiede 4 gradi di libertà. 
+
+Per quanto riguarda il metodo della ripetizione del dato, invece, diamo un esempio. Se si ha una serie trimestrale con il valore 35.5 per l'osservazione 1990:1 (il primo trimestre del 1990), espandendo la serie, il valore 35.5 verrà assegnato alle osservazioni per gennaio, febbraio e marzo del 1990. La variabile espansa non potrà quindi essere utilizzata per analisi temporali "a grana fine", tranne nel caso si abbia ragione di ritenere che la variabile in questione rimanga costante nei vari sotto-periodi. 
+
+# export Dataset "Esportazione dei dati"
+
+È possibile esportare dati in formato separato da virgole (CSV: Comma-Separated Values), in modo che possano essere aperti con fogli elettronici e molti altri programmi applicativi. Selezionando questa opzione, sarà possibile scegliere diverse caratteristiche del file CSV. 
+
+E' anche possibile esportare dati sotto forma di file di dati "native" di gretl, oppure (se i dati lo rendono possibile) esportare un database di gretl. V. <@url="gretl.sourceforge.net/gretl_data.html"> per una discussione dei database di gretl. 
+
+E' anche possibile esportare i dati in un formato pronto per essere usato dai programmi seguenti: 
+
+<indent>
+• GNU R (<@url="www.r-project.org">) 
+</indent>
+
+<indent>
+• GNU octave (<@url="www.gnu.org/software/octave">) 
+</indent>
+
+<indent>
+• JMulTi (<@url="www.jmulti.de">) 
+</indent>
+
+<indent>
+• PcGive (<@url="www.pcgive.com">) 
+</indent>
+
+Se desiderate esportare i dati copiandoli negli appunti invece di scriverli in un file di dati, selezionate le variabili che volete copiare nella finestra principale, cliccate sul pulsante destro e selezionate "Copia negli appunti". (In questo contesto è supportato solo il formato CSV.) 
+
+# factorized Graphs "Grafici X-Y con fattore"
+
+Questo comando richiede che si selezionino tre variabili, l'ultima delle quali deve essere una variabile dummy (con valori 1 o 0). La variabile Y è rappresentata rispetto alla variabile X, con i punti colorati diversamente a seconda del valore della terza variabile. 
+
+Esempio: si hanno dati sui salari e il livello di scolarità per un campione di persone; si dispone anche di una variabile dummy che vale 1 per gli uomini e 2 per le donne (come nel file <@lit="data7-2"> di Ramanathan). Un "Grafico X-Y con fattore" di <@lit="WAGE"> rispetto a <@lit="EDUC"> usando la dummy <@lit="GENDER"> mostrerà le osservazioni che si riferiscono agli uomini in un colore e quelle delle donne in un altro (insieme a una legenda per identificarli). 
+
+# fcast Prediction "Genera previsioni"
+
+Deve seguire un comando di stima. Calcola previsioni per l'intervallo specificato. A seconda del tipo di modello, calcola anche gli errori standard (si veda oltre). 
+
+La scelta tra previsione statica e dinamica è rilevante solo nel caso di modelli dinamici, che comprendono un processo di errore autoregressivo, o che comprendono uno o più valori ritardati della variabile dipendente come regressori. Le previsioni statiche sono per il periodo successivo, basate sui valori effettivi nel periodo precedente, mentre quelle dinamiche usano la regola della previsione a catena. Ad esempio, se la previsione per <@itl="y"> nel 2008 richiede come input il valore di <@itl="y"> nel 2007, non è possibile calcolare una previsione statica se non si hanno dati per il 2007. È possibile calcolare una previsione dinamica per il 2008 se si dispone di una precedente previsione per <@itl="y"> nel 2007. 
+
+La scelta predefinita consiste nel fornire una previsione statica per ogni porzione dell'intervallo di previsione che fa parte dell'intervallo del campione su cui il modello è stato stimato, e una previsione dinamica (se rilevante) fuori dal campione. L'opzione <@lit="dynamic"> richiede di produrre previsioni dinamiche a partire dalla prima data possibile, mentre l'opzione <@lit="static"> richiede di produrre previsioni statiche anche fuori dal campione. 
+
+<code>          
+   fcast --plot=fc.pdf
+</code>
+
+genererà un grafico in formato PDF. Vengono rispettati gli indirizzi di file assoluti; in caso contrario i fail vengono scritti nella directory di lavoro di gretl. 
+
+La natura degli errori standard della previsione (se disponibili) dipende dalla natura del modello e della previsione. Per i modelli lineari statici, gli errori standard sono calcolati seguendo il metodo delineato in Davidson and MacKinnon (2004); essi incorporano sia l'incertezza dovuta al processo d'errore, sia l'incertezza dei parametri (sintetizzata dalla matrice di covarianza delle stime dei parametri). Per modelli dinamici, gli errori standard della previsione sono calcolati solo nel caso di previsione dinamica, e non incorporano incertezza dei parametri. Per modelli non lineari, al momento non sono disponibili errori standard della previsione. 
+
+Accesso dal menù: Finestra del modello, /Analisi/Previsioni
+
+Comando script: <@ref="fcast">
+
+# fractint Statistics "Fractional integration"
+
+Verifica la presenza di integrazione frazionale ("long memory") per la variabile specificata. L'ipotesi nulla è che l'ordine di integrazione della variabile sia zero. Di default viene utilizzato lo stimatore locale di Whittle <@bib="(Robinson, 1995);robinson95">, ma se si indica l'opzione <@opt="--⁠gph"> il comando usa il test GPH <@bib="(Geweke and Porter-Hudak, 1983);GPH83">. L'opzione <@opt="--⁠all"> permette di ottenere i risultati di entrambi i test. 
+
+Per maggiori dettagli su questo tipo di test, v. <@bib="Phillips e Shimotsu (2004);phillips04">. 
+
+Se non si specifica l'argomento opzionale <@var="order">, l'ordine del test (o dei test) è automaticamente fissato al più piccolo fra <@itl="T">/2 e <@itl="T"><@sup="0.6">. 
+
+I risultati possono essere recuperati usando gli accessori <@lit="$test"> e <@lit="$pvalue">. Questi valori sono basati sullo stimatore locale di Whittle a meno che non sia stata indicata l'opzione <@opt="--⁠gph">. 
+
+Accesso dal menù: /Variable/Unit root tests/Fractional integration
+
+Comando script: <@ref="fractint">
+
+# freq Statistics "Distribuzione di frequenza"
+
+Nella finestra di dialogo della distribuzione di frequenza è possibile controllare le caratteristiche del grafico in due modi diversi. 
+
+Per prima cosa è possibile scegliere il numero di intervalli; in questo caso la larghezza e la posizione degli intervalli sono calcolate automaticamente. 
+
+In alternativa, è possibile specificare il limite inferiore del primo intervallo e la larghezza degli intervalli; in questo caso il numero di intervalli viene calcolato automaticamente. 
+
+Se si vuole che gli intervalli corrispondano a numeri interi, è possibile procedere in questo modo: iniziare specificando il numero di intervalli, controllare il grafico prodotto, prendere nota delle modifiche da fare (ad esempio impostare l'inizio del primo intervallo al valore 100 e la larghezza pari a 200), quindi ricreare il grafico specificando i valori scelti. 
+
+Questa finestra permette inoltre di scegliere una distribuzione teorica da sovrapporre ai dati: la normale o la gamma. Se si sceglie la distribuzione normale, viene calcolato il test di normalità di Doornik–Hansen. Se si sceglie la gamma, gretl calcola il test non parametrico di Locke per l'ipotesi nulla che la variabile segua questa distribuzione. Si noti che la parametrizzazione della distribuzione gamma in gretl è (forma, scala). 
+
+Accesso dal menù: /Variabile/Distribuzione di frequenza
+
+Comando script: <@ref="freq">
+
+# garch Estimation "Stima GARCH"
+
+Stima un modello GARCH (Generalized Autoregressive Conditional Heteroskedasticity) univariato, o, se sono specificate delle variabili-indipendenti, includendo delle variabili esogene. L'equazione della varianza condizionale è la seguente: 
+
+  <@fig="garch_h">
+
+Il parametro <@var="p"> rappresenta quindi l'ordine generalizzato (o "AR"), mentre <@var="q"> rappresenta il consueto ordine ARCH (o "MA"). Se <@var="p"> è diverso da zero, anche <@var="q"> deve essere diverso da zero, altrimenti il modello non è identificato. Comunque, è possibile stimare un modello ARCH consueto impostando <@var="q"> a un valore positivo e <@var="p"> a zero. La somma di <@var="p"> e <@var="q"> non deve superare 5. 
+
+Per impostazione predefinita, i modelli GARCH vengono stimati usando il codice nativo gretl, ma è anche possibile usare l'algoritmo di Fiorentini, Calzolari e Panattoni (1996). Il primo usa il massimizzatore BFGS, mentre il secondo usa la matrice di informazione per massimizzare la verosimiglianza, con un raffinamento usando l'Hessiana. 
+
+Sono disponibili varie stime della matrice di covarianza dei coefficienti. Il metodo predefinito è quello dell'Hessiana, a meno di non selezionare la casella "Errori standard robusti", nel qual caso viene usata la matrice di covarianza QML (White). Altre possibilità (ad es. la matrice di informazione, o lo stimatore di Bollerslev–Wooldridge) possono essere specificate con il comando <@ref="set">. 
+
+La varianza condizionale stimata, insieme ai residui e ad altre statistiche del modello, può essere richiamata ed aggiunta al dataset usando il menù "Analisi" presente nella finestra del modello. Se viene spillata la casella "Standardizza i residui", i resuidi vengono divisi per la radice della varianzqa condizionale stimata. 
+
+Accesso dal menù: /Modello/Serie storiche/GARCH
+
+Comando script: <@ref="garch">
+
+# genr Dataset "Generazione di una nuova variabile"
+
+NOTA: questo comando ha subito molti cambiamenti e migliorie da quando l'help seguente è stato scritto, per cui per informazioni complete e aggornate consigliamo di far riferimento alla <@pdf="la guida all'uso di gretl">. D'altro canto, il testo che segue non contiene informazioni erronee, per cui può essere interpretato come "questo ed altro". 
+
+In contesti appropriati, <@lit="series">, <@lit="scalar"> e <@lit="matrix"> sono sinonimi per questo comando. 
+
+Usate questa riga per definire una nuova variabile seguendo lo schema <@var="nome"> = <@var="formula">. La formula dovrebbe essere una combinazione sintatticamente corretta di nomi di variabili, operatori e funzioni (v. oltre per ulteriori dettagli). Per essere sicuri di ottenere una variabile del tipo desiderato è possibile premettere alla formula il nome di un tipo, e.g. <@lit="scalar">, <@lit="series"> o <@lit="matrix">. Per esempio, per creare una variabile con un valore costante pari a 10 possiamo digitare 
+
+<code>          
+   series c = 10
+</code>
+
+(in caso contrario <@lit="c = 10"> creerebbe una variabile scalare). 
+
+Il comando <@lit="genr"> può produrre come risultato una serie o uno scalare. Ad esempio, la formula <@lit="x2 = x * 2"> produce una serie se la variabile <@lit="x"> è una serie e uno scalare se <@lit="x"> è uno scalare. Le formule <@lit="x = 0"> e <@lit="mx = mean(x)"> producono degli scalari. In alcune circostanze, può essere utile che un risultato scalare sia espanso in una serie o in un vettore: è possibile ottenere questo risultato usando <@lit="series"> come "alias" per il comando <@lit="genr">. Ad esempio, <@lit="series x = 0"> produce una serie con tutti i valori pari a 0. Allo stesso modo, è possibile usare <@lit="scalar"> come alias per <@lit="genr">, ma non è possibile forzare un risultato vettoriale in uno scalare: con questa parola chiave si indica che il risultato <@itl="dovrebbe essere"> uno scalare; se non lo è, viene emesso un messaggio di errore. 
+
+Quando una formula produce una serie o un vettore come risultato, l'intervallo su cui essi sono definiti dipende dall'impostazione attuale del campione. È quindi possibile definire una serie a pezzi, alternando l'uso dei comandi <@lit="smpl"> e <@lit="genr">. 
+
+Gli <@itl="operatori aritmetici"> supportati sono, in ordine di precedenza: <@lit="^"> (esponenziale); <@lit="*">, <@lit="/"> e <@lit="%"> (modulo o resto); <@lit="+"> e <@lit="-">. 
+
+Gli <@itl="operatori Booleani"> disponibili sono (ancora in ordine di precedenza): <@lit="!"> (negazione), <@lit="&&"> (AND logico), <@lit="||"> (OR logico), <@lit=">">, <@lit="<">, <@lit="=">, <@lit=">="> (maggiore o uguale), <@lit="<="> (minore o uguale) e <@lit="!="> (disuguale). Gli operatori Booleani possono essere usati per costuire variabili dummy: ad esempio <@lit="(x > 10)"> produce 1 se <@lit="x"> > 10, 0 altrimenti. 
+
+Le costanti predefinite sono <@lit="pi"> e <@lit="NA">. L'ultima rappresenta il codice per i valori mancanti: è possibile inizializzare una variabile con valori mancanti usando <@lit="scalar x = NA">. 
+
+Il comando <@lit="genr"> supporta un'ampia gamma di funzioni matematiche e statistiche, da quelle più comuni a quelle di uso specifico in econometria. Inoltre offre l'accesso a numerose variabili interne che vengono definite nel corso della stima di regressioni, dell'esecuzione di test, e così via. Per un elenco delle funzioni e degli accessori, si veda: <@gfr="la guida alle funzioni di gretl">. 
+
+Oltre agli operatori e alle funzioni mostrati, ci sono alcuni usi speciali del comando <@lit="genr">: 
+
+<indent>
+• <@lit="genr time"> crea una variabile trend temporale (1,2,3,…) chiamata <@lit="time">. <@lit="genr index"> fa la stessa cosa, ma chiamando la variabile <@lit="index">. 
+</indent>
+
+<indent>
+• <@lit="genr dummy"> crea una serie di variabili dummy a seconda della periodicità dei dati. Ad esempio, nel caso di dati trimestrali (periodicità 4) il programma crea <@lit="dq1">, che vale 1 nel primo trimestre e 0 altrove, <@lit="dq2"> che vale 1 nel secondo trimestre e 0 altrove, e così via. Nel caso di dati mensili, le dummy si chiamano <@lit="dm1">, <@lit="dm2"> e così via. Con altre frequenze dei dati, i nomi delle dummy sono <@lit="dummy_1">, <@lit="dummy2">, ecc. 
+</indent>
+
+<indent>
+• <@lit="genr unitdum"> e <@lit="genr timedum"> creano insiemi di variabili dummy speciali da usare in un dataset di tipo panel. Il primo comando crea dummy che rappresentano le unità cross section, il secondo i periodi di osservazione. 
+</indent>
+
+<@itl="Nota">: nella versione a riga di comando del programma, i comandi <@lit="genr"> che estraggono dati relativi al modello si riferiscono sempre al modello stimato per ultimo. Questo vale anche per la versione grafica del programma se si usa <@lit="genr"> nel "terminale di gretl" o si immette una formula usando l'opzione "Definisci nuova variabile" nel menù Variabile della finestra principale. Usando la versione grafica, però, è possibile anche estrarre i dati da qualunque modello mostrato in una finestra (anche se non è il modello più recente) usando il menù "Analisi" nella finestra del modello. 
+
+La variabile speciale <@lit="t"> serve da indice per le osservazioni (<@lit="obs"> è un sinonimo). Ad esempio, <@lit="genr dum = (t=15)"> crea una variabile dummy che vale 1 per l'osservazione 15 e 0 altrove. È anche possibile usare questa variabile per selezionare alcune osservazioni particolari secondo la data o il nome. Ad esempio <@lit="genr d = (obs>1986:4)">, <@lit="genr d = (obs>"2008/04/01")">, <@lit="genr d = (obs="CA")">. Quando si usa una data o un nome dell'osservazione, questi vanno racchiusi tra virgolette doppie, mentre non è strettamente necessario farlo per le date trimestrali e mensili. 
+
+Nota: quando si usa <@lit="t"> e <@lit="obs"> con serie storiche annuali, il valore corrisponde sempre all'anno dell'osservazione. Quindi se si hanno dati annuali che iniziano nel 1970, l'osservazione per il 1980 corrisponde a <@lit="t=1980">, non a <@lit="t=10">. Con dati trimestrali o mensili, invece, <@lit="t=10"> corrisponde alla decima osservazione. 
+
+È possibile estrarre dei valori scalari da una serie usando una formula <@lit="genr"> con la sintassi <@var="nome-variabile"><@lit="["><@var="osservazione"><@lit="]">. Il valore di <@var="osservazione"> può essere specificato con un numero o una data. Esempi: <@lit="x[5]">, <@lit="CPI[1996:01]">. Per i dati giornalieri occorre usare la forma <@var="AAAA/MM/GG">, ad esempio <@lit="ibm[1970/01/23]">. 
+
+È possibile modificare una singola osservazione in una serie usando <@lit="genr">. Per farlo, occorre aggiungere un numero di osservazione o una data valida tra parentesi quadre al nome della variabile nel lato sinistro della formula. Ad esempio: <@lit="genr x[3] = 30"> o <@lit="genr x[1950:04] = 303.7">. 
+
+Ecco un esempio di utilizzo delle variabili dummy: si supponga che <@lit="x"> abbia valori 1, 2, o 3 e si desiderino tre variabili dummy, <@lit="d1"> = 1 se <@lit="x"> = 1, e 0 altrove, <@lit="d2"> = 1 se <@lit="x"> = 2 e così via. Per crearle, basta usare i comandi: 
+
+<code>          
+       genr d1 = (x=1)
+       genr d2 = (x=2)
+       genr d3 = (x=3)
+</code>
+
+Accesso dal menù: /Variabile/Definisci nuova variabile
+Accesso alternativo: Menù pop-up nella finestra principale
+
+Comando script: <@ref="genr">
+
+# genrand Programming "Generazione di variabili casuali"
+
+In questa finestra occorre specificare il nome da dare alla variabile da generare, seguito da alcune informazioni aggiuntive che dipendono dal tipo di distribuzione. 
+
+<indent>
+• Uniforme: limite superiore e inferiore per la distribuzione. 
+</indent>
+
+<indent>
+• Normale: la media e lo scarto quadratico medio (deve essere positivo). 
+</indent>
+
+<indent>
+• Chi-quadro e t di Student: i gradi di libertà (devono essere positivi). 
+</indent>
+
+<indent>
+• F: gradi di libertà al numeratore e denominatore. 
+</indent>
+
+<indent>
+• Gamma: parametri di forma e scala (entrambi positivi). 
+</indent>
+
+<indent>
+• Binomiale: numero di prove (un intero positivo) e la probabilità di "successo". 
+</indent>
+
+<indent>
+• Poisson: la media (che è pari anche alla varianza). 
+</indent>
+
+Se occorre generare sequenze ripetibili di numeri pseudo-casuali, è possibile impostare il seme del generatore, nel menù Strumenti. 
+
+# genseed Programming "Impostare il seme per i numeri casuali"
+
+Il "seme" rappresenta il punto di partenza per la sequenza di numeri pseudo-casuali generati in una sessione di gretl. Per impostazione predefinita, il seme viene impostato all'avvio del programma, basandosi sull'orologio di sistema. Ciò fa sì che si ottenga una diversa sequenza di numeri casuali ogni volta che si usa il programma; se invece si vuole usare sequenze ripetibili di numeri, occorre impostare manualmente il seme (e ricordarsi il valore usato). 
+
+Si noti che il generatore viene re-impostato ogni volta che si fa clic sul pulsante "OK" di questa finestra di dialogo, quindi, ad esempio, se si imposta il seme a 147, si genera una serie dalla distribuzione normale standard, si riapre questa finestra di dialogo e si fa clic su "OK" indicando ancora 147 come seme, e infine si genera una seconda serie dalla normale standard, le due serie generate saranno identiche. 
+
+# gmm Estimation "Stima GMM"
+
+Esegue la stima col metodo dei momenti generalizzato (Generalized Method of Moments, GMM) usando l'algoritmo BFGS (Broyden, Fletcher, Goldfarb, Shanno). Occorre specificare uno o più comandi per aggiornare le quantità rilevanti (tipicamente i residui GMM), una o più condizioni di ortogonalità, una matrice iniziale dei pesi e un elenco dei parametri da stimare, il tutto racchiuso tra le parole chiave <@lit="gmm"> e <@lit="end gmm">. 
+
+Si veda la <@pdf="la guida all'uso di gretl"> per i dettagli. Quello che segue è un semplice esempio illustrativo. 
+
+<code>          
+   gmm e = y - X*b
+     orthog e ; W
+     weights V
+     params b
+   end gmm
+</code>
+
+Nell'esempio si assume che <@lit="y"> e <@lit="X"> siano matrici di dati, <@lit="b"> sia un vettore con i valori dei parametri, <@lit="W"> sia una matrice di strumenti, e <@lit="V"> un'appropriata matrice dei pesi. La dichiarazione 
+
+<code>          
+   orthog e ; W
+</code>
+
+indica che il vettore dei residui <@lit="e"> è in linea di principio ortogonale ad ognuno degli strumenti che compongono le colonne di <@lit="W">. 
+
+Accesso dal menù: /Modello/GMM
+
+Comando script: <@ref="gmm">
+
+# graphing Graphs "Grafici"
+
+Gretl richiama un programma separato, gnuplot, per generare i grafici. Gnuplot è un programma di grafica molto completo, con una miriade di opzioni; gretl fornisce l'accesso, attraverso un'interfaccia grafica, a una parte di queste opzioni, cercando di scegliere dei valori, ma è possibile anche controllare l'aspetto di un grafico in tutti i suoi dettagli, se si vuole. 
+
+Mentre un grafico viene visualizzato, facendo clic sulla finestra del grafico si aprirà un menù pop-up con le seguenti opzioni: 
+
+<indent>
+• Salva come postscript: salva il grafico in formato encapsulated postscript (EPS) 
+</indent>
+
+<indent>
+• Salva come PNG: salva in formato Portable Network Graphics 
+</indent>
+
+<indent>
+• Salva alla sessione come icona: il grafico apparirà sotto forma di icona quando si seleziona "Visualizza Icone" dal menù Sessione 
+</indent>
+
+<indent>
+• Ingrandisci: permette di selezionare un'area all'interno del grafico per visualizzarla da vicino 
+</indent>
+
+<indent>
+• Stampa: permette di stampare il grafico direttamente (disponibile solo in Gnome e MS Windows) 
+</indent>
+
+<indent>
+• Copia negli appunti: permette di copiare il grafico per poi incollarlo in altri programmi Windows, come ad esempio MS Word (disponibile solo in MS Windows) 
+</indent>
+
+<indent>
+• Modifica: apre una finestra che permette di modificare vari dettagli dell'aspetto del grafico 
+</indent>
+
+<indent>
+• Chiudi: chiude la finestra del grafico 
+</indent>
+
+Se si conosce gnuplot e si desidera un controllo sull'aspetto del grafico più preciso di quello fornito dalla finestra di modifica del grafico (opzione "Modifica"), ci sono due possibilità: 
+
+<indent>
+• Una volta salvato il grafico come icona di sessione, facendo clic col tasto destro sull'icona si apre un altro menù pop-up. Una delle opzioni disponibili è "Comandi per modificare il grafico", che apre una finestra di modifica con i comandi di gnuplot. È possibile modificare questi comandi e salvarli per il futuro, oppure inviarli direttamente a gnuplot (con il comando "File/Invia a gnuplot" del menù della finestra di modifica dei comandi). 
+</indent>
+
+<indent>
+• Un altro modo per salvare i comandi del grafico (o per salvare il grafico in formati diversi da EPS o PNG) è quello di usare il comando "Modifica" nel menù pop-up del grafico per aprire la finestra di modifica del grafico, quindi fare clic su "File": verrà visualizzato un menù a discesa con i formati in cui è possibile salvare il grafico. 
+</indent>
+
+Per saperne di più su gnuplot, si veda <@url="http://www.gnuplot.info"> 
+
+# graphpg Graphs "Pagina dei grafici"
+
+La "pagina dei grafici" funzionerà solo se si è installato il sistema di composizione LaTeX e si è in grado di generare e visualizzare file in formato postscript. 
+
+Nella finestra della sessione, è possibile trascinare fino a otto grafici sull'icona della pagina dei grafici. Facendo doppio clic sull'icona della pagina dei grafici (o facendo clic col tasto destro e selezionando "Mostra"), la pagina contenente i grafici selezionati verrà composta e aperta con il proprio visualizzatore di file postscript, da cui sarà possibile stamparla. 
+
+Per pulire la pagina dei grafici, fare clic col tasto destro sull'icona e selezionare "Pulisci". 
+
+Su sistemi diversi da MS Windows, può essere necessario modificare l'impostazione del programma per visualizzare il postscript, che si trova nella sezione "Programmi" della finestra di dialogo delle Preferenze di gretl (nel menù Strumenti della finestra principale). 
+
+E' anche possibile operare sulla pagina del grafico usanod uno script oppure usando la console (nel programma GUI). Sono disponibili i comandi seguenti: 
+
+Per aggiungere un grafico alla pagina dei grafici, digitate il comando <@lit="graphpg add"> dopo aver salvato un grafico con un nome, come in 
+
+<code>          
+   grf1 <- gnuplot Y X
+   graphpg add
+</code>
+
+Per aprire la pagina dei grafici: <@lit="graphpg show">. 
+
+Per svuotare la pagina dei grafici: <@lit="graphpg free">. 
+
+Per modificare la dimensione del font usato nella pagina dei grafici usate <@lit="graphpg fontscale"> <@var="scale">, dove <@var="scale"> è un moltiplicatore (con un valore di default pari a 1.0). Per rendere il fonto più grande del 50 per cento, dunque, è possibile scrivere 
+
+<code>          
+   graphpg fontscale 1.5
+</code>
+
+Per stampare su un file la pagina dei grafici usate l'opzione <@opt="--⁠output="> seguita dal nome di un file; questo nome deve avere il suffisso "<@lit=".pdf">", "<@lit=".ps">" o "<@lit=".eps">". Per esempio: 
+
+<code>          
+   graphpg --output="myfile.pdf"
+</code>
+
+In questo contesto l'output usa linee colorate di default; per usare linee punteggiate o tratteggiate al posto dei colori è possibile aggiungere l'opzione <@opt="--⁠monochrome">. 
+
+Comando script: <@ref="graphpg">
+
+# 3-D Graphs "Grafici tridimensionali"
+
+Questa funzionalità consente di manipolare il grafico 3D con il mouse (ruotandolo ed allungando o riducendo gli assi). 
+
+Nella composizione di un grafico 3D, si noti che l'asse Z sarà l'asse verticale, quindi se si ha una variabile dipendente che si pensa possa essere influenzata da due variabili indipendenti, è meglio mettere la variabile dipendente sull'asse Z e le altre due variabili sugli assi X e Y. 
+
+A differenza di molti altri grafici di gretl, i grafici 3D sono controllati da gnuplot invece che da gretl, quindi il menù di modifica dei grafici in questo caso non è disponibile. 
+
+# gui-funcs Programming "Special functions"
+
+Questo comando permette di specificare se ad alcune delle funzioni di un pacchetto devono essere attribuiti alcuni compiti specifici, e se sì a quali. Si noti che a una data funzione può essere attribuito al massimo uno dei compiti seguenti, e che per poter essere candidata a uno di questi compiti la funzione deve soddisfare alcuni criteri. 
+
+<indent>
+• <@lit="bundle-print">: stampa l'output sulla base del contenuto di un bundle di risultati generati dal vostro pacchetto. Criteri: questa funzione deve avere come primo parametro un puntatore del bundle. Se presente, il secondo parametro deve assumere valori interi, ed è necessario che ne sia specificato uno di default. 
+</indent>
+
+<indent>
+• <@lit="bundle-plot">: produce uno o più grafici usando un bundle generato dal vostro pacchetto. Criteri: come per <@lit="bundle-print">. 
+</indent>
+
+<indent>
+• <@lit="bundle-test">: calcola qualche test statistico usando un bundle generato dal vostro pacchetto. Criteri: come per <@lit="bundle-print">. 
+</indent>
+
+<indent>
+• <@lit="gui-main">: l'interfaccia pubblica che per default dovrebbe essere offerta agli utenti in modalità GUI. Questa opzione è utile solo se il pacchetto può offrire più di un'interfaccia pubblica. 
+</indent>
+
+<indent>
+• <@lit="gui-precheck">: funzione di controllo che restituisce 0 se le funzionalità del vostro pacchetto possono essere applicate al contesto corrente, e un valore diverso da 0 in caso contrario. Questa opzione serve per i pacchetti che svolgono qualche operazione a partire da un modello, in modo da evitare i tipi di modelli non gestibili dal pacchetto. 
+</indent>
+
+# gui-htest Tests "Calcolatore per le statistiche test"
+
+Il calcolatore dei test di Gretl calcola statistiche test e p-value per molti tipi di test di ipotesi su una o più popolazioni. Per utilizzarlo, occorre indicare le statistiche campionarie derivate da uno o due campioni, a seconda del test scelto. Queste possono essere indicate esplicitamente in forma numerica, oppure, se si ha un file di dati aperto, è possibile far calcolare a gretl le statistiche test per una o più variabili selezionate dal dataset (nel caso delle medie e varianze, ma non nel caso delle proporzioni). 
+
+Per eseguire un test indicando una variabile del dataset, occorre per prima cosa attivare questa opzione selezionando la casella "Usa variabile dal dataset", e poi scegliere la variabile nella lista. Appena si sceglie una variabile, i valori della statistica rilevante sono automaticamente inseriti nelle caselle sottostanti. 
+
+Oltre che selezionare semplicemente una variabile, è possibile specificare un sotto-campione. Ad esempio, si ipotizzi di avere dei dati sui salari in una variabile chiamata "salari" e una variabile dummy chiamata "genere", pari a 1 per gli uomini e 0 per le donne (o viceversa). Quindi, nel test per la differenza fra le medie, è possibile selezionare "salari" in entrambi i campi, ma aggiungendo nel campo superiore "(genere=0)" e nel campo inferiore "(genere=1)" si otterrà un test per la differenza tra il reddito medio degli uomini e delle donne. Quando si specifica un vincolo che identifica un sotto-campione, occorre premere il tasto Invio perché le statistiche campionarie siano calcolate. 
+
+Il vincolo che definisce il sotto-campione deve essere indicato tra parentesi e in generale prende la forma "variabile operatore valore", dove "variabile" è il nome di una variabile nel dataset attuale, "valore" è un valore numerico e "operatore" è un operatore di confronto, da scegliere tra =, !=, <, >, <= or >= (rispettivamente uguale diverso, minore, maggiore, minore o uguale, maggiore o uguale). Gli spazi prima e dopo l'operatore sono opzionali. 
+
+# gui-htest-np Tests "Test non parametrici"
+
+Nella finestra "Test delle differenze" è possibile svolgere dei test non parametrici per la differenza tra due popolazioni o gruppi; è possibile scegliere vari tipi specifici di test: 
+
+Test del segno: si basa sul fatto che per due campioni <@itl="x"> e <@itl="y"> estratti casualmente dalla stessa distribuzione, la probabilità che valga <@itl="x"><@sub="i"> > <@itl="y"><@sub="i"> per ogni osservazione <@itl="i"> dovrebbe valere 0.5. La statistica test è <@itl="w">, ossia il numero di osservazioni per cui vale <@itl="x"><@sub="i"> > <@itl="y"><@sub="i">. Sotto l'ipotesi nulla, questa grandezza si distribuisce come una binomiale con parametri (<@itl="n">, 0.5), dove <@itl="n"> è il numero di osservazioni. 
+
+Test rank sum di Wilcoxon. Questo test procede ordinando le osservazioni estratte da entrambi i campioni dalla più piccola alla più grande, e quindi calcolando la somma dei ranghi delle osservazioni da uno dei campioni. I due campioni non devono necessariamente avere la stessa dimensione: se sono diversi, viene usato il campione più piccolo per calcolare la somma dei ranghi. Sotto l'ipotesi nulla che i campioni siano estratti da popolazioni con la stessa mediana, la distribuzione di probabilità della somma dei ranghi può essere calcolata per ogni valore dell'ampiezza dei due campioni, mentre per campioni abbastanza ampi essa approssima la distribuzione normale. 
+
+Test signed rank di Wilcoxon. Questo test è valido per "coppie di campioni", come possono essere ad esempio i valori di una variabile in un gruppo di individui prima e dopo un certo trattamento. Il test procede calcolando le differenze tra le coppie di osservazioni <@itl="x"><@sub="i"> – <@itl="y"><@sub="i">, ordinando queste differenze per valore assoluto e assegnando ad ogni coppia un valore di rango con segno, in cui il segno rispecchia il segno della differenza. Quindi viene calcolato <@itl="W"><@sub="+">, la somma di tutti i ranghi con segno positivo. Come avviene per il test rank-sum, questa statistica ha una distribuzione precisa nell'ipotesi nulla che la differenza mediana sia zero, distribuzione che converte alla normale nel caso di campioni abbastanza ampi. 
+
+Nella finestra "Test delle successioni" è possibile eseguire un test per la casualità di una certa variabile, basato sul numero di successioni di valori consecutivi positivi o negativi. Con l'opzione "Usa la differenza prima", la variabile viene differenziata prima dell'analisi, quindi le successioni sono interpretabili come sequenze di incrementi o decrementi consecutivi nel valore della variabile. La statistica test è basata su un'approssimazione normale alla distribuzione del numero di sequenze sotto l'ipotesi nulla di casualità. 
+
+# hausman Tests "Diagnosi panel"
+
+Questo test è disponibile solo dopo aver stimato un modello OLS su dati panel (si veda anche <@lit="setobs">). Testa il semplice modello "pooled" (con tutte le osservazioni mescolate indistintamente) contro le principali alternative: il modello a effetti fissi e quello a effetti casuali. 
+
+Il modello a effetti fissi permette all'intercetta della regressione di variare per ogni unità cross section. Viene eseguito un test <@itl="F"> per l'ipotesi nulla che le intercette non differiscano tra loro. Il modello a effetti casuali scompone la varianza dei residui in due parti: una specifica all'unità cross section e una specifica all'osservazione particolare (la stima può essere eseguita solo se il numero delle unità cross section nel dataset è maggiore del numero dei parametri da stimare). La statistica LM di Breusch–Pagan testa l'ipotesi nulla che il modello pooled OLS sia adeguato contro l'alternativo modello a effetti casuali. 
+
+Può accadere che il modello pooled OLS sia rifiutato nei confronti di entrambe le alternative, a effetti fissi o casuali. A patto che gli errori specifici di unità o di gruppo siano non correlati con le variabili indipendenti, lo stimatore a effetti casuali è più efficiente dello stimatore a effetti fissi; nel caso contrario lo stimatore a effetti casuali non è consistente e deve essergli preferito lo stimatore a effetti fissi. L'ipotesi nulla per il test di Hausman è che l'errore specifico di gruppo non sia correlato con le variabili indipendenti (e quindi che il modello a effetti casuali sia preferibile). Un basso p-value per questo test suggerisce di rifiutare il modello a effetti casuali in favore del modello a effetti fissi. 
+
+Accesso dal menù: Finestra del modello, /Test/HAUSMAN - Diagnosi panel
+
+Comando script: <@ref="hausman">
+
+# hccme Estimation "Errori standard robusti"
+
+Sono disponibili vari modi di calcolare gli errori standard robusti in presenza di eteroschedasticità (e, nel caso dello stimatore HAC, di autocorrelazione). 
+
+HC0 produce gli "errori standard originali di White"; HC1, HC2, HC3 e HC3a sono varianti che si ritiene producano risultati migliori (più affidabili). Per i dettagli sugli stimatori, si veda <@bib="MacKinnon and White (Journal of Econometrics, 1985);mackinnon-white85"> o <@bib="Davidson and MacKinnon, Econometric Theory and Methods (Oxford, 2004);davidson-mackinnon04">. Le sigle usate sono quelle proposte da Davidson e MacKinnon. La variante "HC3a" è il "jackknife" descritto da MacKinnon e White (1985); HC3 è una sua vicina approssimazione. 
+
+Se si usa lo stimatore HAC per serie storiche, è possibile calibrare la lunghezza dei ritardi usando il comando <@lit="set">. Si veda il manuale di gretl o i file di aiuto per i dettagli. 
+
+Quando si stima un modello OLS su dati panel, lo stimatore robusto predefinito per la matrice di covarianza è quello dato da Arellano. L'alternativa è lo stimatore PCSE (Panel Corrected Standard Errors) di Beck e Katz, che tiene conto dell'eteroschedasticità, ma non dell'autocorrelazione. 
+
+Per i modelli GARCH sono disponibili due stimatori robusti della matrice di covarianza: QML è lo stimatore di quasi massima verosimiglianza, e BW è lo stimatore di Bollerslev-Wooldridge. 
+
+# hsk Estimation "Stime corrette per l'eteroschedasticità"
+
+Questo comando è utile in presenza di eteroschedasticità sotto forma di una funzione incognita dei regressori, che può essere approssimata da una relazione quadratica. In questo contesto, offre la possibilità di avere errori standard consistenti e stime dei parametri più efficienti, rispetto alla stima OLS. 
+
+La procedura richiede: (a) la stima OLS del modello, (b) una regressione ausiliaria per generare la stima della varianza dell'errore e (c) la stima con minimi quadrati ponderati, usando come peso il reciproco della varianza stimata. 
+
+Nella regressione ausiliaria (b) il logaritmo dei quadrati dei residui dalla prima regressione OLS viene regredito sui regressori originali e sui loro quadrati. La trasformazione logaritmica viene effettuata per assicurarsi che le varianze stimate siano non negative. Indicando con <@itl="u"><@sup="*"> i valori stimati da questa regressione, la serie dei pesi per la regressione con minimi quadrati ponderati è data da 1/exp(<@itl="u"><@sup="*">). 
+
+Accesso dal menù: /Modello/Altri modelli lineari/HSK - WLS corretti per eteroschedasticità
+
+Comando script: <@ref="hsk">
+
+# hurst Statistics "Esponente di Hurst"
+
+Calcola l'esponente di Hurst (una misura di persistenza, o di memoria lunga) per una serie storica con almeno 128 osservazioni. 
+
+L'esponente di Hurst è discusso da Mandelbrot. In termini teorici è l'esponente <@itl="H"> nella relazione 
+
+  <@fig="hurst">
+
+dove RS è l'"intervallo riscalato" della variabile <@itl="x"> in un campione dell'ampiezza <@itl="n">, mentre <@itl="a"> è una costante. L'intervallo riscalato è l'intervallo (valore massimo meno valore minimo) del valore cumulato, o somma parziale, di <@itl="x"> sul periodo del campione (dopo aver sottratto la media campionaria), diviso per lo scarto quadratico medio campionario. 
+
+Come punto di riferimento, se <@itl="x"> è un rumore bianco (media zero, persistenza zero) l'intervallo dei suoi valori cumulati (che forma una passeggiata casuale), scalato per lo scarto quadratico medio, cresce come la radice quadrata dell'ampiezza campionaria, ossia ha un esponente di Hurst atteso pari a 0.5. Valori dell'esponente sensibilmente maggiori di 0.5 indicano persistenza della serie, mentre valori minori di 0.5 indicano anti-persistenza (autocorrelazione negativa). In teoria l'esponente deve essere compreso tra 0 e 1, ma in campioni finiti è possibile ottenere delle stime per l'esponente maggiori di 1. 
+
+In gretl, l'esponente è stimato usando il sotto-campionamento binario: si inizia dall'intero intervallo dei dati, quindi si usano le due metà dell'intervallo, poi i quattro quarti, e così via. Il valore RS è la media presa sui vari campioni. L'esponente è quindi stimato come il coefficiente di pendenza della regressione del logaritmo di RS sul logaritmo dell'ampiezza del campione. 
+
+Accesso dal menù: /Variabile/Esponente di Hurst
+
+Comando script: <@ref="hurst">
+
+# intreg Estimation "Modello di regressione per intervalli"
+
+Stima un modello di regressione per intervallo. Questo modello è adatto al caso in cui la variabile dipendente è osservata in modo imperfetto per alcune osservazioni (o anche tutte). In altre parole, si ipotizza che il processo generatore dei dati sia 
+
+  <@itl="y* = x b + u">
+
+ma che solo <@itl="m <= y* <= M"> sia osservato (l'intervallo può essere limitato a destra o a sinistra). Si noti che per alcune osservazioni <@itl="m"> può essere uguale a <@itl="M">. Le variabili <@var="var-min"> e <@var="var-max"> devono contenere valori <@lit="NA"> nel caso di osservazioni non limitate a sinistra o a destra. 
+
+Nella finestra di specificazione del modello, <@var="var-min"> e <@var="var-max"> sono identificate come la variabile limite inferiore e la variabile limite superiore. 
+
+Il modello è stimato per massima verosimiglianza, ipotizzando la normalità del termine di disturbo. 
+
+Per impostazione predefinita, gli errori standard sono calcolati usando l'inversa dell'Hessiana. Se si abilita la casella "Errori standard robusti", vengono calcolati invece gli errori standard QML o Huber–White. In questo caso la matrice di covarianza stimata è un "sandwich" dell'inversa dell'Hessiana stimata e del prodotto esterno del gradiente. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Regressione per intervalli
+
+Comando script: <@ref="intreg">
+
+# irfboot Graphs "Bootstrap impulso-risposta"
+
+Se si sceglie l'intervallo di confidenza bootstrap nella visualizzazione delle funzioni di impulso-risposta, gretl calcola un intervallo di confidenza al 95 per cento per le risposte usando il metodo bootstrap. Si effettua un campionamento (con reimmissione) dai residui del VAR (o VECM) originale, viene costruito un dataset artificiale usando le stime originali dei parametri e i residui ri-campionati, viene ri-stimato il sistema e vengono ri-calcolate le funzioni di impulso-risposta. Questa procedura viene ripetuta 999 volte e vengono mostrati i quantili 0.025 e 0.975 per le risposte, insieme alle stime puntuali. L'opzione bootstrap al momento non è disponibile per il VECM vincolati. 
+
+Questo comando permette anche il riordinamento delle variabili per la scomposizione di Cholesky della matrice di covarianza degli errori delle diverse equazioni. Di default l'ordine adottato è quello con il quale le variabili vengono elencate nella specificazione del modello, ma è possibile usare le frecce verso l'alto e verso il basso per spostare una variabile selezionata. 
+
+# kalman Estimation "Kalman filter"
+
+Inizia un blocco di istruzioni per impostare un filtro di Kalman. Questo blocco deve terminare con la linea <@lit="end kalman">, alla quale possono essere aggiunte le opzioni elencate sopra. Le istruzioni del blocco specificano le matrici che compongono il filtro. Per esempio, 
+
+<code>          
+   kalman 
+     obsy y
+     obsymat H
+     statemat F
+     statevar Q
+   end kalman
+</code>
+
+Vedi <@pdf="la guida all'uso di gretl"> per ulteriori dettagli. 
+
+Vedi anche <@xrf="kfilter">, <@xrf="ksimul">, <@xrf="ksmooth">. 
+
+Comando script: <@ref="kalman">
+
+# kpss Tests "Test KPSS di stazionarietà"
+
+Calcola il test KPSS (Kwiatkowski, Phillips, Schmidt e Shin, 1992) per la stazionarietà di una variabile (o della sua differenza prima, se si usa l'opzione di differenziazione). L'ipotesi nulla è che la variabile in questione sia stazionaria, attorno a un valore fisso o, se è stata selezionata l'opzione <@lit="includi un trend">, attorno a un trend deterministico lineare. 
+
+L'argomento ordine determina la dimensione della finestra usata per il livellamento di Bartlett. Se si usa l'opzione <@lit="Mostra i risultati della regressione">, vengono mostrati anche i risultati della regressione ausiliaria, insieme alla varianza stimata della componente random walk della variabile. 
+
+Il valori critici riportati per questa statistica test sono basati sulle superfici di risposta stimati da <@bib="Sephton (Economics Letters, 1995);sephton95">, che per piccoli campioni sono più accurati di quelli forniti nell'articolo originale di KPSS. Quando la statistica test si trova fra i valori critici al 10 e all'1 per cento viene mostrato un p-value ottenuto per interpolazione lineare, che non dovrebbe essere accettato in maniera acritica. 
+
+Accesso dal menù: /Variabile/Test KPSS
+
+Comando script: <@ref="kpss">
+
+# lad Estimation "Stima con minime deviazioni assolute"
+
+Calcola una regressione che minimizza la somma delle deviazioni assolute dei valori stimati dai valori effettivi della variabile dipendente. Le stime dei coefficienti sono derivate usando l'algoritmo del simplesso di Barrodale–Roberts; viene mostrato un messaggio di avvertimento se la soluzione non è unica. 
+
+Gli errori standard sono derivati usando la procedura bootstrap con 500 estrazioni. La matrice di covarianza per le stime dei parametri, mostrata se si usa l'opzione <@lit="--vcv">, si basa sulla stessa procedura. 
+
+Accesso dal menù: /Modello/Stima robusta/LAD - Minime deviazioni assolute
+
+Comando script: <@ref="lad">
+
+# lags-dialog Estimation "Finestra di selezione dei ritardi"
+
+In questa finestra di dialogo è possibile selezionare l'ordine dei ritardi per le variabili indipendenti in un modello di serie storiche, e in alcuni casi anche per la variabile dipendente (ma si noti che l'ordine di ritardi comune per modelli vettoriali come i VAR e i VECM è gestito separatamente attraverso un selettore nella finestra di dialogo principale del modello). 
+
+I selettori sulla sinistra permettono di selezionare un intervallo di ritardi consecutivi per ogni variabile. Per specificare ritardi non consecutivi, occorre selezionare la casella vicino al campo intitolato "ritardi specifici". In questo modo si attiva il campo, all'interno del quale è possibile inserire una lista di ritardi separati da spazi. 
+
+La riga denominata "predefinito" offre un modo veloce per impostare una specificazione di ritardi comune a tutte le variabili indipendenti: i valori inseriti in questa riga vengono copiati in tutte le righe successive (tranne quella della variabile dipendente, se esiste). 
+
+La variabile dipendente è trattata in modo speciale: il ritardo di ordine zero indica che la variabile apparirà nel modello a sinistra del segno uguale, mentre ulteriori ordini di ritardo saranno aggiunti a destra dell'uguale, insieme alle variabili indipendenti. 
+
+I valori selezionati in questa finestra di dialogo vengono ricordati per l'intera durata della sessione di lavoro con un certo dataset. 
+
+# leverage Tests "Osservazioni influenti"
+
+Deve seguire immediatamente un comando <@lit="ols">. Calcola il "leverage" (<@itl="h">, compreso tra 0 e 1) di ogni osservazione nel campione su cui è stato stimato il precedente modello. Mostra il residuo (<@itl="u">) per ogni osservazione assieme al leverage corrispondente e a una misura della sua influenza sulla stima: <@fig="influence">. I "punti di leverage" per cui il valore di <@itl="h"> supera 2<@itl="k">/<@itl="n"> (dove <@itl="k"> è il numero dei parametri stimati e <@itl="n"> è l'ampiezza del campione) sono indicati con un asterisco. Per i dettagli sui concetti di leverage e influenza, si veda <@bib="Davidson and MacKinnon (1993);davidson-mackinnon93">, capitolo 2. 
+
+Vengono mostrati anche i valori DFFITS: questi sono "residui studentizzati" (ossia i residui previsti, divisi per i propri errori standard) moltiplicati per <@fig="dffit">. Per una discussione dei residui studentizzati e dei valori DFFITS si veda <@bib="Maddala's Introduction to Econometrics;maddala92">, cap. 12, oppure <@bib="Belsley, Kuh and Welsch (1980);belsley-etal80">. 
+
+In breve, i "residui previsti" sono la differenza tra il valore osservato e il valore stimato della variabile dipendente all'osservazione <@itl="t">, ottenuti da una regressione in cui quell'osservazione è stata omessa (oppure in cui è stata aggiunta una variabile dummy che vale 1 solo per l'osservazione <@itl="t">); il residuo studentizzato si ottiene dividendo il residuo previsto per il proprio errore standard. 
+
+L'icona "+" in cima alla finestra del test di leverage apre una finestra di dialogo che permette di salvare nel dataset in uso una o più delle variabili del test. 
+
+Dopo l'esecuzione, l'accessore <@lit="$test"> restituisce il criterio di validazione incrociata, definito come la somma dei quadrati degli scarti fra la variabile dipendente e il suo valore previsto, calcolato a partire da un campione dal quale quell'osservazione è stata esclusa. (Questo stimatore è chiamato <@itl="leave-one-out">). Per una discussione più approfondita del criterio di validazione incrociata, v. Davidson e MacKinnon's <@itl="Econometric Theory and Methods">, pag. 685–686, e i riferimenti bibliografici ivi citati. 
+
+Accesso dal menù: Finestra del modello, /Test/LEVERAGE - Osservazioni influenti
+
+Comando script: <@ref="leverage">
+
+# levinlin Tests "Levin-Lin-Chu test"
+
+Calcola il test di radice unitaria per dati panel di <@bib="Levin, Lin and Chu (2002);LLC2002">. L'ipotesi nulla che tutte le singole serie storiche contengano una radica unitaria, mentre l'alternativa è che nessuna delle serie storiche ne contenga una. (In altre parole, si assume un coefficiente AR(1) comune a tutte le serie, anche se altre proprietà statistiche delle serie possono variare da un'unità di osservazione all'altra.) 
+
+Accesso dal menù: /Variable/Unit root tests/Levin-Lin-Chu test
+
+Comando script: <@ref="levinlin">
+
+# loess Estimation "Loess"
+
+Stima una regressione polinomiale locally-weighted e produce una serie che contiene i valori previsti della variabile dipendente in corrispondenza di tutti i valori non missing della variabile indipendente. Il metodo applicato è quello descritto da <@bib="William Cleveland (1979);cleveland79">. 
+
+I parametri vi permettono di specificare l'ordine del polinomio nella variabile indipendente e la percentuale di punti osservati da utilizzare in ciascuna regressione locale (l'ampiezza di banda). Valori più elevati di quest'ultima generato un risultato più liscio. 
+
+Se viene selezionata l'opzione dei pesi robusti la procedura di regressione locale è ripetuta due volte, modificando i pesi sulla base dei residui ottenuti all'iterazione precedente in modo da assegnare un'influenza minore alle osservazioni anomale. 
+
+# logistic Estimation "Regressione logistica"
+
+Regressione logistica: esegue una regressione OLS usando la trasformazione logistica sulla variabile dipendente: 
+
+  <@fig="logistic1">
+
+Nella finestra di dialogo del comando, è possibile specificare un valore diverso per il massimo. Il valore fornito deve essere maggiore di tutti i valori osservati della variabile dipendente. 
+
+I valori stimati e i residui della regressione sono trasformati automaticamente usando 
+
+  <@fig="logistic2">
+
+dove <@itl="x"> rappresenta un valore stimato oppure un residuo della regressione OLS, usando la variabile dipendente trasformata. I valori riportati sono dunque confrontabili con la variabile dipendente originale. 
+
+Si noti che se la variabile dipendente è binaria, occorre usare il comando <@ref="logit"> invece di questo comando. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Logistico
+
+Comando script: <@ref="logistic">
+
+# logit Estimation "Regressione logit"
+
+Se la variabile dipendente è binaria (i suoi valori sono 0 o 1), esegue una stima di massima verosimiglianza dei coefficienti per le <@var="variabili-indipendenti"> con il metodo BRMR ("binary response model regression") descritto in Davidson e MacKinnon (2004). Visto che il modello è nonlineare, le pendenze dipendono dai valori delle variabili indipendenti: per impostazione predefinita, al posto dei p-value vengono mostrate le pendenze rispetto ad ognuna delle variabili indipendenti, calcolate in corrispondenza della media della variabile. Questo comportamento può essere soppresso usando l'opzione <@lit="--p-values">. La statistica chi-quadro testa l'ipotesi nulla che tutti i coefficienti tranne la costante siano pari a zero. 
+
+In modalità predefinita, gli errori standard sono calcolati con l'inversa negativa dell'Hessiana. Se si seleziona la casella "Errori standard robusti", verranno calcolati gli errori standard QML o quelli di Huber–White. In questo caso, la matrice di covarianza stimata è un "sandwich" dell'inversa dell'Hessiana stimata e del prodotto esterno del gradiente. Per i dettagli, si veda Davidson e MacKinnon 2004, cap. 10. 
+
+Se la variabile dipendente non è binaria, ma è discreta, si ottengono stime Logit ordinate. Tuttavia, se viene fornita l'opzione <@opt="--⁠multinomial">, la variabile dipendente è interpretata come non ordinale, e vengono prodotte stime Logit Multinomiali. (In ambo i casi, verrà dato un errore se la dipendente non è discreta.) Nel caso multinomiale, l'accessore <@lit="$mnlprobs"> sarà disponibile dopo la stima; esso conterrà una matrice con le probabilità stimate dei possibili valori della dipendente per ogni osservazione (osservazioni per riga, valori per colonna). 
+
+Per condurre un'analisi delle proporzioni (dove la variabile dipendente è la proporzione dei casi che hanno una certa caratteristica in ogni osservazione, invece che una variabile binaria che indica se la caratteristica è presente o no), non bisogna usare il comando <@lit="logit">, ma occorre costruire la variabile logit come 
+
+<code>          
+   genr lgt_p = log(p/(1 - p))
+</code>
+
+e usare questa come variabile dipendente in una regressione OLS. Si veda <@bib="Ramanathan (2002);ramanathan02">, capitolo 12. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Logit
+
+Comando script: <@ref="logit">
+
+# mahal Statistics "Distanze di Mahalanobis"
+
+La distanza di Mahalanobis è la distanza tra due punti in uno spazio <@itl="k">-dimensionale, scalata rispetto alla variazione statistica in ogni dimensione dello spazio. Ad esempio, se <@itl="p"> e <@itl="q"> sono due osservazioni su un insieme di <@itl="k"> variabili con matrice di covarianza <@itl="C">, la distanza di Mahalanobis tra le due osservazioni è data da 
+
+  <@fig="mahal">
+
+dove <@fig="mahal2"> è un vettore a <@itl="k"> dimensioni. Se la matrice di covarianza è la matrice identità, la distanza di Mahalanobis corrisponde alla distanza Euclidea. 
+
+Lo spazio in cui vengono calcolate le distanze è definito dalle variabili selezionate; per ogni osservazione nell'intervallo attuale viene calcolata la distanza tra l'osservazione e il centroide delle variabili selezionate. La distanza è la controparte multidimensionale di uno <@itl="z">-score standard e può essere usata per giudicare se una certa osservazione "appartiene" a un gruppo di altre osservazioni. 
+
+Se il numero delle variabili selezionate è minore o uguale a 4, vengono mostrate la matrice di covarianza e la sua inversa. Facendo clic sul pulsante "+" in cima alla finestra che mostra le distanze è possibile aggiungerle al dataset come nuova variabile. 
+
+Accesso dal menù: /Visualizza/Distanze di Mahalanobis
+
+Comando script: <@ref="mahal">
+
+# meantest Tests "Differenza delle medie"
+
+L'impostazione predefinita prevede di assumere che le varianze delle due variabili siano uguali, mentre usando l'opzione <@lit="--unequal-vars">, si assume che esse siano diverse. Questo è rilevante per la statistica test solo se le due variabili contengono un diverso numero di osservazioni valide (non mancanti). 
+
+Calcola la statistica t per l'ipotesi nulla che le medie della popolazione siano uguali per due variabili selezionate, mostrando il suo p-value. Il comando può essere eseguito con o senza l'ipotesi che le varianze delle due variabili siano uguali (anche se questo è rilevante per la statistica test solo se le due variabili contengono un diverso numero di osservazioni valide). 
+
+Accesso dal menù: /Modello/Modelli bivariati/Differenza delle medie
+
+Comando script: <@ref="meantest">
+
+# missing Dataset "Valori dati mancanti"
+
+Imposta un valore numerico che sarà interpretato come "mancante" o "non disponibile", per una serie particolare (nel menù Variabile) o globalmente per l'intero dataset (nel menù Campione). 
+
+Gretl ha un codice interno per i valori mancanti, che non sempre può coincidere con quello usato dai dati importati. Ad esempio, se una serie usa il valore -1 col significato di "non disponibile", è possibile selezionare "Imposta codice valori mancanti" nel menù Variabile e immettere il valore "-1" (senza le virgolette); gretl interpreterà quindi i valori -1 come osservazioni mancanti. 
+
+# menu-attach Programming "Menu attachment"
+
+Questa finestra di dialogo permette di specificare a quale menu attaccare il pacchetto. A tal fine, bisogna riempire i tre campi previsti. 
+
+<@itl="Etichetta"> 
+
+Una breve stringa, che apparirà nel menu. 
+
+<@itl="Finestra"> 
+
+Selezionare "finestra del modello" per un pacchetto che fa qualcosa copn un modello stimato da gretl, e deve apparire nella barra del menu di un modello. In tutti gli altri casi, selezionare "finestra principale". 
+
+<@itl="Albero del menu"> 
+
+Selezionare la posizione nell'albero del menu (per la finestra principale o per la finestra del modello, come da scelta sopra) dove il pacchetto deve apparire. 
+
+# mle Estimation "Stima di massima verosimiglianza"
+
+Esegue la stima di massima verosimiglianza (ML, Maximum Likelihood) usando l'algoritmo BFGS (Broyden, Fletcher, Goldfarb, Shanno). Occorre specificare la funzione di log-verosimiglianza, e se possibile è consigliabile indicare anche espressioni per le derivate di questa funzione, rispetto ad ognuno dei parametri. 
+
+Esempio: si supponga di avere una serie <@lit="X"> con valori 0 o 1 e di voler ottenere la stima di massima verosimiglianza della probabilità <@lit="p"> che <@lit="X"> valga 1 (è semplice intuire che la stima ML di <@lit="p"> corrisponderà alla proporzione dei valori 1 nel campione). 
+
+Occorre per prima cosa aggiungere <@lit="p"> al dataset e assegnargli un valore iniziale, attraverso il comando <@lit="genr"> o i comandi del menù. È possibile scrivere delle istruzioni "genr" appropriate nella finestra di specificazione del comando di stima, prima di indicare la specificazione della funzione di log-verosimiglianza. 
+
+Si scrivano i seguenti comandi nella finestra del comando: 
+
+<code>          
+   loglik = X*log(p) + (1-X)*log(1-p)
+   deriv p = X/p - (1-X)/(1-p)
+</code>
+
+La prima riga specifica la funzione di log-verosimiglianza, mentre la seconda indica la derivata della funzione rispetto a p. Se non si indicanto righe "deriv", viene calcolata un'approssimazione numerica delle derivate. 
+
+Se non si era dichiarato in precedenza il parametro p, sarebbe stato necessario premettere alle righe precedenti la riga: 
+
+<code>          
+   genr p = 0.5
+</code>
+
+Per impostazione predefinita, gli errori standard sono basati sul prodotto esterno del gradiente. Se si richiedono errori standard robusti, viene usato uno stimatore QML (ossia, un sandwich dell'inversa negativa dell'Hessiana e della matrice di covarianza del gradiente). L'Hessiana è approssimata numericamente. 
+
+Accesso dal menù: /Modello/Massima verosimiglianza
+
+Comando script: <@ref="mle">
+
+# modeltab Utilities "Tabella modelli"
+
+Nella ricerca econometrica si è soliti stimare vari modelli con una variabile dipendente comune, che differiscono tra loro per le variabili indipendenti o per lo stimatore usato. In questa situazione è comodo poter rappresentare i risultati delle regressioni sotto forma di una tabella dove ogni colonna contiene i risultati (stime dei coefficienti e errori standard) per un dato modello e ogni riga contiene le stime per una certa variabile nei differenti modelli. 
+
+Gretl dà la possibilità di costruire una tabella simile (e di esportarla in testo semplice, LaTeX o RTF - Rich Text Format). Ecco come fare: 
+
+<indent>
+1. Stimare un modello che si vuole includere nella tabella e selezionare, nel menù File della finestra di visualizzazione del modello, "Salva alla sessione come icona" o "Salva come icona e chiudi". 
+</indent>
+
+<indent>
+2. Ripetere il punto 1 per gli alri modelli da includere nella tabella (fino a un massimo di sei modelli). 
+</indent>
+
+<indent>
+3. Completata la stima dei modelli, aprire l'icona della sessione di gretl (selezionando "Visualizza Icone" nel menù Sessione della finestra principale di gretl, o facendo clic su "Finestra icone" sulla barra degli strumenti di gretl). 
+</indent>
+
+<indent>
+4. La finestra delle icone contiene un'icona chiamata "Tabella Modelli". Per aggiungere alla tabella modelli il modello che deve apparire nella colonna più a sinistra della tabella, basta trascinare l'icona del modello sull'icona della Tabella Modelli, oppure fare clic col tasto destro sull'icona del modello e selezionare "Aggiungi alla tabella modelli" dal menù pop-up. 
+</indent>
+
+<indent>
+5. Ripetere il punto 4 per gli altri modelli da aggiungere alla tabella. Il secondo modello scelto apparirà nella seconda colonna da sinistra della tabella, e così via. 
+</indent>
+
+<indent>
+6. Ultimata la composizione della tabella, è possibile visualizzarla facendo doppio clic sulla sua icona. Per copiare la tabella negli appunti in uno dei formati supportati, basta fare clic sul menù Modifica della finestra in cui appare la tabella. 
+</indent>
+
+<indent>
+7. Se l'ordinamento dei modelli nella tabella non è quello voluto, fare clic col tasto destro sull'icona della tabella modelli e selezionare "Pulisci", quindi tornare al punto 4. 
+</indent>
+
+Accesso dal menù: Finestra delle icone, Icona Tabella Modelli
+
+Comando script: <@ref="modeltab">
+
+# modtest Tests "Test LM"
+
+Deve seguire immediatamente un comando di stima. A seconda dell'opzione usata, il comando esegue uno dei test seguenti: test di Doornik–Hansen per la normalità del termine di errore; test dei moltiplicatori di Lagrange per la non-linearità (logaritmi o quadrati); test di White (con o senza i prodotti incrociati) o test di Breusch–Pagan per l'eteroschedasticità (<@bib="Breusch and Pagan, 1979;breusch-pagan79">), test LMF per la correlazione seriale (si veda <@bib="(Kiviet, 1986);kiviet86">); test per il modello ARCH (Autoregressive Conditional Heteroskedasticity, si veda anche il comando <@lit="arch">); o restrizione a fattore comune, (solo modelli AR1). La maggior parte delle opzioni sono disponibili solo per modelli stimati con OLS, ma si veda oltre per alcuni dettagli riguardanti la stima con i minimi quadrati a due stadi. 
+
+L'argomento opzionale <@lit="ordine"> è rilevante solo nel caso si scelga l'opzione <@lit="--autocorr"> o l'opzione <@lit="--arch">. Per impostazione predefinita, questi test sono eseguiti usando un ordine di ritardo pari alla periodicità dei dati, ma è possibile anche impostare un ordine di ritardo specifico. 
+
+L'opzione <@lit="--robust"> ha effetto solo se viene scelto il test di Breusch–Pagan; l'effetto è quello di usare lo stimatore robusto per la varianza proposto da <@bib="Koenker (1981);koenker81">, rendendo il test meno sensibile all'ipotesi di normalità. 
+
+L'opzione <@lit="--panel"> è disponibile solo se il modello viene stimato su dati panel: in questo caso viene eseguito un test per eteroschedasticità a gruppi (ossia per una varianza dell'errore diversa fra le unità cross section). 
+
+L'opzione <@opt="--⁠comfac"> è disponibile solo quando il modello è stimato usando un metodo AR(1), come quello di Hildreth–Lu. La regressione ausiliaria ha la struttura di un modello dinamico relativamente poco vincolato ed è usata per verificare il vincolo di fattori comuni implicito nella specificazione AR(1). 
+
+Per impostazione predefinita, il programma mostra la regressione ausiliaria su cui si basa la statistica test, ma è possibile evitarlo usando l'opzione <@lit="--quiet">. La statistica test e il suo p-value possono essere recuperati usando le variabili accessorie <@lit="$test"> e <@lit="$pvalue">. 
+
+Nel caso di modelli stimati col metodo dei minimi quadrati a due stadi (si veda <@ref="tsls">), non è possibile usare il test LM, quindi gretl offre alcuni test equivalenti; in questo caso, l'opzione <@lit="--autocorr"> calcola il test di Godfrey per l'autocorrelazione (si veda Godfrey 1994), mentre l'opzione <@lit="--white"> produce il test HET1 per l'eteroschedasticità (si veda Pesaran e Taylor 1999). 
+
+Accesso dal menù: Finestra del modello, /Test
+
+Comando script: <@ref="modtest">
+
+# mpols Estimation "Stima OLS a precisione multipla"
+
+Calcola le stime OLS per il modello indicato usando aritmetica in virgola mobile a precisione multipla. Questo comando è disponibile solo se gretl è compilato con il supporto per la libreria Gnu Multiple Precision (GMP). Per impostazione predefinita, vengono usati 256 bit di precisione nei calcoli, ma è possibile aumentare questo valore usando la variabile d'ambiente <@lit="GRETL_MP_BITS">. Ad esempio, usando l'interprete dei comandi bash, è possibile aumentare la precisione a 1024 bit eseguendo il comando seguente prima di avviare gretl 
+
+<code>          
+   export GRETL_MP_BITS=1024
+</code>
+
+Accesso dal menù: /Modello/Altri modelli lineari/MPOLS - Minimi quadrati in alta precisione
+
+Comando script: <@ref="mpols">
+
+# nadarwat Estimation "Nadaraya-Watson"
+
+Calcola lo stimatore nonparametrico di Nadaraya–Watson per la media condizionale della variabile dipendente, <@itl="m(x)">, per ogni valore valido della variabile <@itl="x">. 
+
+La funzione kernel <@itl="K"> è data da <@itl="K = exp(-x"><@sup="2"><@itl=" / 2h)"> per <@itl="|x| < T"> e zero altrove. 
+
+L'ampiezza di banda, che di solito è un numero piccolo, controlla quanto liscia debba essere la funzione <@itl="m(x)"> (più è alto il valore, più liscia sarà la funzione); il valore di default è <@itl="n"><@sup="-0.2">. 
+
+Se viene spillata la casella "escludine uno", verrà usata una variante dello stimatore in cui la <@itl="i">-esima osservazione non viene usata per calcolare <@itl="m(x"><@sub="i"><@itl=")">. Questo rende lo stimatore Nadaraya–Watson più robusto numericamente e il suo uso è, di norma, consigliabile quando lo stimatore è usato per l'inferenza. 
+
+# negbin Estimation "Negative Binomial regression"
+
+Stima un modello Binomiale Negativo. Il comando assume che la variabile dipendente rappresenti un conteggio del numero di volte in cui si è verificato un certo evento e deve assumere solo valori interi non negativi. Di default, viene usata la distribuzione NegBin 2, in cui la varianza condizionale è data da μ(1 + αμ), dove μ denota la media condizionale. Tuttavia, se vien data l'opzione <@opt="--⁠model1"> allora la varianza condizionale sarà data da μ(1 + α). 
+
+L'argomento opzionale <@lit="offset"> funziona come per il comando <@ref="poisson">. In effetti, il modello di Poisson è un caso particolare del binomiale negativo con α = 0. 
+
+Di default, gli errori standard vengono calcolati unsando un'approssimazione numerica dell'Hessiana sul punto di massimo. Con l'opzione <@opt="--⁠opg"> la matrice di covarianze verrà invece calcolata tramite il prodotto esterno dei gradienti (OPG), o via QML con l'opzione <@opt="--⁠robust"> usando un "sandwich" dell'hessiana inversa e dell'OPG. 
+
+Accesso dal menù: /Model/Nonlinear models/Count data...
+
+Comando script: <@ref="negbin">
+
+# nls Estimation "Minimi quadrati non-lineari"
+
+Esegue una stima con minimi quadrati non-lineari (NLS: Nonlinear Least Squares) usando una versione modificata dell'algoritmo di Levenberg–Marquardt. Occorre fornire una specificazione di funzione e si raccomanda di specificare anche le espressioni per le derivate di questa funzione rispetto a ognuno dei parametri, se possibile. Se non si indicano le derivate, occorre fornire una lista dei parametri da stimare (separati da spazi o virgole), preceduta dalla parola chiave <@lit="params">. 
+
+Esempio: si supponga di avere un dataset con le variabili <@itl="C"> e <@itl="Y"> (ad es. <@lit="greene11_3.gdt">) e di voler stimare una funzione di consumo non-lineare del tipo: 
+
+  <@fig="greene_Cfunc">
+
+I parametri alfa, beta e gamma devono per prima cosa essere aggiunti al dataset, indicando un valore iniziale; è possibile farlo usando il comando genr o attraverso i menù. È possibile inserire i comandi "genr" appropriati nella finestra di dialogo della specificazione NLS prima di specificare la funzione. 
+
+Nella finestra NLS si inseriranno le righe seguenti: 
+
+<code>          
+   C = alfa + beta * Y^gamma
+   deriv alfa = 1
+   deriv beta = Y^gamma
+   deriv gamma = beta * Y^gamma * log(Y)
+</code>
+
+La prima riga indica la specificazione della funzione, mentre le righe successive forniscono le derivate della funzione rispetto ad ognuno dei tre parametri. Se non vengono fornite le righe "deriv", viene calcolata un'approssimazione numerica del Jacobiano. 
+
+Se i parametri alfa, beta e gamma non sono stati dichiarati in precedenza, è possibile premettere alle righe viste sopra le seguenti: 
+
+<code>          
+   genr alpha = 1
+   genr beta = 1
+   genr gamma = 1
+</code>
+
+Per ulteriori dettagli sulla stima NLS si veda la <@pdf="la guida all'uso di gretl">. 
+
+Accesso dal menù: /Modello/Modelli non lineari/NLS - Minimi quadrati non lineari
+
+Comando script: <@ref="nls">
+
+# normtest Tests "Test di normalità"
+
+Conduce un test di normalità per la <@var="serie"> specificata. Il tipo di test eseguito è determinato dalle opzioni del comando (se non ne viene usata alcuna, viene eseguito il test di Doornik–Hansen). Si noti che il test di Jarque–Bera test, sebbene semplice da calcolare, ha un'accuratezza relativamente bassa in campioni limitati, quindi se ne raccomanda l'uso principalmente a scopo di confronto. 
+
+La statistica test e il suo p-value possono essere recuperati usando gli accessori <@lit="$test"> e <@lit="$pvalue">. Se si usa l'opzione <@lit="--all">, i risultati salvati saranno queslli del test di Doornik–Hansen. 
+
+Comando script: <@ref="normtest">
+
+# nulldata Dataset "Creazione di un dataset vuoto"
+
+Crea un dataset "vuoto", che contiene solo una costante e una variabile indice, con periodicità 1 e il numero indicato di osservazioni. Ad esempio, è possibile creare un dataset a scopo di simulazione usando alcuni comandi <@lit="genr"> (come <@lit="genr uniform()"> e <@lit="genr normal()">) per generare dati di prova. Questo comando può essere usato insieme a <@lit="loop">. Si veda anche l'opzione "seed" del comando <@ref="set">. 
+
+Per impostazione predefinita, questo comando cancella tutti i dati presenti nell'ambiente di lavoro di gretl. Usando l'opzione <@lit="--preserve">, verranno mantenute tutte le matrici attualmente definite. 
+
+Accesso dal menù: /File/Nuovo dataset
+
+Comando script: <@ref="nulldata">
+
+# ols Estimation "Minimi quadrati ordinari"
+
+Calcola le stime minimi quadrati ordinari (OLS: Ordinary Least Squares) per il modello specificato. 
+
+Oltre alle stime dei coefficienti e agli errori standard, il programma mostra i p-value per le statistiche <@itl="t"> (a due code) e <@itl="F">. Un p-value inferiore a 0.01 indica significatività al livello dell'1 per cento ed è denotato con <@lit="***">. <@lit="**"> indica invece la significatività tra l'1 e il 5 per cento, mentre <@lit="*"> indica un livello di significatività tra il 5 e il 10 per cento. Vengono mostrate anche le statistiche di selezione del modello (il criterio di informazione di Akaike, AIC, e il criterio di informazione bayesiana di Schwarz, BIC). La formula usata per AIC è descritta in Akaike (1974), ossia meno due volte la log-verosimiglianza massimizzata più il doppio del numero di parametri stimati. 
+
+Accesso dal menù: /Modello/OLS - Minimi quadrati ordinari
+Accesso alternativo: Pulsante Beta-hat sulla barra degli strumenti
+
+Comando script: <@ref="ols">
+
+# omit Tests "Omette variabili"
+
+Questo comando stima di nuovo il modello dato, dopo aver omesso le variabili specificate o dopo aver omesso sequenzialmente le variabili non significative, se è stata selezionata l'apposita casella. Oltre ai consueti risultati della stima del modello, viene fornita una statistica test per la significatività congiunta delle variabili omesse: l'ipotesi nulla è che i coefficienti di tutte le variabili omesse siano pari a zero. 
+
+Se il modello originale è stato stimato con OLS, la statistica test è un valore <@itl="F">, basato sulle somme dei quadrati dei residui del modello vincolato e di quello originale. Per stimatori diversi da OLS, o se si usa l'opzione Wald, la statistica è un valore chi-quadro di Wald asintotico basato sulla matrice di covarianza del modello originale. 
+
+L'eliminazione sequenziale funziona nel modo seguente: ad ogni passo viene omessa la variabile con il p-value più alto, fino a che tutte le variabili restanti hanno un p-value inferiore a una certa soglia. La soglia predefinita è del 10 per cento (con due code), che può essere modificata usando l'apposito pulsante. 
+
+Usando l'opzione Wald, il modello vincolato non viene stimato (quindi il modello attuale non viene rimpiazzato). L'opzione <@lit="--quiet"> sopprime la stampa dei risultati del modello vincolato (se esso viene stimato): viene mostrato solo il risultato del test. Se il modello vincolato viene stimato e ne viene chiesta la stampa, l'opzione <@lit="--vcv"> ha l'effetto di mostrare la matrice di covarianza dei coefficienti del modello vincolato, altrimenti quest'opzione è ignorata. 
+
+Accesso dal menù: Finestra del modello, /Test/OMIT - Ometti variabili
+
+Comando script: <@ref="omit">
+
+# online Dataset "Accesso ai database online"
+
+Gretl può accedere ai database della Wake Forest University (se il proprio computer è connesso a internet). 
+
+Dal menù "File, Database", selezionare "Sul server di gretl": apparirà una finestra che mostra i database disponibili alla Wake Forest (a seconda della località e della velocità della connessione internet, l'operazione può richiedere alcuni secondi). Oltre al nome del database e a una breve descrizione, apparirà un campo "Stato", che mostra se il database è stato installato localmente (sul disco del computer), e, in caso positivo, se la versione installata è aggiornata a quella disponibile sul server. 
+
+Se un database è stato installato localmente ed è aggiornato, non c'è nessun vantaggio nell'accedervi attraverso il server, mentre per un database non installato o non aggiornato, può essere utile scaricare un elenco delle serie di dati, facendo clic su "Scarica l'elenco delle serie". Apparirà una nuova finestra da cui è possibile visualizzare i valori di una serie scelta, vederne il grafico o importarle in gretl. È possibile effettuare queste operazioni usando il menù "Serie", o attraverso il menù pop-up che appare facendo clic col tasto destro su una serie. È anche possibile cercare nell'elenco una variabile in particolare, usando il comando "Trova" del menù. 
+
+Per poter accedere a un database anche offline, basta selezionare la riga del database desiderato nella prima finestra e premere il pulsante "Installa". Il database verrà scaricato in formato compresso, verrà decompresso e installato sul proprio disco fisso, in modo da poter essere caricato usando il menù "File, Database, Gretl". 
+
+# panel Estimation "Modelli panel"
+
+Stima un modello panel, per impostazione predefinita usando lo stimatore a effetti fissi; la stima è implementata sottraendo le medie di gruppo o delle unità dai dati originali. 
+
+Se si seleziona la casella "Effetti casuali", vengono calcolate stime a effetti casuali, usando il metodo di Swamy e Arora. 
+
+Per maggiori dettagli sulla stima panel, si veda la <@pdf="la guida all'uso di gretl">. 
+
+Accesso dal menù: /Modello/Panel
+
+Comando script: <@ref="panel">
+
+# panel-between Estimation "Modello panel tra i gruppi"
+
+Questa finestra di dialogo permette di immettere la specificazione per un modello panel "tra i gruppi", ossia una regressione che usa le medie di gruppo dei dati, ignorando quindi la variazione all'interno dei gruppi. Questo modello di solito non è di grande interesse in sé, ma può essere utile a scopo di confronto, ad esempio rispetto al modello a effetti fissi. 
+
+# panel-mode Dataset "Organizzazione dei dati panel"
+
+Questa finestra di dialogo offre tre opzioni per definire un dataset come panel. Le prime due opzioni richiedono che il dataset sia già organizzato in un formato panel (anche se gretl può non essersi accorto di ciò). La terza opzione richiede che il dataset contenga variabili che rappresentano la struttura panel. 
+
+<@itl="Pila di serie storiche">: date <@var="N "> unità cross section nel dataset e <@var="T"> osservazioni temporali per ogni unità, selezionando questa opzione si indica a gretl che il dataset attuale è composto da <@var="N"> blocchi consecutivi di <@var="T"> osservazioni ciascuno. Il passo successivo consiste nello specificare il valore di <@var="N">. 
+
+<@itl="Pila di dati cross section">: si indica a gretl che il dataset è composto da <@var="T"> blocchi consecutivi di <@var="N"> osservazioni cross section ciascuno, uno per per ogni periodo. Il passo successivo consiste nello specificare il valore di <@var="N">. 
+
+Se il numero di osservazioni del dataset è un numero primo, le due opzioni precedenti non sono disponibili. 
+
+<@itl="Usa variabili indice">: si indica che il dataset è organizzato in modo qualsiasi, ma contiene due variabili che indicizzano le unità cross section e quelle temporali. Il passo successivo consiste nell'indicare queste due variabili. Le variabili indice per i panel possono assumere solo valori interi e non negativi e non devono avere valori mancanti. Se il dataset non contiene variabili di questo tipo, questa opzione non è disponibile. 
+
+# panel-wls Estimation "Minimi quadrati ponderati a gruppi"
+
+Minimi quadrati ponderati a gruppi per dati panel. Calcola le stime WLS con i pesi basati sulle varianze stimate degli errori per le rispettive unità cross section nel campione. 
+
+Selezionando l'opzione di iterazione, la procedura viene iterata: ad ogni passo, i residui vengono ricalcolati usando le stime WLS disponibili per i parametri, fornendo così un nuovo insieme di stime per le varianze degli errori, e quindi un nuovo insieme di pesi. Le iterazioni si arrestano quando la massima differenza nelle stime dei parametri tra un passo e l'altro scende sotto 0.0001, oppure se il numero di iterazioni supera 20. Se la procedura converge, le stime risultanti sono di massima verosimiglianza. 
+
+# pca Statistics "Analisi delle componenti principali"
+
+Analisi delle componenti principali. Mostra gli autovalori della matrice di correlazione (o della matrice di covarianza, se si usa la casella opportuna) per le variabili selezionate, insieme alla proporzione della varianza comune spiegata da ogni componente. Mostra anche i corrispondenti autovettori (o "pesi della componente"). 
+
+Nella finestra che mostra i risultati è possibile salvare le componenti principali come serie nel dataset. 
+
+Accesso dal menù: /Visualizza/Componenti principali
+Accesso alternativo: Pop-up nella finestra principale (selezione multipla)
+
+Comando script: <@ref="pca">
+
+# pergm Statistics "Periodogramma"
+
+Calcola e mostra (graficamente se non si è in modalità batch) lo spettro della variabile specificata. Per impostazione predefinita viene mostrato il periodogramma nel campione, mentre usando l'opzione <@lit="--bartlett">, lo spettro viene stimato usando una finestra di Bartlett per i ritardi (si veda ad esempio <@itl="Econometric Analysis"> di Greene per una discussione su questo argomento). L'ampiezza predefinita della fiestra di Bartlett è pari a due volte la radice quadrata dell'ampiezza campionaria, ma questo valore può essere impostato manualmente usando il parametro <@var="banda">, fino a un massimo pari a metà dell'ampiezza campionaria. Usando l'opzione <@lit="--log">, lo spettro viene rappresentato su una scala logaritmica. 
+
+Quando viene mostrato il periodogramma del campione, vengono mostrati anche due test per l'integrazione frazionale ("memoria lunga") della serie, ossia il test di Geweke e Porter-Hudak (GPH), e lo stimatore locale di Whittle. L'ipotesi nulla in entrambi i casi è che l'ordine di integrazione sia zero. Per impostazione predefinita, l'ordine per questi test è il valore minore tra <@itl="T">/2 e <@itl="T"><@sup="0.6">; anche questo valore può essere modificato con il parametro di banda. 
+
+Accesso dal menù: /Variabile/Spettro
+Accesso alternativo: Menù pop-up nella finestra principale (selezione singola)
+
+Comando script: <@ref="pergm">
+
+# polyweights Transformations "Trend polinomiale"
+
+Quando si usa un trend polinomiale per approssimare una serie storica, si può voler dare più peso alle osservazioni all'inizio e alla fine del campione. (I punti in mezzo hanno dei vicini su ambo il lati che, probabilmente, portano il polinomio nella stessa direzione.) 
+
+Gli schemi di ponderazione offerti qui (quadratico, a coseno e a gradini) possono essere usati allo scopo. Selezionando uno di essi, bisogna poi scegliere il valore per due settaggi aggiuntivi: primo, il massimo peso da usare (il minimo è 1.0). Secondo, la frazione di campione centrale a qui dare un peso uniforme (minimale). 
+
+Supponiamo, ad esempio, di scegliere un peso massimo pari a 3.0 e una frazione centrale di 0.4. Ciò implica che il 40% centrale dei dati riceverà una ponderazione di 1.0. Selezionando la ponderazione a gradini, il primo e l'ultimo 30% delle osservazioni riceve un peso pari a 3.0; altrimenti, il peso per il primo 30% delle osservazioni decresce gradualmente da 3.0 to 1.0, e per l'ultimo 30% delle osservazioni cresce gradualmente da 1.0 to 3.0. 
+
+# poisson Estimation "Stima Poisson"
+
+Stima una regressione di Poisson, in cui la variabile dipendente rappresenta le occorrenze di un qualche tipo di evento e può assumere solo valori interi non negativi. 
+
+Se una variabile casuale discreta <@itl="Y"> segue la distribuzione di Poisson, 
+
+  <@fig="poisson1">
+
+per <@itl="y"> = 0, 1, 2,…. La media e la varianza della distribuzione sono entrambe uguali a <@itl="v">. Nel modello di regressione di Poisson, il parametro <@itl="v"> è rappresentato da una funzione di una o più varabili indipendenti. La versione più comune del modello (e l'unica supportata da gretl) ha 
+
+  <@fig="poisson2">
+
+ossia il logaritmo di <@itl="v"> è una funzione lineare delle variabili indipendenti. 
+
+Opzionalmente è possibile aggiungere una variabile "offset" alla specificazione, ossia una variabile di scala, il cui logaritmo viene aggiunto alla funzione di regressione lineare (con un coefficiente implicito di 1.0). Ciò ha senso se si ipotizza che il numero di occorrenze dell'evento in questione sia proporzionale a qualche fattore noto, a parità di altre condizioni. Ad esempio, il numero di incidenti stradali può essere ipotizzato proporzionale al volume del traffico, che potrebbe essere specificato come una variabile di "offset" in un modello di Poisson per il tasso di incidenti. La variabile di offset dev'essere strettamente positiva. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Poisson
+
+Comando script: <@ref="poisson">
+
+# probit Estimation "Stima probit"
+
+Se la variabile dipendente è binaria (tutti i suoi valori sono 0 o 1), esegue una stima di massima verosimiglianza dei coefficienti delle <@var="variabili-indipendenti"> con il metodo Newton-Raphson. Visto che il modello è nonlineare, gli effetti marginali (pendenze) dipendono dai valori delle variabili indipendenti: per impostazione predefinita, al posto dei p-value vengono mostrate le pendenze rispetto ad ognuna delle variabili indipendenti, calcolate in corrispondenza della media della variabile. Questo comportamento può essere soppresso usando l'opzione <@lit="--p-values">. La statistica chi-quadro testa l'ipotesi nulla che tutti i coefficienti tranne la costante siano pari a zero. 
+
+In modalità predefinita, gli errori standard sono calcolati tramite l'Hessiana. Se si seleziona la casella "Errori standard robusti", verranno calcolati gli errori standard QML (Huber–White). In questo caso, la matrice di covarianza stimata è un "sandwich" dell'inversa dell'Hessiana stimata e del prodotto esterno del gradiente. Per i dettagli, si veda Davidson e MacKinnon 2004, cap. 10. 
+
+Con l'opzione <@opt="--⁠random-effects">, il termine di errore è composto per ipotesi da due componenti gaussiane: una, specifica per l'unità cross-sezionale e invariante nel tempo (nota come "effetto individuale") e l'altra specifica per quella particolare osservazione. 
+
+Il calcolo della log-verosimiglianza per questo modello viene effettuato tramite la quadratura di Gauss-Hermite per approssimare il valore di valori attesi di funzioni di variabili casuali normali. Il numero di punti di quadratura usati si può scegliere tramite l'opzione <@opt="--⁠quadpoints"> (il default è 32). Un numero elevato di questi aumenta l'accuratezza dei risultati, ma al costo di tempi di calcolo più lunghi; in questo caso la stima può richiedere molto tempo con dataset grandi. 
+
+Oltre ai parametri standard (e statistiche associate) relativi alle variabili esplicative, dopo la stima di questo tipo di modello vengono presentati alcuni risultati aggiuntivi: 
+
+<indent>
+• <@lit="lnsigma2">: la stima ML del logaritmo della varianza dell'effetto individuale; 
+</indent>
+
+<indent>
+• <@lit="sigma_u">: la stima dell'errore quadratico medio dell'effetto individuale; 
+</indent>
+
+<indent>
+• <@lit="rho">: la quota stima dell'effetto individuale sulla varianza totale del termine di errore composito (anche nota come correlazione intra-classe). 
+</indent>
+
+Il test LR per l'ipotesi <@lit="rho">=0 consente di stabilire se la specificazione a effetti random è in effetti necessaria. Sotto la nulla, una semplice specificazione probit è del tutto adeguata. 
+
+Se la variabile dipendente non è binaria, ma è discreta, si ottengono stime Probit ordinali. Se la variabile scelta come dipendente non è discreta, viene emesso un messaggio di errore. 
+
+Il probit per l'analisi delle proporzioni non è ancora stato implementato in gretl. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Probit
+
+Comando script: <@ref="probit">
+
+# qlrtest Tests "Test del rapporto di verosimiglianza di Quandt"
+
+Per un modello stimato con OLS su serie storiche, esegue il test del rapporto di verosimiglianza di Quandt (QLR) per un break strutturale in un punto incognito del campione, escludendo il 15% delle osservazioni all'inizio e ella fine del campione. 
+
+Per ogni possibile punto di rottura compreso nel 70% centrale delle osservazioni, viene eseguito un test di Chow (si veda <@ref="chow">). La statistica del test QLR è il massimo dei valori <@itl="F"> di questi test; segue una distribuzione non standard, i cui valori critici sono presi da <@itl="Introduction to Econometrics"> di Stock e Watson (2003). Se la statistica QLR eccede il valore critico per un dato livello di significatività, è possibile inferire che i parametri del modello non sono costanti. Questa statistica può essere usata per riconoscere forme di instabilità diverse da un singolo punto di rottura, ad esempio più punti di rottura o un lento cambiamento dei parametri. 
+
+Accesso dal menù: Finestra del modello, /Test/QLR
+
+Comando script: <@ref="qlrtest">
+
+# qqplot Graphs "Q-Q plot"
+
+Con una sola serie selezionata, mostra un grafico della distribuzione empirica della serie stessa contro i quantili della normale. La serie deve includere almeno 20 valori validi nel campione selezionato al momento. Per impostazione predefinita, i quantili empirici vengono disegnati contro quelli della normale avente media e varianza uguali a quelli campionari della serie, ma sono disponibili due alternative: i dati possono essere standardizzati prima, oppure i quantili empirici possono essere disegnati contro quelli della normale standardizzata. 
+
+Tramite l'opzione <@opt="--⁠output"> si invia il grafico al file desiderato; usare "display" per forzare l'output allo schermo, ad esempio nel contesto di un loop. 
+
+Con due argomenti, <@var="y"> and <@var="x">, mostra un grafico dei quantili empirici di <@var="y"> contro quelli di <@var="x">. I dati non vengono standardizzati. 
+
+Accesso dal menù: /Variabile/Q-Q normale
+Accesso dal menù: /Visualizza/Grafico/Q-Q
+
+Comando script: <@ref="qqplot">
+
+# quantreg Estimation "Regressione quantile"
+
+Regressione quantile. Per impostazione predefinita, gli errori standard sono calcolati con la formula asintotica di Koenker e Bassett (<@itl="Econometrica">, 1978), ma se si attiva la casella "robusto", verrà usata la variante robusta per l'eteroschedasticità di Koenker e Zhao (<@itl="Journal of Nonparametric Statistics">, 1994). 
+
+Se si abilita l'opzione "Calcola intervalli di confidenza", gretl calcolerà gli intervalli di confidenza invece degli errori standard. La casella "robust" mantiene il suo effetto: se non è selezionata, gli intervalli sono calcolati nell'ipotesi di errori IID, altrimenti gretl usa lo stimatore robusto sviluppato da Koenker e Machado (<@itl="Journal of the American Statistical Association">, 1999). Si noti che questi intervalli non sono calcolati semplicemente aggiungendo e sottraendo un certo numero di errori standard: in generale sono asimmetrici rispetto alle stime puntuali dei parametri. 
+
+È possibile indicare un elenco di quantili (il menù a discesa contiene alcune possibilità predefinite), e in tal caso gretl calcolerà stime quantili ed errori standard o intervalli di confidenza per ognuno dei valori specificati. 
+
+Per un approfondimento, si veda la <@pdf="la guida all'uso di gretl">. 
+
+Accesso dal menù: /Modello/Stima robusta/Regressione quantile
+
+Comando script: <@ref="quantreg">
+
+# reprobit Estimation "Random effects probit"
+
+Lo stimatore a effetti random consente di stimare un modello proit binario in dataset di tipo panel. Il termine di errore è composto per ipotesi da due componenti gaussiane: una, specifica per l'unità cross-sezionale e invariante nel tempo (nota come "effetto individuale") e l'altra specifica per quella particolare osservazione. 
+
+Il calcolo della log-verosimiglianza per questo modello viene effettuato tramite la quadratura di Gauss-Hermite per approssimare il valore di valori attesi di funzioni di variabili casuali normali. In questa finestra di dialogo è possibile scegliere il numero di punti di quadratura usati. Un numero elevato di questi aumenta l'accuratezza dei risultati, ma al costo di tempi di calcolo più lunghi; in questo caso la stima può richiedere molto tempo con dataset grandi. 
+
+Oltre ai parametri standard (e statistiche associate) relativi alle variabili esplicative, dopo la stima di questo tipo di modello vengono presentati alcuni risultati aggiuntivi: 
+
+<indent>
+• <@lit="lnsigma2">: la stima ML del logaritmo della varianza dell'effetto individuale; 
+</indent>
+
+<indent>
+• <@lit="sigma_u">: la stima dell'errore quadratico medio dell'effetto individuale; 
+</indent>
+
+<indent>
+• <@lit="rho">: la quota stima dell'effetto individuale sulla varianza totale del termine di errore composito (anche nota come correlazione intra-classe). 
+</indent>
+
+Il test LR per l'ipotesi <@lit="rho">=0 consente di stabilire se la specificazione a effetti random è in effetti necessaria. Sotto la nulla, una semplice specificazione probit è del tutto adeguata. 
+
+In modalità scripting, il modello probit a effetti random si ottiene usando il comando <@lit="probit"> con l'opzione <@opt="--⁠random-effects">. 
+
+# reset Tests "Test RESET di Ramsey"
+
+Va eseguito dopo la stima di un modello via OLS. Esegue il test RESET di Ramsey per la specificazione del modello (non-linearità), aggiungendo alla regressione il quadrato e/o il cubo dei valori stimati (a meno che non siano specificate le opzioni <@lit="--squares-only"> o <@lit="--cubes-only">) e calcolando la statistica <@itl="F"> per l'ipotesi nulla che i coefficienti dei due termini aggiunti siano pari a zero. 
+
+Accesso dal menù: Finestra del modello, /Test/RESET - Ramsey
+
+Comando script: <@ref="reset">
+
+# restrict-model Tests "Vincoli su un modello"
+
+Ognuno dei vincoli da imporre a un modello deve essere espresso sotto forma di equazione con una combinazione lineare dei parametri al primo membro e un valore numerico al secondo. Nel caso della singola equazione, i parametri sono indicati con la sintassi <@lit="b["><@var="i"><@lit="]">, dove <@var="i"> rappresenta la posizione nella lista dei regressori, a partire da uno, oppure <@lit="b["><@var="variabile"><@lit="]">, dove <@var="variabile"> è il nome del regressore in questione. 
+
+I termini <@lit="b"> nell'equazione che rappresenta un vincolo possono essere prefissati con un moltiplicatore numerico usando il carattere <@lit="*"> per indicare la moltiplicazione, ad esempio <@lit="3.5*b[4]">. 
+
+Ecco ad esempio un insieme di vincoli: 
+
+<code>          
+   b[1] = 0
+   b[2] - b[3] = 0
+   b[4] + 2*b[5] = 1
+</code>
+
+# restrict-system Tests "Vincoli su un sistema di equazioni"
+
+Ognuno dei vincoli da imporre a un sistema deve essere espresso sotto forma di equazione con una combinazione lineare dei parametri al primo membro e un valore numerico al secondo. I parametri vengono indicati con la sintassi <@lit="b"> seguita da due numeri tra parentesi quadre. Il primo numero rappresenta la posizione dell'equazione all'interno del sistema, mentre il secondo indica la posizione nella lista dei regressori, entrambi contati a partire da uno. Ad esempio <@lit="b[2,1]"> indica il primo parametro della seconda equazione, mentre <@lit="b[3,2]"> il secondo parametro della terza equazione. 
+
+I termini <@lit="b"> nell'equazione che rappresenta un vincolo possono essere prefissati con un moltiplicatore numerico usando il carattere <@lit="*"> per indicare la moltiplicazione, ad esempio <@lit="3.5*b[1,4]">. 
+
+Ecco ad esempio un insieme di vincoli: 
+
+<code>          
+   b[1,1] = 0
+   b[1,2] - b[2,2] = 0
+   b[3,4] + 2*b[3,5] = 1
+</code>
+
+# restrict-vecm Tests "Vincoli su un VECM"
+
+Questo comando impone restrizioni lineari sulle relazioni di cointegrazione (beta) e/o sui coefficienti di aggiustamento (alfa) in un modello vettoriale a correzione d'errore (VECM). 
+
+Ognuno dei vincoli deve essere espresso sotto forma di equazione, con una combinazione lineare dei parametri al primo membro e un valore numerico al secondo membro. Le restrizioni su beta possono essere non omogenee (valore diverso da zero al secondo membro), ma quelle su alfa devono essere omogenee (valore zero al secondo membro). 
+
+Se il VECM è di rango 1, è possibile esprimere gli elementi di beta nella forma <@lit="b["><@var="i"><@lit="]">, dove <@var="i"> rappresenta la posizione nel vettore di correzione dell'errore, a partire da uno. Ad esempio, <@lit="b[2]"> indica il secondo elemento di beta. Se il rango è maggiore di 1, è possibile esprimere i parametri usando <@lit="b"> seguito da due numeri tra parentesi quadre. Ad esempio <@lit="b[2,1]"> rappresenta il primo elemento nel secondo vettore di cointegrazione. 
+
+Per riferirisi agli elementi di alfa, basta usare <@lit="a"> al posto di <@lit="b">. 
+
+Gli identificatori dei parametri nell'equazione che rappresenta un vincolo possono essere prefissati con un moltiplicatore numerico usando il carattere <@lit="*"> per indicare la moltiplicazione, ad esempio <@lit="3.5*b[4]">. 
+
+Ecco ad esempio un insieme di vincoli su un VECM di rango 1. 
+
+<code>          
+   b[1] + b[2] = 0
+   b[1] + b[3] = 0
+</code>
+
+Si veda anche la <@pdf="la guida all'uso di gretl">. 
+
+# rmplot Graphs "Grafici range-mean"
+
+Grafici Range–mean: questo comando crea un semplice grafico che aiuta a capire se una serie storica <@itl="y">(t) ha varianza costante o no. L'intero campione t=1,...,T viene diviso in piccoli sotto-campioni di dimensione arbitraria <@itl="k">. Il primo sotto-campione è formato da <@itl="y">(1), ... ,<@itl="y">(k), il secondo da <@itl="y">(k+1), ... , <@itl="y">(2k), e così via. Per ogni sotto-campione, vengono calcolati la media e il campo di variazione (range: il valore massimo meno quello minimo) e viene costruito un grafico con le medie sull'asse orizzontale e i campi di variazione su quello verticale, in modo che ogni sotto-campione sia rappresentato da un punto sul piano. Se la varianza della serie è costante, ci si aspetta che il campo di variazione del sotto-campione sia indipendente dalla media del sotto-campione; se i punti si dispongono su una linea crescente, la varianza della serie cresce al crescere della media, viceversa se i punti si dispongono su una linea decrescente. 
+
+Oltre al grafico, gretl mostra anche le medie e i campi di variazione per ogni sotto-campione, insieme al coefficiente di pendenza della regressione OLS del campo di variazione sulla media e il p-value per l'ipotesi nulla che la pendenza sia zero. Se il coefficiente di pendenza è significativo al livello del 10 per cento, viene mostrata sul grafico la linea stimata della regressione del campo di variazione sulla media. 
+
+Accesso dal menù: /Variabile/Grafico range-mean
+
+Comando script: <@ref="rmplot">
+
+# runs Tests "Test delle successioni"
+
+Esegue il test non parametrico "delle successioni" per la casualità della variabile specificata, dove le successioni sono definite come sequenze di valori consecutivi positivi o negativi. Ad esempio, per testare la casualità delle deviazioni dalla mediana per una variabile chiamata <@lit="x1">, con una mediana diversa da zero, eseguire i comandi seguenti: 
+
+<code>          
+   genr signx1 = x1 - median(x1)
+   runs signx1
+</code>
+
+Se si usa l'opzione <@lit="--difference">, la variabile viene differenziata prima dell'analisi, quindi le successioni sono interpretabili come sequenze di incrementi o decrementi consecutivi nel valore della variabile. 
+
+Se si usa l'opzione <@lit="--equal">, l'ipotesi nulla incorpora l'assunzione che i valori positivi e negativi siano equiprobabili, altrimenti la statistica test è invariante rispetto all'"equilibrio" del processo che genera la sequenza, focalizzandosi solo sull'indipendenza. 
+
+Accesso dal menù: /Strumenti/Test non parametrici
+
+Comando script: <@ref="runs">
+
+# sampling Dataset "Impostazione del campione"
+
+Il menù Campione offre vari modi di selezionare un sotto-campione dal dataset in uso. 
+
+Scegliendo "Campione/Imposta in base a dummy...", viene chiesto di scegliere una variabile dummy (indicatrice), che può assumere solo valori 0 o 1 per ogni osservazione. Il campione verrà limitato alle osservazioni per cui la variabile dummy vale 1. 
+
+Scegliendo "Campione/Imposta in base a condizione...", viene chiesto di inserire un'espressione Booleana (logica), dello stesso tipo di quella che si userebbe per definire una variabile dummy. Ad esempio, l'espressione "sqft > 1400" selezionerà solo le osservazioni per cui la variabile sqft ha un valore maggiore di 1400. Le condizioni possono essere concatenate con gli operatori logici "&&" (AND) e "||" (OR) e possono essere negate usando "!" (NOT). 
+
+Il comando "Campione/Scarta valori mancanti" ridefinisce il campione in modo da escludere tutte le osservazioni per cui i valori di una o più variabili sono mancanti (lasciando nel campione solo i casi completi). 
+
+Per selezionare le osservazioni per cui solo una particolare variabile non ha valori mancanti, occorre usare "Campione/Imposta in base a condizione..." e inserire la condizione Booleana "!missing(nome-variabile)" (sostituire "nome-variabile" con il nome della variabile che si intende usare). 
+
+Se sono state associate etichette alle osservazioni, è possibile escludere una particolare osservazione dal campione impostando una condizione del tipo obs!="Francia". L'etichetta dell'osservazione deve essere racchiuso tra virgolette doppie. 
+
+Occore tenere presente che ridefinendo il campione basandosi su una variabile dummy, un'espressione Booleana o sul criterio delle osservazioni mancanti, tutte le informazioni "strutturali" contenute nel file con la descrizione dei dati (riguardanti la struttura di serie storiche o di panel dei dati) vengono perse. È possibile reimpostare la struttura originale con "Campione/Imposta frequenza e inizio...". 
+
+Si veda la <@pdf="la guida all'uso di gretl"> per maggiori dettagli. 
+
+# save-labels Utilities "Save or remove series labels"
+
+Se scegliete Export, gretl scriverà un file contenente le etichette descrittive di tutte le variabili nel dataset corrente dotate di etichetta. Il file sarà in formato testo con una linea per ogni variabile. La linea di una variabile priva di etichetta verrà lasciata vuota. 
+
+Se scegliete Remove, verranno cancellate le etichette descrittive di tutte le variabili dotate di etichetta. Una scelta di questo tipo è appropriata solo se le etichette correnti sono state aggiunte per errore. 
+
+# add-labels Utilities "Add series labels"
+
+Se scegliete Sì, vi apparirà la finestra di dialogo usata per aprire un file di testo contenente le etichette descrittive per le variabili nel dataset corrente. Il file deve contenere un'etichetta per ogni linea; una linea vuota significa nessuna etichetta. Gretl tenterà di leggere un numero di etichette pari a quello delle variabili nel dataset, esclusa la costante. 
+
+# save-script Utilities "Save commands?"
+
+Se scegliete Sì gretl trascriverà su un file una registrazione dei comandi eseguiti nel corso della sessione corrente. La maggior parte dei comandi che scegliete di eseguire usando un "point and click" hanno uno "script" equivalente, ed è questo script che verrà trascritto. Il file così generato può servire come punto di partenza per la stesura di uno script di comandi di gretl. 
+
+Se non vi interessa la possibilità che in uscita venga salvata una registrazione dei comandi, deselezionate la casella nella finestra di dialogo salva comandi. 
+
+# save-session Utilities "Save this gretl session?"
+
+Se scegliete Sì, gretl scriverà un file contenente una"fotografia" della sessione corrente, compresa una copia del dataset corrente e di tutti i modelli, grafici o altri oggetti che avete salvato "come icone". In seguito potete riaprire questo file per ricreare lo stato di gretl al momento in cui è stata abbandonata la sessione (v. il menu "File/Sessioni"). 
+
+Se siete interessati prevalentemente a lavorare con gretl usando script di comandi (un modo di procedere che consigliamo caldamente per svolgere analisi econometriche "serie"), probabilmente non vi interessa salvare la sessione, ma dovete essere sicuri di salvare nello script tutte le modifiche che vi interessa conservare. Potreste anche voler salvare le modifiche effettuate al dataset, a meno che non siano facilmente ricreabili eseguendo uno script. 
+
+Se lavorate con script e non vi interessa la possibilità di salvare la sessione in uscita, deselezionate la casella nella finestra di dialogo salva sessione. 
+
+# scatters Graphs "Grafici multipli per coppie di variabili"
+
+Produce grafici a dispersione della "Variabile asse Y" selezionata rispetto ad ognuna delle "Variabili asse X" selezionate (ma è possibile fare anche viceversa). Questi gruppi di grafici sono utili nell'analisi esplorativa dei dati. È possibile creare fino a sei grafici alla volta, eventuali variabili in sovrappiù saranno ignorate. 
+
+Accesso dal menù: /Visualizza/Grafici multipli
+
+Comando script: <@ref="scatters">
+
+# setinfo Dataset "Modifica degli attributi di una variabile"
+
+In questa finestra di dialogo è possibile: 
+
+* Rinominare una variabile. 
+
+* Aggiungere o modificare una descrizione della variabile, che appare accanto al nome della variabile nella finestra principale di gretl. 
+
+* Aggiungere o modificare il "nome per i grafici" della variabile (se la variabile è una serie e non uno scalare). Questa stringa (lunga al massimo 19 caratteri) viene usata al posto del nome della variabile quando questa compare in un grafico. Così, ad esempio, è possibile associare una stringa più comprensibile come "Tariffe telefoniche" a un nome criptico come "tartel". 
+
+* Impostare (se i dati sono serie storiche) il metodo di compattamento per la variabile, che verrà usato se si decide di ridurre la frequenza del dataset, o se si importa la variabile da un dataset che ha una frequenza maggiore di quella del dataset in uso. 
+
+* Marcare una variabile come discreta (per serie che contengono solo valori discreti). In questo modo, essa viene trattata in modo speciale nei diagrammi di frequenza. 
+
+* Impostare il valore di una variabile (per variabili discrete). 
+
+Accesso dal menù: /Variabile/Modifica attributi
+Accesso alternativo: Menù pop-up nella finestra principale
+
+Comando script: <@ref="setinfo">
+
+# setmiss Dataset "Codice dei valori mancanti"
+
+Imposta un valore numerico che verrà interpretato come "mancante" o "non applicabile", per una particolare serie (sotto il menù Variabile) o globalmente per l'intero dataset (sotto il menù Campione). 
+
+Gretl ha un codice interno per i valori mancanti, che non sempre può coincidere con quello usato dai dati importati. Ad esempio, se una serie usa il valore -1 col significato di "non disponibile", è possibile selezionare "Imposta codice valori mancanti" nel menù Variabile e immettere il valore "-1" (senza le virgolette); gretl interpreterà quindi i valori -1 come osservazioni mancanti. 
+
+Accesso dal menù: /Campione/Imposta codice valori mancanti
+
+Comando script: <@ref="setmiss">
+
+# spearman Statistics "Correlazione di rango di Spearman"
+
+Mostra il coefficiente di correlazione di rango di Spearman per una coppia di variabili. Le variabili non devono essere state ordinate manualmente in precedenza, se ne occupa la funzione. 
+
+L'ordinamento automatico è dal massimo al minimo (ossia il valore massimo nei dati assume il rango 1). Se occorre invertire l'ordinamento, creare una variabile che è il negativo della variabile originale, ad esempio: 
+
+<code>          
+   genr altx = -x
+   spearman altx y
+</code>
+
+Accesso dal menù: /Modello/Stima robusta/SPEARMAN - Correlazione di rango
+
+Comando script: <@ref="spearman">
+
+# store Dataset "Salvataggio dei dati"
+
+Salva l'intero dataset, o un sottoinsieme delle variabili se è stata indicata una <@var="lista-variabili">, nel file indicato con <@var="file-dati">. 
+
+L'impostazione predefinita è di salvare i dati nel formato "interno" di gretl, ma le opzioni del comando permettono di usare formati alternativi. I dati CSV (Comma-Separated Values, dati separati da virgole) possono essere letti dai programmi di foglio elettronico e possono essere modificati con un editor di testi. I formati Octave, R e PcGive sono destinati ad essere usati con i rispettivi programmi. La compressione con gzip può essere utile per grandi dataset. Si veda la <@pdf="la guida all'uso di gretl"> per i dettagli sui vari formati. 
+
+L'opzione <@lit="--omit-obs"> è applicabile solo quando si salvano dati in formato CSV. In modalità predefinita, se i dati sono serie storiche o panel, o se il dataset include marcatori per osservazioni specifiche, il file CSV comprende una prima colonna che identifica le osservazioni (ad esempio per data). Se si usa <@lit="--omit-obs">, questa colonna verrà omessa e verranno salvati solo i dati effettivi. 
+
+Si noti che le variabili scalari non saranno salvate automaticamente: per salvarle occorre includerle esplicitamente nella <@var="lista-variabili">. 
+
+L'opzione di salvataggio in formato database di gretl è indicata se occorre costruire dei grandi dataset di serie, magari con frequenze diverse e diversi intervalli di osservazioni. Al momento questa opzione è disponibile solo per dati annuali, trimestrali o mensili. Salvando su un file che esiste già, il comportamento predefinito è quello di accodare le nuove serie al contenuto del database preesistente. In questo contesto, se una o più delle variabili da salvare hanno lo stesso nome di una delle variabili già presenti nel database si otterrà un messaggio di errore. L'opzione <@lit="--overwrite"> permette invece di sovrascrivere eventuali variabili del dataset che hanno lo stesso nome delle nuove variabili, in modo che queste ultime rimpiazzino le variabili preesistenti. 
+
+Accesso dal menù: /File/Salva dati; /File/Esporta dati
+
+Comando script: <@ref="store">
+
+# system Estimation "Sistemi di equazioni"
+
+In questa finestra, è possibile stimare sistemi di equazioni e scegliere uno stimatore per il sistema. È possibile indicare i seguenti quattro tipi di comandi: 
+
+<indent>
+• <@ref="equation">: specifica un'equazione del sistema. Occorre indicarne almeno due. 
+</indent>
+
+<indent>
+• <@lit="instr">: per i sistemi da stimare con i minimi quadrati a tre stadi, indica la lista degli strumenti (indicati dal nome o dal numero della variabile). In alternativa, è possibile fornire questa informazione nella riga <@lit="equation"> usando la stessa sintassi accettata dal comando <@ref="tsls">. 
+</indent>
+
+<indent>
+• <@lit="endog">: per i sistemi di equazioni simultanee, indica la lista delle variabili endogene. È indicato principalmente per la stima FIML, ma può essere usato anche nella stima minimi quadrati a tre stadi al posto dell'istruzione <@lit="instr">: in questo modo tutte le variabili non identificate come endogene verranno usate come strumenti. 
+</indent>
+
+<indent>
+• <@lit="identity">: per la stima FIML, un'identità che collega due o più variabili del sistema. Questo tipo di istruzione è ignorata se viene usato uno stimatore diverso da FIML. 
+</indent>
+
+Accesso dal menù: /Modello/Equazioni simultanee
+
+Comando script: <@ref="system">
+
+# tobit Estimation "Stima Tobit"
+
+Stima un modello Tobit. Il modello può essere appropriato quando la variabile dipendente è "censurata". Ad esempio, vengono osservati valori positivi o nulli della spesa dei consumatori per beni durevoli, ma non valori negativi; tuttavia le decisioni di spesa possono essere pensate come derivanti da una propensione al consumo, sottostante e non osservata, che può anche essere negativa in alcuni casi. Per i dettagli si veda il capitolo 20 di <@itl="Econometric Analysis"> di Greene. 
+
+Accesso dal menù: /Modello/Modelli non lineari/Tobit
+
+Comando script: <@ref="tobit">
+
+# transpos Dataset "Trasposizione dei dati"
+
+Traspone il dataset attuale, ossia, ogni osservazione (riga) del dataset attuale verrà trattata come una variabile (colonna) e ogni variabile come un'osservazione. Questo comando è utile se sono stati importati da una fonte esterna dati in cui le righe rappresentano variabili e le colonne osservazioni. 
+
+Si veda anche <@ref="dataset">. 
+
+Accesso dal menù: /Dati/Trasponi dati
+
+# tsls Estimation "Stima minimi quadrati a due stadi"
+
+Questo comando richiede la scelta di due liste di variabili; le variabili indipendenti che appaiono nel modello e un elenco di strumenti. Questi ultimi comprendono le variabili esogene e/o altre variabili predeterminate che possono essere usate per derivare valori stimati dei regressori endogeni. Si noti che eventuali regressori esogeni devono essere inclusi in entrambe le liste. 
+
+L'output delle stime TSLS comprende il test di Hausman e, se il modello è sovra-identificato, il test di Sargan per la sovra-identificazione. Nel test di Hausman, l'ipotesi nulla è che le stime OLS siano consistenti, o in altre parole che non sia richiesta la stima per mezzo di variabili strumentali. Un modello di questo tipo è sovra-identificato se ci sono più strumenti di quelli strettamente necessari. Il test di Sargan è basato su una regressione ausiliaria dei residui del modello minimi quadrati a due stadi sull'intera lista degli strumenti. L'ipotesi nulla è che tutti gli strumenti siano validi, cosa di cui si dovrebbe dubitare se la regressione ausiliaria ha un significativo potere esplicativo. Davidson e MacKinnon (2004, capitolo 8) forniscono una buona spiegazione di entrambi i test. 
+
+Il valore R-quadro mostrato i modelli stimati con i minimi quadrati a due stadi è il quadrato della correlazione tra la variabile dipendente e i valori stimati. 
+
+<indent>
+• <@lit="--two-step">: esegue la stima GMM in due passi, invece che in un passo solo. 
+</indent>
+
+<indent>
+• <@lit="--iterate">: itera il GMM fino alla convergenza. 
+</indent>
+
+<indent>
+• <@lit="--weights="><@var="Pesi">: specifica una matrice quadrata di pesi da usare nel calcolo della funzione criterio del GMM. La dimensione di questa matrice deve essere pari al numero di strumenti. L'impostazione predefinita consiste nell'usare una matrice identità di dimensione opportuna. 
+</indent>
+
+Accesso dal menù: /Modello/TSLS - Minimi quadrati a due stadi
+
+Comando script: <@ref="tsls">
+
+# var Estimation "Autoregressione vettoriale"
+
+Questo comando richiede la specificazione dei seguenti elementi: 
+
+<indent>
+• - L'ordine di ritardi, ossia il numero di ritardi di ogni variabile presente nel sistema; 
+</indent>
+
+<indent>
+• - Eventuali termini esogeni (ma si noti che una costante viene inclusa automaticamente, a meno che non si richieda altrimenti; inoltre è possibile includere variabili dummy stagionali con l'apposita casella); e 
+</indent>
+
+<indent>
+• - Una lista di variabili esogene, i cui ritardi saranno inclusi a destra delle equazioni (nota: non includere variabili ritardate in questa lista, verranno aggiunte automaticamente). 
+</indent>
+
+Viene calcolata una regressione separata per ogni variabile del sistema; i risultati comprendono i test F per i vincoli di uguaglianza a zero su tutti i ritardi della variabili e un test F per il ritardo massimo, oltre (opzionalmente) alla scomposizione della varianza della previsione e alle funzioni di impulso-risposta. 
+
+Le decomposizioni della varianza della previsione e le funzioni di impulso-risposta sono basate sulla decomposizione di Cholesky della matrice di covarianza contemporanea, e in questo contesto l'ordine in cui vengono date le variabili stocastiche conta. La prima variabile nella lista viene considerata come la "più esogena" all'interno del periodo. L'orizzonte per le decomposizioni della varianza e le funzioni di impulso-risposta può essere impostato usando il comando <@ref="set">. 
+
+Accesso dal menù: /Modello/Serie storiche/VAR - Autoregressione vettoriale
+
+Comando script: <@ref="var">
+
+# VAR-lagselect Tests "Scelta dell'ordine di ritardi in un VAR"
+
+In questa finestra di dialogo è possibile testare la stima di un VAR per diversi ordini di ritardi; oltre a indicare la specificazione del VAR è possibile selezionare il massimo ordine di ritardi da testare. 
+
+Il risultato consiste in una tabella che mostra i valori dei criteri di informazione di Akaike (AIC), Schwartz (BIC) e Hannan–Quinn (HQC) calcolati per VAR dall'ordine 1 fino all'ordine massimo indicato. 
+
+# VAR-omit Tests "Test per variabili esogene in un VAR"
+
+In questa finestra di dialogo è possibile testare l'omissione da un VAR di un gruppo di variabili esogene. 
+
+Viene calcolato un test del rapporto di verosimiglianza sotto l'ipotesi nulla che i coefficienti delle variabili indicate valgano zero in tutte le equazioni del VAR. Il test si basa sulla differenza tra il log-determinante della matrice di varianza per il modello non vincolato e per il modello con il vincolo che i coefficienti delle variabili indicate valgano zero. 
+
+# vartest Tests "Differenza delle varianze"
+
+Calcola la statistica <@itl="F"> per l'ipotesi nulla che le varianze della popolazione per le variabili selezionate siano uguali e mostra il p-value. 
+
+Accesso dal menù: /Modello/Modelli bivariati/Differenza delle varianze
+
+Comando script: <@ref="vartest">
+
+# vecm Estimation "Modello vettoriale a correzione d'errore"
+
+Un VECM è un tipo di autoregressione vettoriale, o VAR (si veda <@ref="var">), applicabile quando le variabili del modello sono individualmente integrate di ordine 1 (ossia, sono "random walk" con o senza deriva), ma esibiscono cointegrazione. Questo comando è strettamente connesso al test di Johansen per la cointegrazione (si veda <@ref="coint2">). 
+
+L'ordine di ritardo selezionato nella finestra di dialogo del VECM è quello del sistema VAR. Per ottenere il numero di ritardi nel VECM (dove la variabile dipendente è data da una differenza prima) occorre sottrarre uno da questo numero. 
+
+Il "rango di cointegrazione" rappresenta il numero di vettori di cointegrazione. Questo deve essere maggiore di zero e minore o uguale (in genere minore) al numero di variabili endogene selezionate. 
+
+Nel riquadro "Variabili endogene", è possibile selezionare il vettore delle variabili endogene, in livelli. L'inclusione di trend deterministici nel modello è controllata dai pulsanti opzionali. Se non si seleziona alcuna opzione, viene inclusa una "costante non vincolata", che permette la presenza di un'intercetta diversa da zero nelle relazioni di cointegrazione e di un trend nei livelli delle variabili endogene. Nella letteratura originata dal lavoro di Johansen (si veda ad esempio il suo libro del 1995), si fa riferimento a questo come al "caso 3". Le altre quattro opzioni producono rispettivamente i casi 1, 2, 4 e 5. Il significato di questi casi e i criteri per scegliere tra di essi sono spiegati nella <@pdf="la guida all'uso di gretl">. 
+
+Nel riquadro "Variabili esogene" è possibile aggiungere specifiche variabili esogene. Per impostazione predefinita, le variabili vengono aggiunte al modello in forma non vincolata (indicata da una lettera <@lit="N"> vicino al nome della variabile). Se si vuole che una certa variabile esogena sia vincolata allo spazio di cointegrazione, basta fare clic col tasto destro e selezionare "Vincolata" dal menu pop-up. Il simbolo vicino alla variabile diventerà una V. 
+
+Se i dati sono trimestrali o mensili, è presente anche una casella che permette di includere un gruppo di variabili dummy stagionali centrate. In tutti i casi, la casella "Mostra dettagli" permette di vedere il risultato delle regressioni ausiliarie che sono il punto di partenza per la procedura di stima di massima verosimiglianza di Johansen. 
+
+Accesso dal menù: /Modello/Serie storiche/VECM
+
+Comando script: <@ref="vecm">
+
+# wls Estimation "Minimi quadrati ponderati"
+
+Se <@var="variabile-pesi"> è una variabile dummy, la stima WLS equivale a eliminare tutte le osservazioni per cui essa vale zero. 
+
+Detta "variabile-pesi" la variabile scelta nel campo "Variabile pesi", viene stimata una regressione OLS in cui la variabile dipendente è il prodotto della variabile dipendente selezionata e della radice quadrata della variabile-pesi, e anche le variabili indipendenti sono moltiplicate per la radice quadrata della variabile-pesi. Le statistiche della regressione, come l'<@itl="R">-quadro sono basate sui dati ponderati. Se la variabile-pesi è una variabile dummy, ciò equivale a eliminare tutte le osservazioni per cui essa vale zero. 
+
+Accesso dal menù: /Modello/Altri modelli lineari/WLS - Minimi quadrati ponderati
+
+Comando script: <@ref="wls">
+
+# working-dir Utilities "Directory di lavoro"
+
+La "directory di lavoro" è quella usata da gretl in modo predefinito nelle operazioni di letura o scrittura di file di dati o comandi, usando i comandi Apri e Salva. 
+
+Inoltre, la directory di lavoro è usata anche per: 
+
+<indent>
+• leggere i file attraverso i comandi testuali <@lit="append">, <@lit="open">, <@lit="run"> e <@lit="include">; 
+</indent>
+
+<indent>
+• scrivere i file attraverso i comandi <@lit="eqnprint">, <@lit="tabprint">, <@lit="gnuplot">, <@lit="outfile"> e <@lit="store">. 
+</indent>
+
+Se si è abituati ad avviare gretl da un terminale testuale invece che da un menù o icona, può essere utile l'opzione che permette di usare la directory attuale (determinata dalla shell) al momento dell'avvio del programma. 
+
+Accesso dal menù: /File/Directory di lavoro
+
+# x12a Utilities "X-12-ARIMA"
+
+Qui ci sono duo opzioni procedurali, controllate dal set inferiore di bottoni radio. 
+
+Selezionando "Esegui X-12-ARIMA direttamente" gretl scriverà un file di comandi per X-12-ARIMA e chiamerà il programmma x12aper eseguirli. In questo caso, è possibile produrre un grafico e/o salvare le serie di output nel dataset di gretl. 
+
+Selezionando invece "Scrivi file di comandi X-12-ARIMA" gretl scriverà un file di comandi per X-12-ARIMA, come sopra, ma poi questo file verrà aperto in una finestra di editor, così da poter apportare modifiche e salvarlo col nome voluto. Sarà anche possibile mandarlo in esecuzione con x12a (cliccando il bottone "Run" sulla barra degli strumenti dell'editor) e visualizzarne l'output. In questo caso, tuttavia, non c'è possibilità di salvare i dati prodotti o di di produrre grafici. 
+
+# xcorrgm Statistics "Correlogramma incrociato"
+
+Mostra il correlogramma incrociato per le variabili <@var="var1"> e <@var="var2">, che possono essere specificate per nome o per numero. I valori sono i coefficienti di correlazione campionari tra il valore presente di <@var="var1"> e i valori ritardati e anticipati di <@var="var2">. 
+
+Se si indica un valore <@var="maxlag">, la lunghezza del correlogramma è limitata al numero di ritardi e anticipi indicati, altrimenti è determinata automaticamente in funzione della frequenza dei dati e del numero di osservazioni. 
+
+Accesso dal menù: /Visualizza/Correlogramma
+Accesso alternativo: Menù pop-up nella finestra principale (selezione multipla)
+
+Comando script: <@ref="xcorrgm">
+
+# xtab Statistics "Tabulazione incrociata"
+
+Mostra la tabella di contingenza, o la tabulazione incrociata, tra ogni combinazione delle variabili selezionate. Si noti che tutte le variabili devono essere discrete. 
+
+Per impostazione predefinita le celle indicano la frequenza assoluta, ma è possibile scegliere di avere le percentuali relative alle righe o alle colonne. 
+
+Inoltre, le celle con un valore di frequenza nullo sono lasciate vuote, ma è possibile scegliere di avere i valori pari a zero esplicitamente. 
+
+Il test chi quadro di Pearson per l'indipendenza viene mostrato se la frequenza attesa nell'ipotesi di indipendenza è pari almeno a 1.0e-7 per tutte le celle. Una regola approssimativa usata spesso nel giudicare la validità di questa statistica richiede che la frequenza attesa sia superiore a 5 per almeno l'80 per cento delle celle; se questa condizione non viene soddisfatta viene mostrato un messaggio di avvertimento. 
+
+Se la tabella di contingenza è 2 x 2, viene calcolato il test esatto di Fisher per l'indipendenza. Si noti che questo test si basa sull'ipotesi che i totali per riga e colonna siano fissi; questo può essere appropriato o meno a seconda di come sono stati generati i dati. Il p-value sinistro va usato nel caso in cui l'ipotesi alternativa a quella di indipendenza sia quella dell'associazione negativa (ossia i valori tendono ad accumularsi nelle celle che non appartengono alla diagonale della tabella), mentre il p-value destro va usato nell'ipotesi alternativa di associazione positiva. Il p-value a due code di questo test è calcolato seguendo il metodo (b) descritto in Agresti (1992, capitolo 2.1): esso è la somma delle probabilità di tutte le possibili tabelle che hanno i totali per riga e per colonna pari a quelli della tabella data e che hanno una probabilità minore o uguale a quella della tabella data. 
+
+Comando script: <@ref="xtab">

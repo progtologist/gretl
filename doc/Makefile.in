@@ -1,0 +1,19 @@
+# Note: three transation subdirs are present: tex_es, tex_it
+# and tex_pt. These can be added to SUBDIRS if wanted.
+
+SUBDIRS = tex
+
+.PHONY : subdirs $(SUBDIRS) clean install 
+
+subdirs: $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+clean:
+	for d in $(SUBDIRS) ; do \
+	$(MAKE) -C $$d clean ; done
+
+install: 
+	for d in $(SUBDIRS) ; do \
+	$(MAKE) -C $$d install ; done

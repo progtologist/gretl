@@ -1,0 +1,330 @@
+\chapter{User-written functions}
+\label{chap:user-funcs}
+
+Hansl natively provides a reasonably wide array of pre-defined
+functions for manipulating variables of all kinds; the previous
+chapters contain several examples. However, it is also possible to
+extend hansl's native capabilities by defining additional
+functions.
+
+Here's what a user-defined function looks like:
+\begin{flushleft}
+\texttt{function \emph{type} \emph{funcname}(\emph{parameters})}\\
+   \quad \ldots\\
+   \quad \texttt{\emph{function body}}\\
+   \quad \ldots \\
+\texttt{end function}
+\end{flushleft}
+
+The opening line of a function definition contains these elements, in
+strict order:
+
+\begin{enumerate}
+\item The keyword \texttt{function}.
+\item \texttt{\emph{type}}, which states the type of value returned by
+  the function, if any.  This must be one of \texttt{void} (if the
+  function does not return anything), \texttt{scalar},
+  \texttt{series}, \texttt{matrix}, \texttt{list}, \texttt{string} or
+  \texttt{bundle}.
+\item \texttt{\emph{funcname}}, the unique identifier for the
+  function.  Function names have a maximum length of 31 characters;
+  they must start with a letter and can contain only letters, numerals
+  and the underscore character. They cannot coincide with the names of
+  native commands or functions.
+\item The function's \texttt{\emph{parameters}}, in the form of a
+  comma-separated list enclosed in parentheses.\footnote{If you have
+    to pass many parameters, you might want to consider wrapping them
+    into a bundle to avoid syntax cluttering.} Note: parameters are
+  the only way hansl function can receive anything from ``the
+  outside''. In hansl there are no global variables.
+\end{enumerate}
+
+Function parameters can be of any of the types shown below.
+
+\begin{center}
+\begin{tabular}{ll}
+  \multicolumn{1}{c}{Type} & 
+  \multicolumn{1}{c}{Description} \\ [4pt]
+  \texttt{bool}   & scalar variable acting as a Boolean switch \\
+  \texttt{int}    & scalar variable acting as an integer  \\
+  \texttt{scalar} & scalar variable \\
+  \texttt{series} & data series (see section~\ref{sec:series})\\
+  \texttt{list}   & named list of series  (see section~\ref{sec:lists})\\
+  \texttt{matrix} & matrix or vector \\
+  \texttt{string} & string variable or string literal \\
+  \texttt{bundle} & all-purpose container
+\end{tabular}
+\end{center}
+
+Each element in parameter list must include two terms: a type
+specifier, and the name by which the parameter shall be known within
+the function.
+
+The \emph{function body} contains (almost) arbitrary hansl code, which
+should compute the \emph{return value}, that is the value the function
+is supposed to yield. Any variable declared inside the function is
+\emph{local}, so it will cease to exist when the function ends.
+
+The \cmd{return} command is used to stop execution of the code inside
+the function and deliver its result to the calling code. This
+typically happens at the end of the function body, but doesn't have
+to. The function definition must end with the expression
+\verb|end function|, on a line of its own.
+
+\tip{Beware: unlike some other languages (e.g.\ Matlab or GAUSS), you
+  cannot directly return multiple outputs from a function. However,
+  you can return a bundle and stuff it with as many objects as you
+  want.}
+
+In order to get a feel for how functions work in practice, here's a
+simple example:
+\begin{code}
+function scalar quasi_log(scalar x)
+   /* popular approximation to the natural logarithm
+     via Padé polynomials 
+   */
+   if (x<0)
+      scalar ret = NA
+   else 
+      scalar ret = 2*(x-1)/(x+1)
+   endif
+   return ret
+end function
+
+loop for (x=0.5; x<2; x+=0.1)
+   printf "x = %4.2f; ln(x) = %g, approx = %g\n", x, ln(x), quasi_log(x)
+endloop
+\end{code}
+
+The code above computes the rational function
+\[
+  f(x) = 2 \cdot \frac{x-1}{x+1} ,
+\]
+which provides a decent approximation to the natural logarithm in the
+neighborhood of 1. Some comments on the code:
+
+\begin{enumerate}
+\item Since the function is meant to return a scalar, we put the
+  keyword \texttt{scalar} after the intial \cmd{function}.
+\item In this case the parameter list has only one element: it is
+  named \texttt{x} and is specified to be a scalar.
+\item On the next line the function definition begins; the body
+  includes a comment and an \cmd{if} block.
+\item The function ends by returning the computed value, \texttt{ret}.
+\item The following lines give a simple example of usage. Note that in
+  the \cmd{printf} command, the two functions \cmd{ln()} and
+  \cmd{quasi\_log()} are indistinguishable from a purely syntactic
+  viewpoint, although the former is native and the latter is
+  user-defined.
+\end{enumerate}
+
+In ambitious uses of hansl you may end up writing several functions,
+some of which may be quite long. In order to avoid cluttering your
+script with function definitions, hansl provides the \cmd{include}
+command: you can put your function definitions in a separate file (or
+set of files) and read them in as needed.  For example, suppose you
+saved the definition of \verb|quasi_log()| in a separate file called
+\verb|quasilog_def.inp|: the code above could then be written more
+compactly as
+\begin{code}
+include quasilog_def.inp
+
+loop for (x=0.5; x<2; x+=0.1)
+   printf "x = %4.2f; ln(x) = %g, approx = %g\n", x, ln(x), quasi_log(x)
+endloop
+\end{code}
+Moreover, \cmd{include} commands can be nested.
+
+
+\section{Parameter passing and return values}
+\label{sec:params-returns}
+
+In hansl, parameters are passed \emph{by value}, so what is used
+inside the function is a copy of the original argument. You may modify
+it, but you'll be just modifying the copy. The following example
+should make this point clear:
+\begin{code}
+function void f(scalar x)
+    x = x*2
+    print x
+end function
+
+scalar x = 3
+f(x)
+print x
+\end{code}
+Running the above code yields
+\begin{code}
+              x =  6.0000000
+              x =  3.0000000
+\end{code}
+The first \cmd{print} statement is executed inside the function, and
+the displayed value is 6 because the input \verb|x| is doubled;
+however, what really gets doubled is simply a \emph{copy} of the
+original \texttt{x}: this is demonstrated by the second \cmd{print}
+statement.  If you want a function to modify its arguments, you must
+use pointers.
+
+\subsection{Pointers}
+
+Each of the type-specifiers, with the exception of \texttt{list} and
+\texttt{string}, may be modified by prepending an asterisk to the
+associated parameter name, as in
+%    
+\begin{code}
+function scalar myfunc (matrix *y)
+\end{code}
+This indicates that the required argument is not a plain matrix but
+rather a \emph{pointer-to-matrix}, or in other words the memory
+address at which the variable is stored.
+
+This can seem a bit mysterious to people unfamiliar with the C
+programming language, so allow us to explain how pointers work by
+analogy. Suppose you set up a barber shop. Ideally, your customers
+would walk into your shop, sit on a chair and have their hair trimmed
+or their beard shaved. However, local regulations forbid you to modify
+anything coming in through your shop door. Of course, you wouldn't do
+much business if people must leave your shop with their hair
+untouched. Nevertheless, you have a simple way to get around this
+limitation: your customers can come to your shop, tell you their home
+address and walk out. Then, nobody stops you from going to their place
+and exercising your fine profession. You're OK with the law, because
+no modification of anything took place inside your shop.
+
+While our imaginary restriction on the barber seems arbitrary, the
+analogous restriction in a programming context is not: it prevents
+functions from having unpredictable side effects. (You might be upset
+if it turned out that your person was modified after visiting the
+grocery store!)
+
+In hansl (unlike C) you don't have to take any special care within the
+function to distinguish the variable from its address,\footnote{In C,
+  this would be called \emph{dereferencing} the pointer. The
+  distinction is not required in hansl because there is no equivalent
+  to operating on the supplied address itself, as in C.} you just use
+the variable's name.  In order to supply the address of a variable
+when you invoke the function, you use the ampersand (\verb|&|)
+operator.
+
+An example should make things clearer. The following code
+\begin{code}
+function void swap(scalar *a, scalar *b)
+    scalar tmp = a
+    a = b
+    b = tmp
+end function
+
+scalar x = 0
+scalar y = 1000000
+swap(&x, &y)
+print x y
+\end{code}
+gives the output
+\begin{code}
+              x =  1000000.0
+              y =  0.0000000
+\end{code}
+So \texttt{x} and \texttt{y} have in fact been swapped. How?
+
+First you have the function definition, in which the arguments are
+pointers to scalars. Inside the function body, the distinction is
+moot, as \verb|a| is taken to mean ``the scalar that you'll find at
+the address given by the first argument'' (and likewise for
+\verb|b|). The rest of the function simply swaps \texttt{a} and
+\texttt{b} by means of a local temporary variable.
+
+Outside the function, we first initialize the two scalars \texttt{x}
+to 0 and \texttt{y} to a big number. When the function is called, it
+is given as arguments \verb|&a| and \verb|&b|, which hansl identifies
+as ``the address of'' the two scalars \texttt{a} and \texttt{b},
+respectively.
+
+Writing a function with pointer arguments has two main consequences:
+first, as we just saw, it makes it possible to modify the function
+arguments. Second, it avoids the computational cost of having to
+allocate memory for a copy of the arguments and performing the copy
+operation; such cost is proportional to the size of the argument.
+Hence, for matrix arguments, this is a nice way to write faster
+functions, as producing a copy of a large matrix can be quite
+time-consuming.\footnote{However, the \cmd{const} qualifier achieves
+  the same effect. See \GUG\ for further details.}
+
+\subsection{Advanced parameter passing and optional arguments}
+
+The parameters to a hansl function can be also specified in more
+sophisticated ways than outlined above. There are three additional
+features worth mentioning:
+\begin{enumerate}
+\item A descriptive string can be attached to each parameter for GUI usage.
+\item For some parameter types, there is a special syntax construct
+  for ensuring that its value is bounded; for example, you can
+  stipulate a scalar argument to be positive, or constrained within a
+  pre-specified range.
+\item Some of the arguments can be made optional.
+\end{enumerate}
+
+A thorough discussion is too long to fit in this document, and the
+interested reader should refer to the ``User-defined functions''
+chapter of the \GUG. Here we'll just show you a simple, and hopefully
+self-explanatory, example which combines features 2 and 3. Suppose
+you have a function for producing smileys, defined as
+\begin{code}
+function void smileys(int times[0::1], bool frown[0])
+    if frown
+        string s = ":-("
+    else
+        string s = ":-)"
+    endif
+    
+    loop times --quiet
+        printf "%s ", s
+    endloop
+    
+    printf "\n"
+end function
+\end{code}
+
+Then, running
+\begin{code}
+smileys()
+smileys(2, 1)
+smileys(4)
+\end{code}
+
+produces
+
+\begin{code}
+:-) 
+:-( :-( 
+:-) :-) :-) :-) 
+\end{code}
+
+\section{Recursion}
+
+Hansl functions can be recursive; what follows is the obligatory
+factorial example:
+\begin{code}
+function scalar factorial(scalar n)
+    if (n<0) || (n>floor(n))
+        # filter out everything that isn't a 
+        # non-negative integer
+        return NA
+    elif n==0
+        return 1
+    else
+        return n * factorial(n-1)
+    endif
+end function
+
+loop i=0..6 --quiet
+    printf "%d! = %d\n", i, factorial(i)
+endloop
+\end{code}
+
+Note: this is fun, but in practice, you'll be much better off using
+the pre-cooked gamma function (or, better still, its logarithm).
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "hansl-primer"
+%%% End: 

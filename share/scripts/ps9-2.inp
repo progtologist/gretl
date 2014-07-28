@@ -1,0 +1,6 @@
+# PS9.2, for Example 9.3
+open data4-7
+ols chd 0 cig edfat spirits beer
+genr time
+genr ut=$uhat
+textplot ut time

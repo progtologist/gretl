@@ -1,0 +1,166 @@
+set echo off
+set messages off
+
+# ------------------------------------------------------
+# This script exemplifies the advanced use of mle, with
+# analytical first and second derivatives plus the choice 
+# of the numerical optimization algorithm
+# ------------------------------------------------------
+
+# ----- functions --------------------------------------
+
+function matrix score(matrix b, series y, list X)
+    /* computes the score by observation for a Probit
+       model, which is returned as a (T x k) matrix */
+    series ndx = lincomb(X, b)
+    series m = y ? invmills(-ndx) : -invmills(ndx)
+    return {m} .* {X}
+end function
+    
+function void Hess(matrix *H, matrix b, series y, list X) 
+    /* computes the negative Hessian for a Probit
+    model, which is stored as a (k x k) matrix pointed 
+    by the first argument of the function */
+    series ndx = lincomb(X, b)
+    series m = y ? invmills(-ndx) : -invmills(ndx)
+    series w = m*(m+ndx)
+    matrix mX = {X}    
+    H = (mX .* {w})'mX
+end function
+
+function void OPG(matrix *H, matrix b, series y, list X) 
+    /* computes the Outer Product of the Gradient for a
+    Probit model via the analytical score function; the 
+    OPG matrix is stored in the (k x k) matrix pointed at 
+    by the first argument of the function */
+    matrix G = score(b, y, X)    
+    H = G'G
+end function
+
+function matrix totalscore(matrix *b, series y, list X) 
+    /* computes the total score; this function is not 
+    needed in the actual optimization, it is just used 
+    by the "check" function (see below) */
+    return sumc(score(b, y, X))
+end function
+
+function void check(matrix b, series y, list X)
+    /* compares the analytical Hessian to its numerical
+    approximation obtained via fdjac */
+    matrix aH
+    Hess(&aH, b, y, X) # stores the analytical Hessian into aH
+    
+    matrix nH = fdjac(b, "totalscore(&b, y, X)")
+    nH = 0.5*(nH + nH') # force symmetry
+    
+    printf "Numerical Hessian\n%16.6f\n", nH 
+    printf "Analytical Hessian (negative)\n%16.6f\n", aH 
+    printf "Check (should be zero)\n%16.6f\n", nH + aH
+end function
+
+# ----- main ----------------------------------------------
+
+nulldata 10000
+set optimizer bfgs
+
+# generate artificial data
+series x1 = normal()
+series x2 = normal()
+series x3 = normal()
+list X = const x1 x2 x3
+
+series ystar = x1 + x2 + x3 + normal()
+series y = (ystar > 0)
+
+matrix b = zeros(nelem(X),1) # initialize b at 0
+check(b, y, X)               # check Hessian at 0
+
+# BFGS - numerical
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    params b
+end mle --verbose 
+tbnum = $stopwatch
+
+check(b, y, X) # check Hessian at maximum
+
+# BFGS - numerical (Richardson)
+set bfgs_richardson on
+matrix b = zeros(nelem(X),1)
+
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    params b
+end mle --verbose 
+tric = $stopwatch
+set bfgs_richardson off
+
+# BFGS - analytical
+matrix b = zeros(nelem(X),1)
+
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    deriv b = score(b, y, X)
+end mle --verbose 
+tban = $stopwatch
+
+# Newton-Raphson - numerical
+set optimizer newton
+
+matrix b = zeros(nelem(X),1)
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    params b
+end mle --verbose 
+tnrn = $stopwatch
+
+# Newton-Raphson - analytical gradient
+matrix b = zeros(nelem(X),1)
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    deriv b = score(b, y, X)
+end mle --verbose
+tnra1 = $stopwatch
+
+# Newton-Raphson - analytical Hessian
+matrix H = {}
+matrix b = zeros(nelem(X),1)
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    deriv b = score(b, y, X)
+    hessian Hess(&H, b, y, X)
+end mle --verbose
+tnra2 = $stopwatch
+
+# BHHH by using OPG instead of real Hessian
+matrix H = {}
+matrix b = zeros(nelem(X),1)
+set stopwatch
+mle logl = y*ln(P) + (1-y)*ln(1-P)
+    series ndx = lincomb(X, b)
+    series P = cnorm(ndx)
+    deriv b = score(b, y, X)
+    hessian OPG(&H, b, y, X)
+end mle --verbose
+tbhhh = $stopwatch
+
+printf "BFGS (numerical):             %5.3f seconds\n", tbnum
+printf "BFGS (Richardson):            %5.3f seconds\n", tric
+printf "BFGS (analytical gradient):   %5.3f seconds\n", tban
+printf "Newton (numerical):           %5.3f seconds\n", tnrn
+printf "Newton (analytical gradient): %5.3f seconds\n", tnra1
+printf "Newton (analytical Hessian):  %5.3f seconds\n", tnra2
+printf "BHHH:                         %5.3f seconds\n", tbhhh
+

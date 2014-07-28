@@ -1,0 +1,172 @@
+/* Configuration header file.
+   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+
+This file is part of gretl.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/* for NLS use */
+#define PACKAGE gretl
+
+/* Native language support? */
+#undef ENABLE_NLS
+
+/* Location of shared gretl files */
+#define GRETL_PREFIX "/usr/local"
+
+/* Building a relocatable package (Windows, OS X)? */
+#undef PKGBUILD
+
+/* Using libcurl for http? */
+#undef USE_CURL
+
+/* Extra floating-point GMP routines? */
+#undef HAVE_MPFR
+
+/* Are we using openmp? */
+#undef OPENMP_BUILD
+
+/* Are we supporting MPI? */
+#undef HAVE_MPI
+
+/* X-12-ARIMA support? */
+#undef HAVE_X12A
+
+/* TRAMO/SEATS support? */
+#undef HAVE_TRAMO
+
+/* Define if you want GNU readline support */
+#undef HAVE_READLINE
+
+/* Define for GNU readline version >= 4.2 */
+#undef NEW_READLINE
+
+/* Define if zlib is available */
+#undef HAVE_ZLIB
+
+/* Define if using libgsf (>= 1.14.31) for zip/unzip */
+#undef USE_GSF
+
+/* Is LaTeX available? */
+#undef HAVE_LATEX
+
+/* using gtk+ 3 */
+#undef USE_GTK3
+
+/* Using gtksourceview-2.0? */
+#undef USE_GTKSOURCEVIEW_2
+
+/* Using gtksourceview-3.0? */
+#undef USE_GTKSOURCEVIEW_3
+
+/* Does unistd.h have getdomainname? */
+#undef GETDOMAINNAME
+
+/* Do we have stdint.h */
+#undef HAVE_STDINT_H
+
+/* Do we have unistd.h */
+#undef HAVE_UNISTD_H
+
+/* Do we have dirent.h */
+#undef HAVE_DIRENT_H
+
+/* Do we have fnmatch.h */
+#undef HAVE_FNMATCH_H
+
+/* Do we have sys/wait.h */
+#undef HAVE_SYS_WAIT_H
+
+/* Do we have sys/times.h */
+#undef HAVE_SYS_TIMES_H
+
+/* Do we have byteswap.h */
+#undef HAVE_BYTESWAP_H
+
+/* Do we have libproc.h */
+#undef HAVE_LIBPROC_H
+
+/* Do we have sys/proc_info.h */
+#undef HAVE_SYS_PROC_INFO_H
+
+/* Do we have mmap */
+#undef HAVE_MMAP
+
+/* Do we have vasprintf */
+#undef HAVE_VASPRINTF
+
+/* Do we have posix_memalign */
+#undef HAVE_POSIX_MEMALIGN
+
+/* Do we have the stuff needed for SMTP? */
+#undef HAVE_SYS_SOCKET_H
+#undef HAVE_NETDB_H
+#undef ENABLE_MAILER
+#undef HAVE_SOCKADDR_IN
+#undef HAVE_IN_ADDR
+
+/* Define if the 'long double' type works.  */
+#undef HAVE_LONG_DOUBLE
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+/* The number of bytes in a int.  */
+#undef SIZEOF_INT
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define to use SSE2 instrinsics. */
+#undef USE_SSE2
+
+/* Define to use AVX instrinsics. */
+#undef USE_AVX
+
+/* Do we have immintrin.h? */
+#undef HAVE_IMMINTRIN_H
+
+/* Enable audio graphs */
+#undef HAVE_AUDIO
+
+/* Use flite for speech synthesis */
+#undef HAVE_FLITE
+
+/* Have Jacobi SVD in Lapack 3.2 or higher */
+#undef HAVE_LAPACK_3_2
+
+/* Use the GNU R shared library */
+#undef USE_RLIB
+
+/* Location of R shared library */
+#undef RLIBPATH
+
+/* Building for Mac OS X? */
+#undef OS_OSX
+
+/* On Mac, using quartz GTK? */
+#undef MAC_NATIVE
+
+#endif /* CONFIG_H */

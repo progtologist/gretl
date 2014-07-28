@@ -1,0 +1,34 @@
+topsrc = @top_srcdir@
+
+CC = @CC@
+HOSTCC = @HOSTCC@
+INSTALL_DATA = cp -fp
+swap_ends = @swap_ends@
+
+ifeq ($(HOSTCC),)
+  HOSTCC = $(CC)
+endif
+
+ifeq ($(swap_ends),yes)
+  mkbin_opt = --swap-ends
+endif
+
+prefix = @prefix@
+gretldir = $(prefix)/share/gretl
+VPATH = $(topsrc)/share/bcih
+
+fedstl.bin: mkbin fedstl.dat
+	./mkbin $(topsrc)/share/bcih $(mkbin_opt)
+
+mkbin: mkbin.c
+	$(HOSTCC) -o $@ $<
+
+install: fedstl.bin
+	$(INSTALL_DATA) fedstl.bin $(DESTDIR)$(gretldir)/db/fedstl.bin
+	$(INSTALL_DATA) $(topsrc)/share/bcih/fedstl.idx $(DESTDIR)$(gretldir)/db/fedstl.idx
+
+clean:
+	rm -f mkbin fedstl.bin
+
+distclean: clean
+	rm -f Makefile

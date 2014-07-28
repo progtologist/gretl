@@ -1,0 +1,94 @@
+\documentclass[oneside]{book}
+\usepackage{url,verbatim,fancyvrb,color,appendix}
+\usepackage{array,longtable}
+\usepackage[latin1]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage[authoryear]{natbib}
+\usepackage{gretl}
+\usepackage[letterpaper,body={6.3in,9.15in},top=.8in,left=1.1in]{geometry}
+\usepackage[pdftex,hyperfootnotes=false]{hyperref}
+
+%% \pdfimageresolution=120
+\hypersetup{pdftitle={Gretl Command Reference},
+            pdfsubject={GNU Regression, Econometrics and Time Series Library},
+            pdfauthor={Allin Cottrell},
+            colorlinks=true,
+            linkcolor=blue,
+            urlcolor=red,
+            citecolor=steel,
+            plainpages=false
+}
+
+\begin{document}
+
+\VerbatimFootnotes
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+
+\hyphenation{het-er-o-sked-ast-ic-ity}
+
+%% titlepage
+
+\thispagestyle{empty}
+
+\begin{center}
+\pdfbookmark[1]{Gretl Command Reference}{titlepage}
+
+\gtitle{Gretl Command Reference}
+
+\gsubtitle{Gnu Regression, Econometrics and Time-series Library}
+
+{\large \sffamily
+Allin Cottrell\\
+Department of Economics\\
+Wake Forest University\\
+
+\vspace{20pt}
+Riccardo ``Jack'' Lucchetti\\
+Dipartimento di Economia\\
+Università Politecnica delle Marche\\
+
+\vspace{20pt}
+\input date
+}
+
+\end{center}
+\clearpage
+
+%% end titlepage, begin license page
+
+\thispagestyle{empty}
+
+\pdfbookmark[1]{License}{license}
+
+\vspace*{2in}
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the \emph{GNU Free Documentation License}, Version
+1.1 or any later version published by the Free Software Foundation
+(see \url{http://www.gnu.org/licenses/fdl.html}).
+
+\clearpage
+
+%% end license page, start table of contents
+\pdfbookmark[1]{Contents}{contents}
+
+\pagenumbering{roman}
+\pagestyle{headings}
+
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\include{cmdref}
+\include{funcref}
+\include{operators}
+\include{comments}
+\include{optarg}
+\include{reftables}
+\clearpage
+\include{biblio}
+
+\end{document}

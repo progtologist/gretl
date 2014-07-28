@@ -1,0 +1,35 @@
+open ooballot
+
+# restrict to 'P' and 'O' countries
+smpl Status > 0 --restrict
+
+# split CPI on median
+genr hicorr = CPI<3.95
+
+# make binary approval variable (omits abstainers)
+genr approv = (Vote=0)? 0 : ((Vote>1)? 1 : NA)
+
+# mark the two new variables as discrete
+discrete hicorr approv
+# and cross-tabulate
+xtab hicorr approv
+
+# An econometrician might be more inclined to run a
+# regression...
+ols Vote 0 CPI
+
+# But of course plain OLS is suspect because "Vote" is not 
+# on an interval scale: so try ordered probit
+probit Vote 0 CPI
+
+# Normality is strongly rejected so use QML standard errors:
+# CPI is still strongly significant
+probit Vote 0 CPI --robust
+
+# Compare the rank-sum test given on effi.org, using
+# all non-abstaining countries for which CPI is available
+smpl --full
+genr capp = (Vote > 1)? CPI : NA
+genr cdis = (Vote = 0)? CPI : NA
+difftest capp cdis --rank-sum
+

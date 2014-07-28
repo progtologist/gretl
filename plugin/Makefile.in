@@ -1,0 +1,385 @@
+topsrc = @top_srcdir@
+datarootdir = @datarootdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+MAKE = @MAKE@
+INSTALL = @INSTALL@
+LN = @LN_S@
+
+build_gui = @build_gui@
+build_mailer = @build_mailer@
+have_odbc = @have_odbc@
+quiet_build = @quiet_build@
+gtk_version = @gtk_version@
+use_gsf = @use_gsf@
+
+GLIB_CFLAGS = @GLIB_CFLAGS@
+GLIB_LIBS = @GLIB_LIBS@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
+GMP_CFLAGS = @GMP_CFLAGS@
+GMP_LIBS = @GMP_LIBS@
+MPFR_CFLAGS = @MPFR_CFLAGS@
+MPFR_LIBS = @MPFR_LIBS@
+LAPACK_LIBS = @LAPACK_LIBS@
+HAVE_AUDIO = @HAVE_AUDIO@
+FLITE_CFLAGS = @FLITE_CFLAGS@
+FLITE_LIBS = @FLITE_LIBS@
+
+ifeq ($(gtk_version),3.0)
+  plugindir = $(libdir)/gretl-gtk3
+else
+  plugindir = $(libdir)/gretl-gtk2
+endif
+
+ifeq ($(CC),)
+  CC = gcc
+endif
+ifeq ($(INSTALL_PROGRAM),)
+  INSTALL_PROGRAM = $(INSTALL) -m 755
+endif
+ifeq ($(INSTALL_DATA),)
+  INSTALL_DATA = $(INSTALL) -m 644
+endif
+
+VPATH = $(topsrc)/plugin:$(topsrc)/tests:$(topsrc)/plugin/mpack:$(topsrc)/plugin/rq
+
+override CFLAGS += -I.. -I$(topsrc)/gui2 -DHAVE_CONFIG_H
+
+LIBTOOL = ../libtool
+COMPILE = $(LIBTOOL) --mode=compile $(CCV) -c $(CFLAGS) 
+
+ifeq ($(quiet_build),yes)
+  AMP = @
+  CCECHO = @echo "  CC    $@"
+  LDECHO = @echo "  LD    $@" 
+  CCV = $(CC) > /dev/null
+  LINK = $(LDECHO); $(LIBTOOL) --mode=link $(CCV) $(LDFLAGS) -module -avoid-version -rpath $(plugindir)
+else
+  CCV = $(CC)
+  LINK = $(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -module -avoid-version -rpath $(plugindir)
+endif
+
+GRETLINC = -I$(topsrc)/lib/src
+GRETLLIB = ../lib/libgretl-1.0.la
+
+GRETL_LIBOLE2_CFLAGS := -I$(topsrc)/plugin $(GLIB_CFLAGS)
+
+SRCS = excel_import.c \
+	fiml.c \
+	liml.c \
+	gnumeric_import.c \
+	eviews_import.c \
+	stata_import.c \
+	spss_import.c \
+	sas_import.c \
+	jmulti_import.c \
+	ods_import.c \
+	xlsx_import.c \
+	import_common.c \
+	johansen.c \
+	jrestrict.c \
+	jalpha.c \
+	kernel.c \
+	longname.c \
+	mp_ols.c \
+	pca.c \
+	progress_bar.c \
+	range-mean.c \
+	fractals.c \
+	stats_tables.c \
+	sysest.c \
+	tramo_options.c \
+	tramo-x12a.c \
+	workbook.c \
+	nistcheck.c \
+	arma_cml.c \
+	arma_common.c \
+	arma_init.c \
+	arma.c \
+	arma_x12.c \
+	garch.c \
+	urcdist.c \
+	vif.c \
+	poisson.c \
+	duration.c \
+	gretlzip.c \
+	heckit.c \
+	odbc_import.c \
+	quantreg.c \
+	interval.c \
+	anova.c \
+	biprobit.c \
+	reprobit.c
+
+ZIPSRC = zfileio.c \
+	zsystem.c \
+	zipfile.c \
+	zipmain.c \
+	zipwork.c
+
+PLUGINS = arbond.la \
+	arma.la \
+	arma_x12.la \
+	eviews_import.la \
+	stata_import.la \
+	spss_import.la \
+	sas_import.la \
+	jmulti_import.la \
+	fractals.la \
+	garch.la \
+	johansen.la \
+	kernel.la \
+	nistcheck.la \
+	range-mean.la \
+	stats_tables.la \
+	sysest.la \
+	urcdist.la \
+	vif.la \
+	poisson.la \
+	duration.la \
+	heckit.la \
+	quantreg.la \
+	interval.la \
+	anova.la \
+	mp_ols.la \
+	interpolate.la \
+	biprobit.la \
+	reprobit.la \
+	panurc.la
+
+GUI_DEPENDENT_PLUGINS = arma_x12.la \
+	excel_import.la \
+	xlsx_import.la \
+	gnumeric_import.la \
+	leverage.la \
+	mailer.la \
+	ods_import.la \
+	pca.la \
+	progress_bar.la \
+	tramo-x12a.la 
+
+MAILER_PLUGIN = mailer.la
+
+ifeq ($(build_gui),yes)
+  PLUGINS += $(GUI_DEPENDENT_PLUGINS)
+  ifeq ($(build_mailer),yes)
+     PLUGINS += $(MAILER_PLUGIN)
+  endif
+  ifeq ($(HAVE_AUDIO),1)
+     PLUGINS += audio.la
+     AUDIO_CFLAGS = $(FLITE_CFLAGS)
+     AUDIO_LIBS = $(FLITE_LIBS)
+  endif  
+endif
+
+ifeq ($(use_gsf),no)
+  PLUGINS += gretlzip.la
+  GRETL_ZIP_CFLAGS := -I$(topsrc)/plugin/zipunzip $(GLIB_CFLAGS)
+  GRETL_ZIP_LIBS := $(GLIB_LIBS) -lz
+endif
+
+# for now we'll build the gretlzip plugin regardless, since
+# libgsf-1.14.29 does not support setting of the zlib
+# compression level
+ifeq ($(use_gsf),yes)
+  PLUGINS += gretlzip.la
+  GRETL_ZIP_CFLAGS := -I$(topsrc)/plugin/zipunzip $(GLIB_CFLAGS)
+  GRETL_ZIP_LIBS := $(GLIB_LIBS) -lz
+endif
+
+ifeq ($(have_odbc),yes)
+  PLUGINS += odbc_import.la
+  ODBC_CFLAGS = @ODBC_CFLAGS@
+  ODBC_LIBS = @ODBC_LIBS@
+endif
+
+vpath %.c $(topsrc)/plugin/libole2
+vpath %.h $(topsrc)/plugin/libole2
+
+ifeq ($(LIBGSF_LIBS),)
+  vpath %.c $(topsrc)/plugin/zipunzip
+  vpath %.h $(topsrc)/plugin/zipunzip
+  ZIPOBJ = $(ZIPSRC:.c=.lo)
+  ZIP_LIBS = $(GRETL_ZIP_LIBS)
+  ZIP_CFLAGS = $(GRETL_ZIP_CFLAGS)
+endif
+
+URCDATA = $(topsrc)/plugin/data/urcdata.gz
+DWDATA = $(topsrc)/plugin/data/dwdata.gz
+
+override CFLAGS += $(GRETLINC) $(GTK_CFLAGS) $(GMP_CFLAGS) $(MPFR_CFLAGS) \
+	$(XML_CFLAGS) $(GRETL_LIBOLE2_CFLAGS) $(ZIP_CFLAGS) $(AUDIO_CFLAGS) \
+	$(ODBC_CFLAGS) -I. 
+
+%.lo: %.c
+	$(CCECHO)
+	$(AMP)$(COMPILE) $< 
+	$(AMP)$(CC) $(CFLAGS) -MM -MT $*.lo $< > .deps/$*.d 
+
+all: .deps $(PLUGINS)
+
+.deps:
+	mkdir $@
+
+-include .deps/*.d
+
+stats_tables.la: stats_tables.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+range-mean.la: range-mean.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+eviews_import.la: eviews_import.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+stata_import.la: stata_import.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(GLIB_LIBS)
+
+spss_import.la: spss_import.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(GLIB_LIBS)
+
+sas_import.la: sas_import.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+jmulti_import.la: jmulti_import.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+fractals.la: fractals.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+kernel.la: kernel.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+vif.la: vif.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(LAPACK_LIBS)
+
+urcdist.la: urcdist.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+mp_ols.la: mp_ols.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(GMP_LIBS) $(MPFR_LIBS)
+
+johansen.la: johansen.lo jrestrict.lo jalpha.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(LAPACK_LIBS)
+
+sysest.la: sysest.lo fiml.lo liml.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(LAPACK_LIBS)
+
+nistcheck.la: nistcheck.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(LAPACK_LIBS)
+
+arbond.la: arbond.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+arma.la: arma.lo arma_cml.lo arma_init.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(LAPACK_LIBS)
+
+poisson.la: poisson.lo
+	$(LINK) -o $@ $< $(GRETLLIB) 
+
+duration.la: duration.lo
+	$(LINK) -o $@ $< $(GRETLLIB) 
+
+heckit.la: heckit.lo
+	$(LINK) -o $@ $< $(GRETLLIB) 
+
+biprobit.la: biprobit.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+reprobit.la: reprobit.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+garch.la: garch.lo fcp.lo mod_garch.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(LAPACK_LIBS)
+
+gretlzip.la: gretlzip.lo $(ZIPOBJ)
+	$(LINK) -o $@ $^ $(ZIP_LIBS) $(GRETLLIB)
+
+audio.la: audio.lo midi_utils.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(AUDIO_LIBS)
+
+odbc_import.la: odbc_import.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(ODBC_LIBS)
+
+quantreg.la: quantreg.lo rqfnb.lo rqbr.lo
+	$(LINK) -o $@ $^ $(GRETLLIB) $(LAPACK_LIBS)
+
+interval.la: interval.lo
+	$(LINK) -o $@ $< $(GRETLLIB) 
+
+anova.la: anova.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(GLIB_LIBS)
+
+interpolate.la: interpolate.lo
+	$(LINK) -o $@ $< $(GRETLLIB)
+
+panurc.la: panurc.lo
+	$(LINK) -o $@ $< $(GRETLLIB) $(GLIB_LIBS)
+
+# plugins that require GTK+
+
+arma_x12.la: arma_x12.lo
+	$(LINK) -o $@ $< $(GTK_LIBS) $(GRETLLIB) $(LAPACK_LIBS)
+
+excel_import.la: excel_import.lo workbook.lo ms-ole.lo
+	$(LINK) -o $@ $^ $(GTK_LIBS) $(GRETLLIB)
+
+xlsx_import.la: xlsx_import.lo
+	$(LINK) -o $@ $^ $(GTK_LIBS) $(GRETLLIB) $(XML_LIBS)
+
+gnumeric_import.la: gnumeric_import.lo
+	$(LINK) -o $@ $< $(GTK_LIBS) $(GRETLLIB) $(XML_LIBS)
+
+leverage.la: leverage.lo
+	$(LINK) -o $@ $< $(GTK_LIBS) $(GRETLLIB) $(LAPACK_LIBS)
+
+mailer.la: mailer.lo encode.lo md5c.lo
+	$(LINK) -o $@ $^ $(GTK_LIBS) $(GRETLLIB) 
+
+ods_import.la: ods_import.lo
+	$(LINK) -o $@ $< $(GTK_LIBS) $(GRETLLIB) $(XML_LIBS)
+
+pca.la: pca.lo
+	$(LINK) -o $@ $< $(GTK_LIBS) $(GRETLLIB) $(LAPACK_LIBS)
+
+progress_bar.la: progress_bar.lo
+	$(LINK) -o $@ $< $(GTK_LIBS)
+
+tramo-x12a.la: tramo-x12a.lo tramo_options.lo
+	$(LINK) -o $@ $^ $(GTK_LIBS) $(GRETLLIB)
+
+$(GRETLLIB):
+	$(MAKE) -C ../lib
+
+.PHONY: 
+
+install: $(GRETLLIB) $(PLUGINS) $(URCDATA) $(DWDATA) installdirs 
+	$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
+	$(PLUGINS) $(DESTDIR)$(plugindir)
+	$(INSTALL_DATA) $(URCDATA) $(DESTDIR)$(plugindir)/data
+	$(INSTALL_DATA) $(DWDATA) $(DESTDIR)$(plugindir)/data
+
+install-strip: $(GRETLLIB) $(PLUGINS) installdirs
+	$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) -s \
+	$(PLUGINS) $(DESTDIR)$(plugindir)
+
+installdirs:
+	$(topsrc)/tools/mkinstalldirs $(DESTDIR)$(plugindir)
+	$(topsrc)/tools/mkinstalldirs $(DESTDIR)$(plugindir)/data
+
+clean:
+	rm -f *.lo *.o *.la
+	rm -rf .libs .deps
+
+distclean: clean
+	rm -f Makefile
+

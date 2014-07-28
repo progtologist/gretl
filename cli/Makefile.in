@@ -1,0 +1,133 @@
+topsrc = @top_srcdir@
+datarootdir = @datarootdir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+MAKE = @MAKE@
+INSTALL = @INSTALL@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+datadir = @datadir@
+localedir = $(datadir)/locale
+
+GLIB_CFLAGS = @GLIB_CFLAGS@
+
+have_readline = @have_readline@
+READLINE_LIBS = @READLINE_LIBS@
+READLINE_CFLAGS = @READLINE_CFLAGS@
+
+have_mpi = @have_mpi@
+MPICC = @MPICC@
+MPI_CFLAGS = @MPI_CFLAGS@
+MPILINK = @MPILINK@
+
+SSE2_CFLAGS = @SSE2_CFLAGS@
+AVX_CFLAGS = @AVX_CFLAGS@
+ifeq ($(AVX_CFLAGS),)
+  SIMD_OPT = $(SSE2_CFLAGS)
+else
+  SIMD_OPT = $(AVX_CFLAGS)
+endif
+
+OMP_OPT = @OPENMP_CFLAGS@
+
+quiet_build = @quiet_build@
+
+ifeq ($(CC),)
+  CC = gcc
+endif
+ifeq ($(INSTALL_PROGRAM),)
+  INSTALL_PROGRAM = $(INSTALL) -m 755
+endif
+ifeq ($(have_readline),yes)
+  RL_OBJ = complete.o
+endif
+ifeq ($(have_mpi),yes)
+  MPICLI = gretlcli-mpi$(EXEEXT)
+  INSTALL_MPI = install-mpi
+endif
+
+ifeq ($(quiet_build),yes)
+  AMP = @
+  CCECHO = @echo "  CC    $@"
+  LDECHO = @echo "  LD    $@" 
+  CCV = $(CC) $(SIMD_OPT) $(OMP_OPT) > /dev/null
+  MPILD_ECHO = @echo "  MPILD  $@" 
+  MPICCV = $(MPICC) $(SIMD_OPT) $(OMP_OPT) > /dev/null
+else
+  CCV = $(CC) $(SIMD_OPT) $(OMP_OPT)
+  MPICCV = $(MPICC) $(SIMD_OPT) $(OMP_OPT)
+endif
+
+GRETLLIB = ../lib/libgretl-1.0.la
+
+# Working directories
+tooldir = $(topsrc)/tools
+libsrc = $(topsrc)/lib/src
+
+vpath %.c $(topsrc)/cli
+
+#### End of system configuration section. ####
+
+SRCS = gretlcli.c complete.c
+OBJS = gretlcli.o $(RL_OBJ)
+MPISRC = gretlcli-mpi.c
+MPIOBJ = gretlcli-mpi.o
+
+DEFS = -DLOCALEDIR=\"$(localedir)\" -DHAVE_CONFIG_H
+
+override CFLAGS += -I.. -I$(topsrc) -I$(libsrc) $(READLINE_CFLAGS) $(GLIB_CFLAGS) $(DEFS)
+
+CLI = gretlcli$(EXEEXT)
+LIBTOOL = ../libtool
+
+%.o: %.c
+	$(CCECHO)
+	$(AMP)$(CC) -c $(CFLAGS) $<
+	$(AMP)$(CC) $(CFLAGS) -MM $< > .deps/$*.d
+
+all: $(CLI) $(MPICLI)
+
+$(CLI): .deps $(OBJS)
+	$(LDECHO)
+	$(AMP)$(LIBTOOL) --mode=link $(CCV) $(LDFLAGS) -o $@ $(OBJS) \
+	$(GRETLLIB) $(READLINE_LIBS)
+
+gretlcli-mpi: .deps $(MPIOBJ)
+	$(MPILD_ECHO)
+	$(AMP)$(LIBTOOL) --mode=link $(MPICCV) $(LDFLAGS) -o $@ $(MPIOBJ) \
+	$(GRETLLIB) $(MPILINK)
+
+gretlcli-mpi.o: gretlcli-mpi.c
+	$(CCECHO)
+	$(AMP)$(CC) -c $(CFLAGS) $(MPI_CFLAGS) $<
+	$(AMP)$(CC) $(CFLAGS) $(MPI_CFLAGS) -MM $< > .deps/$*.d
+
+.deps:
+	$(AMP)mkdir $@
+
+-include .deps/*.d
+
+.PHONY :
+
+install: $(CLI) installdirs $(INSTALL_MPI)
+	$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) $(CLI) $(DESTDIR)$(bindir)/$(CLI)
+
+install-mpi: $(MPICLI) installdirs
+	$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) $(MPICLI) $(DESTDIR)$(bindir)/$(MPICLI)
+
+install-strip: $(CLI) installdirs
+	$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) -s $(CLI) $(DESTDIR)$(bindir)/$(CLI)
+
+installdirs: $(tooldir)/mkinstalldirs
+	$(tooldir)/mkinstalldirs $(DESTDIR)$(bindir)
+
+clean:
+	rm -f *.o $(CLI) $(MPICLI)
+	rm -rf .libs .deps
+
+distclean: clean
+	rm -f Makefile debug

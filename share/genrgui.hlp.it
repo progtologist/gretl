@@ -1,0 +1,3065 @@
+
+## Accessori
+
+# $ahat access
+Risultato: 	serie 
+
+Deve seguire la stima di un modello panel a effetti fissi. Produce le stime degli effetti fissi individuali (intercette delle singole unità). 
+
+# $aic access
+Risultato: 	scalare 
+
+Produce il criterio di informazione di Akaike per l'ultimo modello stimato. Si veda <@pdf="la guida all'uso di gretl"> per dettagli. 
+
+# $bic access
+Risultato: 	scalare 
+
+Produce il criterio di informazione bayesiana di Schwarz per l'ultimo modello stimato. Si veda <@pdf="la guida all'uso di gretl"> per dettagli. 
+
+# $chisq access
+Risultato: 	scalare 
+
+Produce la statistica chi-quadro complessiva per l'ultimo modello stimato, se disponibile. 
+
+# $coeff access
+Risultato: 	matrice o scalare 
+Argomento: 	<@var="s">  (nome del coefficiente, opzionale)
+
+L'accessore <@lit="$coeff"> può essere usato in due modi: senza argomenti produce un vettore colonna che contiene i coefficienti dell'ultimo modello stimato. Con l'argomento opzionale, produce uno scalare che corrisponde alla stima del coefficiente chiamato <@var="s">. Vedi anche <@ref="$stderr">, <@ref="$vcv">. 
+
+Esempio: 
+
+<code>          
+      open bjg
+      arima 0 1 1 ; 0 1 1 ; lg 
+      b = $coeff 
+      macoef = $coeff(theta_1)
+</code>
+
+Se il "modello" in questione è effettivamente un sistema (un VAR o un VECM, o un sistema di equazioni simultanee), <@lit="$coeff"> senza parametri produce la matrice dei coefficienti, una colonna per equazione. 
+
+# $command access
+Risultato: 	stringa 
+
+Deve seguire la stima di un modello; restituisce la stringa del comando relativo, come ad esempio <@lit="ols"> oppure <@lit="probit">. 
+
+# $compan access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VAR o un VECM; produce la matrice compagna. 
+
+# $datatype access
+Risultato: 	scalare 
+
+Restituisce un intero corrispondente al tipo di dataset attualmente in memoria: 0 = nessun dato; 1 = dati cross-sezionali (non datati); 2 = serie storiche; 3 = panel. 
+
+# $depvar access
+Risultato: 	stringa 
+
+Deve seguire la stima di un modello ad equazione singola e restituisce il nome della variabile dipendente. 
+
+# $df access
+Risultato: 	scalare 
+
+Produce i gradi di libertà dell'ultimo modello stimato. Se questo consiste di un sistema di equazioni, viene restituito il numero dei gradi di libertà per equazione; se questo differisce da un'equazione all'altra, allora il valore restituito è pari al numero di osservazioni meno la media del numero di coefficienti per equazione (arrotondato all'intero più vicino). 
+
+# $dwpval access
+Risultato: 	scalare 
+
+Fornisce il p-value per la statistica Durbin–Watson relativa all'ultimo modello stimato, se disponibile. Tale valore è calcolato ramite la procedura di Imhof. 
+
+# $ec access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VECM e restituisce una matrice contenente i termini di correzione d'errore. La matrice restituita ha tante righe quante sono le osservazioni usate nella stima e un numero di colonne pari al rango di cointegrazione del sistema. 
+
+# $error access
+Risultato: 	scalare 
+
+Restituisce il codice interno di errore, che avrà un valore diverso da 0 se si è verificato un errore in presenza del modificatore <@xrf="catch">. Si noti che l'uso di questo accessore resetta il codice di errore interno a 0. Si veda anche <@ref="errmsg">. Per il messaggio d'errore associato a un dato codice, bisogna salvare il valore in una variabile temporanea; ad esempio: 
+
+<code>          
+      err = $error
+      if (err) 
+        printf "Errore %d (%s)\n", err, errmsg(err);
+      endif
+</code>
+
+Vedi anche <@xrf="catch">, <@ref="errmsg">. 
+
+# $ess access
+Risultato: 	scalare 
+
+Produce la somma dei quadrati degli errori dell'ultimo modello stimato. 
+
+# $evals access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VECM; restituisce un vettore contenente gli autovalori usati nel calcolo del test traccia per la cointegrazione. 
+
+# $fcast access
+Risultato: 	matrice 
+
+Deve seguire il comando <@xrf="fcast">; restituisce le previsioni sotto forma di matrice. Se il modello usato per le previsioni è un modello a più equazioni, ogni colonna corrisponde ad un'equazione; altrimenti, restituisce un vettore colonna. 
+
+# $fcerr access
+Risultato: 	matrice 
+
+Deve seguire il comando <@xrf="fcast">; restituisce gli errori standard per le previsioni sotto forma di matrice. Se il modello usato per le previsioni è un modello a più equazioni, ogni colonna corrisponde ad un'equazione; altrimenti, restituisce un vettore colonna. 
+
+# $fevd access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VAR. Restituisce una matrice contenete la scomposizione della varianza dell'errore di previsione (FEVD). Questa avrà <@itl="h"> righe, dove <@itl="h"> è l'orizzonte di previsione, che può essere modificato tramite il comando <@lit="set horizon"> o, altrimenti, viene fissato automaticamente sulla base della frequenza dei dati. Per un VAR con <@itl="p"> variabili, la matrice ha <@itl="p"><@sup="2"> colonne. La parte dell'errore di previsione sulla variabile <@itl="i"> attribuibile allo shock alla variabile <@itl="j"> si troverà nella colonna (<@itl="i"> – 1)<@itl="p"> + <@itl="j">. 
+
+# $Fstat access
+Risultato: 	scalare 
+
+Restituisce la statistica F complessiva per l'ultimo modello stimato, se disponibile. 
+
+# $gmmcrit access
+Risultato: 	scalare 
+
+Deve seguire un blocco <@lit="gmm">. Produce il valore della funzione obiettivo al suo minimo. 
+
+# $h access
+Risultato: 	serie 
+
+Deve seguire un comando <@lit="garch">. Produce la varianza condizionale stimata. 
+
+# $hausman access
+Risultato: 	vettore riga 
+
+Deve seguire un comando <@lit="tsls"> o <@lit="panel"> con l'opzione effetti casuali. Produce un vettore 1×3 contenente nell'ordine: il valore della statistica del test di Hausman, i corrispondenti gradi di libertà e p-value. 
+
+# $hqc access
+Risultato: 	scalare 
+
+Produce il criterio di informazione di Hannan-Quinn per l'ultimo modello stimato, se disponibile. Per maggiori dettagli sulla metodologia di calcolo, v. <@pdf="la guida all'uso di gretl">. 
+
+# $huge access
+Risultato: 	scalare 
+
+Restituisce un numero positivo molto grande. Per impostazione predefinita è pari a 1.0E100, ma tale valore si può cambiare usando il comando <@xrf="set">. 
+
+# $jalpha access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VECM, e produce la matrice dei pesi, che contiene tante righe quante sono le variabili del VECM e tante colonne quanto è il rango di cointegrazione. 
+
+# $jbeta access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VECM, e produce la matrice di cointegrazione, che contiene tante righe quante sono le variabili del VECM (più il numero di eventuali variabili esogene vincolate allo spazio di cointegrazione) e un numero di colonne pari al rango di cointegrazione. 
+
+# $jvbeta access
+Risultato: 	matrice quadrata 
+
+Deve seguire la stima di un VECM, e produce la matrice di covarianza stimata per gli elementi dei vettori di cointegrazione. 
+
+Nel caso di stima non vincolata, ha un numero di righe pari al numero di elementi non vincolati nello spazio di cointegrazione dopo la normalizzazione di Phillips. Se però si stima un sistema vincolato con il comando <@lit="restrict"> e l'opzione <@lit="--full">, verrà prodotta una matrice singolare con <@itl="(n+m)r"> righe (<@itl="n"> è il numero delle variabili endogene, <@itl="m"> quello delle variabili esogene vincolate allo spazio di cointegrazione e <@itl="r"> è il rango di cointegrazione). 
+
+Esempio: il codice 
+
+<code>          
+      open denmark.gdt
+      vecm 2 1 LRM LRY IBO IDE --rc --seasonals -q
+      s0 = $jvbeta
+      restrict --full
+      b[1,1] = 1
+      b[1,2] = -1
+      b[1,3] + b[1,4] = 0
+      end restrict
+      s1 = $jvbeta
+      print s0
+      print s1
+</code>
+
+produce il risultato seguente. 
+
+<code>          
+      s0 (4 x 4)
+        0.019751     0.029816  -0.00044837     -0.12227 
+        0.029816      0.31005     -0.45823     -0.18526 
+     -0.00044837     -0.45823       1.2169    -0.035437 
+        -0.12227     -0.18526    -0.035437      0.76062 
+      s1 (5 x 5)
+      0.0000       0.0000       0.0000       0.0000       0.0000 
+      0.0000       0.0000       0.0000       0.0000       0.0000 
+      0.0000       0.0000      0.27398     -0.27398    -0.019059 
+      0.0000       0.0000     -0.27398      0.27398     0.019059 
+      0.0000       0.0000    -0.019059     0.019059    0.0014180
+</code>
+
+# $llt access
+Risultato: 	serie 
+
+Per alcuni modelli stimati con massima verosimiglianza, produce la serie dei contributi alla log-verosimiglianza di tutte le osservazioni. Al momento, questo accessore funziona solo per logit e probit binari, tobit e heckit. 
+
+# $lnl access
+Risultato: 	scalare 
+
+Produce la log-verosimiglianza dell'ultimo modello stimato (dove possibile). 
+
+# $macheps access
+Risultato: 	scalare 
+
+Restituisce il valore dell'"epsilon macchina", ossia un limite superiore all'errore relativo dovuto all'aritmetica a virgola mobile in doppia precisione. 
+
+# $mnlprobs access
+Risultato: 	matrice 
+
+Dopo la stima di un modello logit multinomiale, crea una matrice con le probabilità stimate di tutti i possibili esiti per tutte le osservazioni usate nella stima. Le osservazioni sono per riga e gli esiti per colonna. 
+
+# $ncoeff access
+Risultato: 	integer 
+
+Produce il numero totale dei coefficienti stimati nell'ultimo modello. 
+
+# $nobs access
+Risultato: 	integer 
+
+Produce il numero delle osservazioni nel campione selezionato. 
+
+# $nvars access
+Risultato: 	integer 
+
+Produce il numero delle variabili nel dataset (inclusa la costante). 
+
+# $obsdate access
+Risultato: 	serie 
+
+Applicabile quando il dataset corrente è una serie storica con frequenza decennale, annuale, trimestrale, mensile, settimanale o giornaliera, oppure è un panel in cui la variabile che indicizza i periodi ha la frequenza appropriata (si veda il comando <@xrf="setobs">). La variabile risultante ha 8 cifre con la struttura <@lit="YYYYMMDD"> (formato "base" delle date secondo l'ISO 8601), che corrisponde al giorno di osservazione o al primo giorno del periodo di osservazione nel caso di serie storiche con frequenza minore di quella giornaliera. 
+
+Questa variabile può essere utile quando si usa il comando <@xrf="join">. 
+
+# $obsmajor access
+Risultato: 	serie 
+
+Applicabile quando le osservazioni nel dataset aperto hanno una struttura maggiore:minore, come in serie storiche trimestrali (anno:trimestre), mensili (anno:mese), orarie (giorno:ora) e dati panel (individuo:periodo). Restituisce una variabile contenente la componente maggiore (a frequenza più bassa, come l'anno). 
+
+Vedi anche <@ref="$obsminor">, <@ref="$obsmicro">. 
+
+# $obsmicro access
+Risultato: 	serie 
+
+Applicabile quando le osservazioni nel dataset aperto hanno una struttura maggiore:minore:micro, come in serie storiche giornaliere (anno:mese:giorno). Restituisce una variabile contenente la componente micro (a frequenza più alta, come il giorno). 
+
+Vedi anche <@ref="$obsmajor">, <@ref="$obsminor">. 
+
+# $obsminor access
+Risultato: 	serie 
+
+Applicabile quando le osservazioni nel dataset aperto hanno una struttura maggiore:minore, come in serie storiche trimestrali (anno:trimestre), mensili (anno:mese), orarie (giorno:ora) e dati panel (individuo:periodo). Restituisce una variabile contenente la componente minore (a frequenza più alta, come il mese). 
+
+Vedi anche <@ref="$obsmajor">, <@ref="$obsmicro">. 
+
+# $pd access
+Risultato: 	integer 
+
+Produce la frequenza o la periodicità dei dati (es. 4 per dati trimestrali). Nel caso di dati panel il valore prodotto rappresenta la lunghezza della serie storica. 
+
+# $pi access
+Risultato: 	scalare 
+
+Restituisce il valore di π in doppia precisione. 
+
+# $pvalue access
+Risultato: 	scalare o matrice 
+
+Produce il p-value della statistica test generata dall'ultimo comando esplicito di test di ipotesi (es. <@lit="chow">). Si veda <@pdf="la guida all'uso di gretl"> per ulteriori dettagli. 
+
+Nella maggior parte dei casi il valore prodotto è scalare ma talvolta può essere costituito da una matrice (per esempio i p-value delle statistiche della traccia e lambda-max del test di cointegrazione di Johansen); in questo caso i valore contenuti nella matrice sono organizzati seguendo la stessa struttura con la quale vengono riportati i risultati. 
+
+Vedi anche <@ref="$test">. 
+
+# $rho access
+Risultato: 	scalare 
+Argomento: 	<@var="n">  (scalare, opzionale)
+
+Senza argomenti, produce il coefficiente autoregressivo del prim'ordine per i residui dell'ultimo modello. Dopo aver stimato un modello con il comando <@lit="ar">, la sintassi <@lit="$rho(n)"> produce la corrispondente stima di ρ(<@itl="n">). 
+
+# $rsq access
+Risultato: 	scalare 
+
+Produce l'<@itl="R"><@sup="2"> non aggiustato dell'ultimo modello stimato. 
+
+# $sample access
+Risultato: 	serie 
+
+Deve seguire la stima di un modello ad equazione singola. Restituisce una variabile binaria con 1 per le osservazioni usate nella stima, 0 per osservazioni incluse nel campione corrente ma non usate nella stima (ad esempio, per via di valori mancanti nella variabile dipendente) e NA per osservazioni al di fuori del campione corrente. 
+
+Se fosse necessario calcolare statistiche basate sul campione usato per un certo modello, ad esempio, si potrebbe usare la seguente sintassi: 
+
+<code>          
+      ols y 0 xlist
+      genr sdum = $sample
+      smpl sdum --dummy
+</code>
+
+# $sargan access
+Risultato: 	vettore riga 
+
+Deve seguire un comando <@lit="tsls">. Produce un vettore 1×3 che contiene nell'ordine: il valore della statistica del test di Sargan di sovraidentificazione, i corrispondenti gradi di libertà e il p-value. 
+
+# $sigma access
+Risultato: 	scalare o matrice 
+
+Richiede che sia stato stimato un modello. Se quest'ultimo consiste di un'unica equazione, restituisce uno scalare, lo Standard Error della Regressione (in altre parole, lo scarto quadratico medio dei residui, con l'opportuna correzione per i gradi di libertà). Se il modello contiene un sistema di equazioni, la funzione restituisce la matrice di covarianza dei residui delle diverse equazioni. 
+
+# $stderr access
+Risultato: 	matrice o scalare 
+Argomento: 	<@var="s">  (nome del coefficiente, opzionale)
+
+L'accessore <@lit="$stderr"> restituisce un vettore colonna contenente lo standard error dei coefficienti dell'ultimo modello. Con il parametro opzionale, restituisce uno scalare contenente lo standard error del parametro <@var="s">. 
+
+Se il "modello" in questione è un sistema, il risultato dipende dalle sue caratteristiche: per sistemi VAR e VECM il valore restituito è una matrice con una colonna per equazione; altrimenti, è un vettore colonna contenente i coefficienti della prima equazione, seguiti da quelli della seconda, e così via. 
+
+Vedi anche <@ref="$coeff">, <@ref="$vcv">. 
+
+# $stopwatch access
+Risultato: 	scalare 
+
+Deve essere preceduto dal comando <@lit="set stopwatch">, che attiva la misurazione del tempo di CPU. Il primo uso di questo accessore restituisce i secondi di CPU time trascorsi dal comando <@lit="set stopwatch">. Ad ogni accesso il cronometro viene riazzerato, cosicché l'uso successivo dell'accessore restituisce i secondi di CPU intercorsi dalla chiamata precedente. 
+
+# $sysA access
+Risultato: 	matrice 
+
+Deve seguire la stima di un sistema simultaneo. Restituisce la matrice dei coefficienti delle endogene ritardate, se presenti nella forma strutturale. Si veda il comando <@xrf="system">. 
+
+# $sysB access
+Risultato: 	matrice 
+
+Deve seguire la stima di un sistema simultaneo. Restituisce la matrice dei coefficienti delle esogene nella forma strutturale. Si veda il comando <@xrf="system">. 
+
+# $sysGamma access
+Risultato: 	matrice 
+
+Deve seguire la stima di un sistema simultaneo. Restituisce la matrice dei coefficienti delle endogene contemporanee nella forma strutturale. Si veda il comando <@xrf="system">. 
+
+# $sysinfo access
+Risultato: 	bundle 
+
+Restituisce un bundle contenente informazioni sulle caratteristiche della versione di gretl e del sistema sul quale quest'ultimo viene eseguito. I membri del bundle sono i seguenti: 
+
+<indent>
+• <@lit="mpi">: intero, pari a 1 se il sistema è compatibile con MPI (Message Passing Interface), altrimenti è pari a 0. 
+</indent>
+
+<indent>
+• <@lit="omp">: intero, pari a 1 se la versione di gretl è compatibile con Open MP, altrimenti è pari a 0. 
+</indent>
+
+<indent>
+• <@lit="nproc">: intero, il numero di processori disponibili. 
+</indent>
+
+<indent>
+• <@lit="mpimax">: intero, il numero massimo di processi MPI che possono essere eseguiti in parallelo. Questo valore è nullo se il sistema non è compatibile con MPI, altrimenti è pari al valore locale <@lit="nproc"> a meno che non sia stato specificato un file di MPI hosts; in questo caso esso è pari alla somma del numero dei processori o degli "slots" presenti su tutte le macchine elencate in quel file. 
+</indent>
+
+<indent>
+• <@lit="wordlen">: intero, pari a 32 o 64 rispettivamente per sistemi a 32- o 64-bit. 
+</indent>
+
+<indent>
+• <@lit="os">: stringa contenente il sistema operativo: può essere pari a <@lit="linux">, <@lit="osx">, <@lit="windows"> o <@lit="other">. 
+</indent>
+
+<indent>
+• <@lit="hostname">: il nome della macchina host sulla quale viene eseguito il processo corrente di gretl (con il valore di ripiego <@lit="localhost"> nel caso in cui il nome non potesse essere individuato). 
+</indent>
+
+Si noti che i singoli elementi del bundle possono essere recuperati usando la notazione "dot" senza bisogno di copiare l'intero bundle con un nuovo nome specificato dall'utente. Per esempio, 
+
+<code>          
+      if $sysinfo.os == "linux"
+        # effettua un'operazione specifica a linux
+      endif
+</code>
+
+# $T access
+Risultato: 	integer 
+
+Numero di osservazioni usato nella stima dell'ultimo modello. 
+
+# $t1 access
+Risultato: 	integer 
+
+Indice (a base 1) della prima osservazione nel campione attualmente selezionato. 
+
+# $t2 access
+Risultato: 	integer 
+
+Indice (a base 1) dell'ultima osservazione nel campione attualmente selezionato. 
+
+# $test access
+Risultato: 	scalare o matrice 
+
+Restituisce il valore della statistica test generata dall'ultimo comando esplicitamente volto al test di ipotesi (p. es: <@lit="chow">), se presente. Si veda <@pdf="la guida all'uso di gretl"> per maggiori dettagli. 
+
+Nella maggior parte dei casi il valore restituito è uno scalare ma talvolta può trattarsi di una matrice (per esempio nel caso delle statistiche della traccia e lambda-max del test di cointegrazione di Johansen); in questo caso gli elementi della matrice sono organizzati seguendo la stessa struttura utilizzata nella stampa dei risultati. 
+
+Vedi anche <@ref="$pvalue">. 
+
+# $trsq access
+Risultato: 	scalare 
+
+Restituisce <@itl="TR"><@sup="2"> (numerosità campionaria per R quadro) dall'ultimo modello. 
+
+# $uhat access
+Risultato: 	serie 
+
+Restituisce i residui dall'ultimo modello stimato. Cosa si intenda per 'residui' dipende dal modello che è stato stimato. Ad esempio, dopo una stima ARMA <@lit="$uhat"> contiene gli errori di previsione a un passo; dopo un probit, i residui generalizzati. 
+
+Se il modello in questione è multi-equazionale (un VAR o un VECM, o un sistema di equazioni simultanee), <@lit="$uhat"> senza parametri restituisce una matrice contenente i residui nelle colonne. 
+
+# $unit access
+Risultato: 	serie 
+
+Valido solo per dataset di tipo panel. Restituisce una variabile con 1 per tutte le osservazioni della prima unità cross-sezionale, 2 per le osservazioni della seconda e così via. 
+
+# $vcv access
+Risultato: 	matrice o scalare 
+Argomenti:	<@var="s1">  (nome del coefficiente, opzionale)
+		<@var="s2">  (nome del coefficiente, opzionale)
+
+Senza argomenti, <@lit="$vcv"> restituisce una matrice quadrata contenente le covarianze stimate dei coefficienti dell'ultimo modello. Nel caso quest'ultimo contenesse una sola equazione è possibile indicare i nomi di due parametri fra parentesi per recuperare la covarianza stimata fra i parametri di nome <@var="s1"> e <@var="s2">. Vedi anche <@ref="$coeff">, <@ref="$stderr">. 
+
+Questo accessore non è disponibile per modelli di tipo VAR o VECM; in tal caso, si veda piuttosto <@ref="$sigma"> e <@ref="$xtxinv">. 
+
+# $vecGamma access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VECM; restituisce una matrice in cui le matrici Gamma (cioè i coefficienti delle differenze ritardate) sono messe una fianco all'altra. Ogni riga rappresenta un'equazione; per un VECM di ordine <@itl="p"> ci sono <@itl="p"> – 1 sottomatrici. 
+
+# $version access
+Risultato: 	scalare 
+
+Restituisce un valore intero che codifica la versione del programma, sotto la forma <@lit="x.y.z"> (ad esempio, 1.7.6). Il valore prodotto da questo accessore è pari a <@lit="10000*x + 100*y + z">, cosicché 1.7.6 diventa 10706. 
+
+# $vma access
+Risultato: 	matrice 
+
+Deve seguire la stima di un VAR o di un VECM; restituisce una matrice contenente la rappresentazione VMA fino all'ordine specificato tramite il comando <@lit="set horizon">. Per maggiori dettagli, si veda <@pdf="la guida all'uso di gretl">. 
+
+# $windows access
+Risultato: 	integer 
+
+Restituisce 1 se gretl sta girando sotto Windows e 0 altrimenti. Questo accessore viene tipicamente usato per scrivere script portabili da un sistema operativo ad un altro. 
+
+Si veda anche il comando <@xrf="shell">. 
+
+# $xlist access
+Risultato: 	lista 
+
+Se l'ultimo modello stimato è un'equazione singola, restituisce la lista dei regressori. Se l'ultimo modello stimato è un sistema di equazioni, restituisce la lista "globale" delle variabili esogene e predeterminate (nello stesso ordine con cui compaiono in <@ref="$sysB">). Se l'ultimo modello è un VAR, restituisce la lista dei regressori esogeni, laddove presenti. 
+
+# $xtxinv access
+Risultato: 	matrice 
+
+Quando segue la stima di un VAR o di un VECM, restituisce <@itl="X'X"><@sup="-1">, dove <@itl="X"> è la matrice comune dei regressori usati in ciascuna delle equazioni. Questo accessore non è disponibile per un VECM stimato con una restrizione imposta su α, la matrice dei "loading". 
+
+# $yhat access
+Risultato: 	serie 
+
+Restituisce i valori stimati dall'ultima regressione. 
+
+# $ylist access
+Risultato: 	lista 
+
+Se l'ultimo modello stimato è un VAR, un VECM o un sistema di equazioni simultanee, restituisce la lista delle variabili endogene nel modello. Se l'ultimo modello stimato è un'equazione singola, questo accessore fornisce una lista di un solo elemento: la variabile dipendente. Nel caso particolare di un modello biprobit la lista contiene due elementi. 
+
+## Functions proper
+
+# abs math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Valore assoluto di <@var="x">. 
+
+# acos math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Arcocoseno di <@var="x">, ossia il numero il cui coseno è <@var="x">. Il risultato è in radianti; l'argomento deve essere compreso fra –1 e 1. 
+
+# acosh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce l'arcoseno iperbolico di <@var="x"> (soluzione positiva). <@var="x"> deve essere maggiore di 1; in caso contrario, viene restituito NA. Vedi anche <@ref="cosh">. 
+
+# aggregate stats
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (serie o lista)
+		<@var="byvar">  (serie o lista)
+		<@var="funcname">  (stringa)
+
+Nella versione più semplice, in cui sia <@var="x"> sia <@var="byvar"> sono singole variabili, questa funzione restituisce una matrice con tre colonne: la prima contiene i valori distinti di <@var="byvar">, ordinati in senso crescente; la seconda contiene il numero delle osservazioni in cui <@var="byvar"> assume ciascuno di questi valori; la terza, infine, contiene i valori della statistica specificata da <@var="funcname">, calcolata sulla variabile <@var="x"> usando solo quelle osservazioni per cui <@var="byvar"> assume il valore specificato nella prima colonna. 
+
+Più in generale, se <@var="byvar"> è una lista di <@itl="n"> elementi, allora le prime <@itl="n"> colonne da sinistra contengono le combinazioni dei valori distinti di ciascuna delle <@itl="n"> variabili, mentre la colonna immediatamente successiva contiene il numero delle osservazioni in cui ciascuna combinazione ricorre. Se <@var="x"> è una lista con <@itl="m"> elementi, allora le <@itl="m"> colonne più a destra contengono i valori della statistica specificata da <@var="funcname"> per ciascuna delle variabili <@var="x">, calcolati sul sottocampione individuato dalle prime colonne. 
+
+I seguenti valori di <@var="funcname"> sono supportati "in modo nativo": <@ref="sum">, <@ref="sumall">, <@ref="mean">, <@ref="sd">, <@ref="var">, <@ref="sst">, <@ref="skewness">, <@ref="kurtosis">, <@ref="min">, <@ref="max">, <@ref="median">, <@ref="nobs"> e <@ref="gini">. Ciascuna di queste funzioni accetta come argomento una variabile e restituisce uno scalare, e in tal senso può dirsi che "aggrega" la variabile in un qualche modo. È anche possibile inserire il nome di una funzione definita dall'utente come aggregatore; come le funzioni supportate in modo nativo, tale funzione deve accettare come argomento una singola variabile e ritornare uno scalare. 
+
+Si noti che, benché il conteggio dei casi sia fornito automaticamente, la funzione <@lit="nobs"> non è ridondante come aggregatore, poiché fornisce il numero di osservazioni valide (non-missing) in <@var="x"> per ciascuna combinazione <@var="byvar">. 
+
+Come semplice esempio, si supponga che <@lit="region"> sia la codifica di regioni geografiche con valori interi da 1 ad <@itl="n"> e <@lit="income"> il reddito familiare. Allora quanto segue produrrà una matrice <@itl="n">×3 contenente: nella prima colonna, i codici delle regioni; nella seconda, il numero delle osservazioni in ciascuna regione; nella terza, il reddito familiare medio per regione: 
+
+<code>          
+      matrix m = aggregate(income, region, mean)
+</code>
+
+Per un esempio che utilizza liste, si ipotizzi che <@lit="gender"> sia una variabile dummy maschio/femmina e <@lit="race"> una variabile categoriale con tre possibili valori. Allora quanto segue genererà una matrice con 6 righe e 5 colonne: le prime due colonne conterranno le combinazioni possibili gender/race; quella centrale il numero di osservazioni di ciascuna di queste combinazioni; e le ultime due la deviazione standard campionaria di <@lit="income"> e <@lit="age">: 
+
+<code>          
+      list BY = gender race
+      list X = income age
+      matrix m = aggregate(X, BY, sd)
+</code>
+
+Si noti che, nel caso in cui <@var="byvar"> sia una lista, alcune combinazioni dei valori di <@var="byvar"> potrebbero non essere presenti nei dati (il numero di osservazioni sarà zero). In tal caso, il valore delle statistiche per <@var="x"> viene registrato come <@lit="NaN"> (Not a Number). Nel caso si voglia non considerare tali casi, si può utilizzare la funzione <@ref="selifr"> per selezionare solo le righe associate ad un numero di osservazioni diverso da zero. Nel caso in cui <@var="byvar"> contenga <@itl="n"> elementi, la colonna da testare sarà quella immediatamente a destra delle prime <@itl="n"> colonne partendo da sinistra. Possiamo quindi eseguire il seguente codice: 
+
+<code>          
+      matrix m = aggregate(X, BY, sd)
+      scalar c = nelem(BY)
+      m = selifr(m, m[,c+1])
+</code>
+
+# argname strings
+Risultato: 	stringa 
+Argomento: 	<@var="s">  (stringa)
+
+Per <@var="s">, il nome di un parametro in una funzione definita dall'utente, restituisce il nome del corrispondente argomento, o una stringa vuota se l'argomento era anonimo. 
+
+# asin math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce l'arcoseno di <@var="x">, cioè, il valore il cui seno è <@var="x">. Il risultato è in radianti; l'input deve essere tra –1 e 1, estremi compresi. 
+
+# asinh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce l'arcoseno iperbolico di <@var="x">. Vedi anche <@ref="sinh">. 
+
+# atan math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Funzione arcotangente di <@var="x">, ossia il valore la cui tangente è <@var="x">. Il risultato è in radianti. Vedi anche <@ref="cos">, <@ref="sin">, <@ref="tan">. 
+
+# atanh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce l'arcotangente iperbolica di <@var="x">. Vedi anche <@ref="tanh">. 
+
+# atof strings
+Risultato: 	scalare 
+Argomento: 	<@var="s">  (stringa)
+
+Analoga alla funzione della libreria C con lo stesso nome. Restituisce il risultato della conversione della stringa <@var="s"> (o della porzione di essa che segue qualsiasi spazio iniziale) in un numero a virgola mobile. In modo diverso dalla funzione <@lit="atof"> in C, comunque, per questioni di portabilità, si assume sempre che il carattere decimale sia "<@lit=".">". Qualsiasi carattere che segue la porzione di <@var="s"> convertita in numero decimale a virgola mobile sotto questa assunzione è ignorata. 
+
+Se nessuna porzione di <@var="s"> (che segue qualsiasi spazio iniziale) risulta convertibile sotto le suddette assunzioni, la funzione restituisce <@lit="NA">. 
+
+<code>          
+      # examples
+      x = atof("1.234") # gives x = 1.234 
+      x = atof("1,234") # gives x = 1
+      x = atof("1.2y")  # gives x = 1.2
+      x = atof("y")     # gives x = NA
+      x = atof(",234")  # gives x = NA
+</code>
+
+Si veda anche <@ref="sscanf"> per modalità più flessibili di conversione da stringa a numero. 
+
+# bessel math
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="type">  (carattere)
+		<@var="v">  (scalare)
+		<@var="x">  (scalare, serie o matrice)
+
+Calcola una delle varianti della funzione di Bessel di ordine <@var="v"> con argomento <@var="x">. Il valore restituito è dello stesso tipo dell'argomento <@var="x">. La variante specifica della funzione è selezionata sulla base del primo argomento, che deve essere <@lit="J">, <@lit="Y">, <@lit="I">, o <@lit="K">. Una buona discussione delle funzioni di Bessel si trova su Wikipedia; qui forniamo una breve sintesi. 
+
+caso <@lit="J">: Funzione di Bessel del primo tipo. Ricorda un'onda sinusoidale smorzata. Definita per reali. Tuttavia, se <@var="x"> è negativo, <@var="v"> deve essere un numero intero. 
+
+caso <@lit="Y">: Funzione di Bessel del secondo tipo. Definita per <@var="v"> e <@var="x"> reali, ma ha una singolarità a <@var="x"> = 0. 
+
+caso <@lit="I">: Funzione di Bessel modificata del primo tipo. Una funzione con crescita esponenziale. Gli argomenti accettati sono gli stessi del caso <@lit="J">. 
+
+caso <@lit="K">: Funzione di Bessel modificata del secondo tipo. Una funzione con decadimento esponenziale. Diverge a <@var="x"> = 0 e non è definita per valori negativi di <@var="x">. È simmetrica attorno a <@var="v"> = 0. 
+
+# BFGSmax numerical
+Risultato: 	scalare 
+Argomenti:	<@var="b">  (vettore)
+		<@var="f">  (function call)
+		<@var="g">  (function call, opzionale)
+
+Massimizzazione numerica con il metodo di Broyden, Fletcher, Goldfarb e Shanno. Il vettore <@var="b"> deve contenere i valori iniziali di un insieme di parametri, mentre la stringa <@var="s"> deve specificare la chiamata a una funzione che calcola il criterio (scalare) da massimizzare, dati i valori correnti dai parametri e qualsiasi altro dato rilevante. Se l'oggetto è di fatto una minimizzazione, è sufficiente ridefinire la funzione chiamata in modo che restituisca il criterio cambiato di segno. In caso di successo, <@lit="BFGSmax"> restituisce il valore massimizzato del criterio, e <@var="b"> contiene i valori dei parametri associati al valore del criterio restituito. 
+
+Il terzo argomento opzionale permette di fornire le derivate analitiche (in caso contrario il gradiente è calcolato numericamente). La chiamata della funzione del gradiente <@var="g"> deve avere come primo argomento una matrice predefinita con dimensioni identiche a quelle del gradiente, indicata con un puntatore. Inoltre deve accettare il vettore dei parametri fra gli argomenti (come puntatore o altro). Gli altri argomenti sono opzionali. 
+
+Per maggiori dettagli ed esempi, si veda il capitolo sui metodi numerici in <@pdf="la guida all'uso di gretl">. Vedi anche <@ref="NRmax">, <@ref="fdjac">, <@ref="simann">. 
+
+# bkfilt filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="f1">  (integer, opzionale)
+		<@var="f2">  (integer, opzionale)
+		<@var="k">  (integer, opzionale)
+
+Restituisce il risultato dell'applicazione del filtro passa banda di Baxter–King alla variabile <@var="y">. I parametri opzionali <@var="f1"> e <@var="f2"> rappresentano, rispettivamente, i limiti inferiore e superiore delle frequenze da estrarre, mentre <@var="k"> è l'ordine dell'approssimazione da usare. Se questi argomenti non sono forniti, vengono usati i seguenti valori di default: <@var="f1"> = 8, <@var="f1"> = 32, <@var="k"> = 8. Vedi anche <@ref="bwfilt">, <@ref="hpfilt">. 
+
+# boxcox filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="d">  (scalare)
+
+Restituisce la trasformazione Box–Cox con parametro <@var="d"> della variabile positiva <@var="y">. 
+
+La variabile trasformata è (<@itl="y"><@sup="d"> - 1)/<@itl="d"> per <@itl="d"> diverso da zero, o log(<@itl="y">) per <@itl="d"> = 0. 
+
+# bread data-utils
+Risultato: 	bundle 
+Argomenti:	<@var="nomefile">  (stringa)
+		<@var="import">  (boolean, opzionale)
+
+Legge un bundle da un file di testo. la stringa <@var="nomefile"> deve contenere il nome del file da cui deve essere letta il bundle. Se questo nome ha estensione "<@lit=".gz">", si assume che il file sia stato creato con compressione gzip. 
+
+Il file in questione dev'essere un file XML appropriatamente definito: esso deve contenere un elemento <@lit="gretl-bundle">, usato a sua volta per contenere zero o più elementi <@lit="bundled-item">. Ad esempio: 
+
+<code>          
+      <?xml version="1.0" encoding="UTF-8"?>
+      <gretl-bundle name="temp">
+        <bundled-item key="s" type="string">moo</bundled-item>
+        <bundled-item key="x" type="scalar">3</bundled-item>
+      </gretl-bundle>
+</code>
+
+Come ci si può aspettare, file di questo tipo vengono generati automaticamente dalla funzione complementare <@ref="bwrite">. 
+
+Se viene indicato un valore non nullo per l'argomento opzionale <@var="import">, la ricerca del file di input avviene all'interno della directory "dot" dell'utente. In questo caso l'argomento <@var="fname"> dovrebbe essere semplicemente un nome di file, senza indicazione del percorso. 
+
+Se dovesse verificarsi un errore (per esempio dovuto al fatto che il file è inaccessibile o mal formattato) l'accessore <@ref="$error"> risulterà non-zero. 
+
+Vedi anche <@ref="mread">, <@ref="bwrite">. 
+
+# bwfilt filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="n">  (integer)
+		<@var="omega">  (scalare)
+
+Restituisce il risultato dell'applicazione di un filtro passa-basso Butterworth di ordine <@var="n"> e frequenza di taglio <@var="omega"> alla variabile <@var="y">. La frequenza di taglio è espressa in gradi e deve essere maggiore di 0 e minore di 180. Frequenze di taglio minori restringono il passa banda alle frequenze minori e quindi producono trend più smussati. Valori maggiori di <@var="n"> producono un taglio più netto, al costo di una possibile instabilità numerica. 
+
+L'esame del periodogramma della variabile target è un passo preliminare utile quando si vuole applicare questa funzione. Si veda <@pdf="la guida all'uso di gretl"> per i dettagli. Vedi anche <@ref="bkfilt">, <@ref="hpfilt">. 
+
+# bwrite data-utils
+Risultato: 	integer 
+Argomenti:	<@var="B">  (bundle)
+		<@var="fname">  (stringa)
+		<@var="export">  (boolean, opzionale)
+
+Copia il bundle <@var="B"> in un file XML di nome <@var="fname">. Per una sommaria descrizione del suo formato, si veda la funzione <@ref="bread">. Se il file <@var="fname"> esiste già verrà sovrascritto. Il valore restituito è 0 in caso l'esecuzione venga portata a termine correttamente; se si verifica un errore, per esempio dovuto al fatto che il file non può essere sovrascritto, il valore restituito sarà non nullo. 
+
+Se viene indicato un valore non nullo per l'argomento <@var="export">, il file di output sarà salvato nella directory "dot" dell'utente. In questo caso è necessario indicare come secondo argomento il nome del file privo del percorso. 
+
+Vedi anche <@ref="bread">, <@ref="mwrite">. 
+
+# cdemean stats
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Centra le colonne della matrice <@var="X"> attorno alla loro media. 
+
+# cdf probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="c">  (carattere)
+		<@var="…">  (vedi sotto)
+		<@var="x">  (scalare, serie o matrice)
+Esempi: 	<@lit="p1 = cdf(N, -2.5)">
+		<@lit="p2 = cdf(X, 3, 5.67)">
+		<@lit="p3 = cdf(D, 0.25, -1, 1)">
+
+Calcola funzioni di ripartizione. Restituisce <@itl="P(X < x)">, dove la distribuzione di <@itl="X"> è determinata dal carattere <@var="c">. Tra gli argomenti <@var="c"> e <@var="x">, possono essere richiesti parametri aggiuntivi a seconda della distribuzione, come specificato qui di seguito. 
+
+<indent>
+• Normale standard (c = z, n, or N): nessun argomento supplementare 
+</indent>
+
+<indent>
+• Normale bivariata (D): coefficiente di correlazione 
+</indent>
+
+<indent>
+• t di Student (t): gradi di libertà 
+</indent>
+
+<indent>
+• Chi quadro (c, x, or X): gradi di libertà 
+</indent>
+
+<indent>
+• F di Snedecor (f or F): gradi di libertà (num.); gradi di libertà (den.) 
+</indent>
+
+<indent>
+• Gamma (g or G): forma; scala 
+</indent>
+
+<indent>
+• Binomiale (b or B): probabilità; numero di prove 
+</indent>
+
+<indent>
+• Poisson (p or P): Media 
+</indent>
+
+<indent>
+• Weibull (w or W): forma; scala 
+</indent>
+
+<indent>
+• Generalized Error (E): forma 
+</indent>
+
+La maggior parte delle distribuzioni usano degli alias per rendere più agevole la memorizzazione dei codici. Il caso della normale bivariata è particolare: la sintassi è <@lit="x = cdf(D, rho, z1, z2)"> dove <@lit="rho"> è la correlazione fra <@lit="z1"> e <@lit="z2">. 
+
+Vedi anche <@ref="pdf">, <@ref="critical">, <@ref="invcdf">, <@ref="pvalue">. 
+
+# cdiv linalg
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="Y">  (matrice)
+
+Divisione complessa. I due argomenti devono avere lo stesso numero di righe, <@itl="n">, e una o due colonne. La prima colonna contiene la parte reale e l'eventuale seconda quella immaginaria. Restituisce una matrice <@itl="n">×2 oppure, se la parte immaginaria del risultato è nulla, un vettore a <@itl="n"> elementi. Vedi anche <@ref="cmult">. 
+
+# ceil math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Parte intera superiore: restituisce il più piccolo numero intero maggiore o uguale a <@var="x">. Vedi anche <@ref="floor">, <@ref="int">. 
+
+# cholesky linalg
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice definita positiva)
+
+Esegue la decomposizione di Cholesky della matrice <@var="A">, assunta simmetrica e definita positiva. Il risultato è una matrice triangolare inferiore <@itl="K"> che soddisfa <@itl="A = KK'">. La funzione restituisce un errore se <@var="A"> non è simmetrica o definita positiva. 
+
+# chowlin transforms
+Risultato: 	matrice 
+Argomenti:	<@var="Y">  (matrice)
+		<@var="xfac">  (integer)
+		<@var="X">  (matrice, opzionale)
+
+Espande i dati in ingresso, <@var="Y">, a una frequenza maggiore, usando il metodo di interpolazione di <@bib="Chow e Lin (1971);chowlin71">. Si assume che le colonne di <@var="Y"> rappresentino serie di dati; la matrice restituita ha tante colonne quante sono le colonne di <@var="Y"> e tante righe quante sono quelle di <@var="Y"> moltiplicate per <@var="xfac">. 
+
+Il secondo argomento rappresenta il fattore di espansione: deve essere 3 per espandere la frequenza della serie da trimestrale a mensile, o 4 per espansioni da annuale a trimestrale. Questi sono gli unici fattori di espansione supportati. Il terzo argomento opzionale può essere utilizzato per generare una matrice di regressori con una frequenza (obiettivo) maggiore. 
+
+I regressori utilizzati di default sono una costante e un trend quadratico. Se viene fornita <@var="X">, le sue colonne sono utilizzate come regressori addizionali; è un errore se il numero di righe in <@var="X"> non è uguale a <@var="xfac"> per il numero di righe in <@var="Y">. 
+
+# cmult linalg
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="Y">  (matrice)
+
+Moltiplicazione complessa. I due argomenti devono avere lo stesso numero di righe, <@itl="n">, e una o due colonne. La prima colonna contiene la parte reale e l'eventuale seconda quella immaginaria. Restituisce una matrice <@itl="n">×2 oppure, se la parte immaginaria del risultato è nulla, un vettore a <@itl="n"> elementi. Vedi anche <@ref="cdiv">. 
+
+# cnorm probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la funzione di distribuzione cumulativa di una normale standard. Vedi anche <@ref="dnorm">, <@ref="qnorm">. 
+
+# colname strings
+Risultato: 	stringa 
+Argomenti:	<@var="M">  (matrice)
+		<@var="col">  (integer)
+
+Restituisce il nome della colonna <@var="col"> della matrice <@var="M">. Se <@var="M"> non ha nomi associati alle colonne, la funzione restituisce una stringa vuota; se <@var="col"> è fuori dai limiti per la matrice data, viene restituito un messaggio di errore. Si veda anche <@ref="colnames">. 
+
+# colnames matbuild
+Risultato: 	scalare 
+Argomenti:	<@var="M">  (matrice)
+		<@var="s">  (lista o stringa)
+
+Attribuisce dei nomi alle colonne della matrice <@var="M"> di dimensioni <@itl="T">×<@itl="k">. Se <@var="s"> è una lista, i nomi sono copiati da quelli delle variabili; la lista deve avere tanti elementi quante sono le colonne di <@var="M">. Se <@var="s"> è una stringa, deve contenere un numero appropriato di sub-stringhe separate da spazi. Restituisce 0 se la funzione è andata a buon fine, non-zero altrimenti. Si veda anche <@ref="rownames">. 
+
+Esempio: 
+
+<code>          
+      matrix M = {1,2;2,1;4,1}
+      colnames(M, "Col1 Col2")
+      print M
+</code>
+
+# cols matshape
+Risultato: 	integer 
+Argomento: 	<@var="X">  (matrice)
+
+Il numero di colonne di <@var="X">. Vedi anche <@ref="mshape">, <@ref="rows">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# corr stats
+Risultato: 	scalare 
+Argomenti:	<@var="y1">  (serie o vettore)
+		<@var="y2">  (serie o vettore)
+
+Calcola il coefficiente di correlazione fra <@var="y1"> e <@var="y2">. Gli argomenti dovrebbero essere due variabili o due vettori con la stessa lunghezza. Vedi anche <@ref="cov">, <@ref="mcov">, <@ref="mcorr">. 
+
+# corrgm stats
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (serie, matrice o lista)
+		<@var="p">  (integer)
+		<@var="y">  (serie o vettore, opzionale)
+
+Se sono forniti solo i primi due argomenti, calcola il correlogramma di <@var="x"> con ritardi da 1 a <@var="p">. Il valore restituito è una matrice con <@var="p"> righe e 2<@itl="k"> colonne, dove <@itl="k"> è il numero di elementi di <@var="x">, ovvero: 1 se <@var="x"> è una variabile; il numero di colonne di <@var="x"> se <@var="x"> è una matrice; il numero degli elementi di <@var="x"> se <@var="x"> è una lista. Le prime <@itl="k"> colonne della matrice restituita contengono le autocorrelazioni, mentre le restanti colonne le rispettive autocorrelazioni parziali. 
+
+Se è fornito un terzo argomento, questa funzione calcola il correlogramma incrociato per ciascuno dei <@itl="k"> elementi di <@var="x"> e <@var="y">, dagli anticipi ("lead") di ordine <@var="p"> fino ai ritardi ("lag") di ordine <@var="p">. La matrice restituita ha 2<@itl="p"> + 1 righe e <@itl="k"> colonne. Se <@var="x"> è una variabile o una lista e <@var="y"> un vettore, il vettore deve avere tante righe quante sono le osservazioni nell'intervallo del campione corrente. 
+
+# cos math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce il coseno di <@var="x">. Vedi anche <@ref="sin">, <@ref="tan">, <@ref="atan">. 
+
+# cosh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce il coseno iperbolico di <@var="x">. 
+
+Vedi anche <@ref="acosh">, <@ref="sinh">, <@ref="tanh">. 
+
+# cov stats
+Risultato: 	scalare 
+Argomenti:	<@var="y1">  (serie o vettore)
+		<@var="y2">  (serie o vettore)
+
+Calcola la covarianza fra <@var="y1"> e <@var="y2">. Gli argomenti dovrebbbero essere due variabili o due vettori con lo stesso numero di elementi. Vedi anche <@ref="corr">, <@ref="mcov">, <@ref="mcorr">. 
+
+# critical probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="c">  (carattere)
+		<@var="…">  (vedi sotto)
+		<@var="p">  (scalare, serie o matrice)
+Esempi: 	<@lit="c1 = critical(t, 20, 0.025)">
+		<@lit="c2 = critical(F, 4, 48, 0.05)">
+
+Calcola i valori critici, ossia <@itl="x"> tale che <@itl="P(X > x) = p">, dove la distribuzione di <@itl="X"> è determinata dal carattere <@var="c">. Tra gli argomenti <@var="c"> e <@var="x">, possono essere richiesti parametri aggiuntivi a seconda della distribuzione, come specificato qui di seguito. 
+
+<indent>
+• Normale standard (c = z, n, or N): nessun argomento addizionale 
+</indent>
+
+<indent>
+• t di Student (t): gradi di libertà 
+</indent>
+
+<indent>
+• Chi quadro (c, x, or X): gradi di libertà 
+</indent>
+
+<indent>
+• F di Snedecor (f or F): gradi di libertà (num.); gradi di libertà (den.) 
+</indent>
+
+<indent>
+• Binomiale (b or B): probabilità; numero di prove 
+</indent>
+
+<indent>
+• Poisson (p or P): Media 
+</indent>
+
+Vedi anche <@ref="cdf">, <@ref="invcdf">, <@ref="pvalue">. 
+
+# cum transforms
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (serie o matrice)
+
+Calcola la somma cumulata di <@var="x">. Se <@var="x"> è una variabile, restituisce una variabile <@itl="y"> in cui ciascuno degli elementi è la somma dei valori di <@var="x"> fino a quel punto; il primo termine della somma è la prima osservazione non mancante (non-missing) nel campione corrente. Se <@var="x"> è una matrice, la somma cumulata viene calcolata per ciascuna delle colonne. 
+
+Vedi anche <@ref="diff">. 
+
+# deseas filters
+Risultato: 	serie 
+Argomenti:	<@var="x">  (serie)
+		<@var="c">  (carattere, opzionale)
+
+Richiede che TRAMO/SEATS o X-12-ARIMA siano installati. Restituisce la serie <@var="x"> destagionalizzata. La serie in ingresso <@var="x"> deve essere trimestrale o mensile. Per usare X-12-ARIMA inserire <@lit="X"> come secondo argomento; per usare TRAMO inserire <@lit="T">. Se il secondo argomento è omesso, è utilizzato X-12-ARIMA. 
+
+Se la variabile in ingresso non possiede una componente stagionale identificabile, la funzione fallisce. Si noti che sia TRAMO/SEATS sia X-12-ARIMA hanno numerose opzioni; <@lit="deseas"> richiama i due programmi con tutte le opzioni ai valori predefiniti. In entrambi i programmi i fattori stagionali sono calcolati sulla base di un modello ARIMA selezionato automaticamente. Una differenza tra i due programmi, che a volte produce differenze sostanziali nei risultati, è che per impostazione predefinita TRAMO compie un aggiustamento preventivo per gli outlier, al contrario di X-12-ARIMA che non lo fa. 
+
+# det linalg
+Risultato: 	scalare 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce il determinante di <@var="A">, calcolato tramite la scomposizione LU. Vedi anche <@ref="ldet">, <@ref="rcond">. 
+
+# diag matbuild
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce la diagonale principale di <@var="X"> in un vettore colonna. Nota: se <@var="X"> è una matrice <@itl="m">×<@itl="n">, il numero di elementi del vettore risultato è min(<@itl="m">, <@itl="n">). Vedi anche <@ref="tr">. 
+
+# diagcat matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice)
+		<@var="B">  (matrice)
+
+Restituisce la somma diretta di <@var="A"> e <@var="B">, ossia una matrice che ha <@var="A"> nell'angolo nord-ovest e <@var="B"> in quello sud-est. Se <@var="A"> e <@var="B"> sono entrambe quadrate, la matrice risultato è diagonale a blocchi. 
+
+# diff transforms
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="y">  (serie, matrice o lista)
+
+Calcola le differenze prime. Se <@var="y"> è una variabile, o una lista di variabili, i valori iniziali restituiti sono <@lit="NA">. Se <@var="y"> è una matrice, le differenze prime sono calcolate per colonna e i valori iniziali restituiti sono 0. 
+
+Vedi anche <@ref="cum">, <@ref="ldiff">, <@ref="sdiff">. 
+
+# digamma math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la funzione digamma (o Psi) di <@var="x">, cioè la derivata del logaritmo della funzione Gamma. 
+
+# dnorm probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la funzione di densità di una normale standard in <@var="x">. Per calcolare la densità di una distribuzione normale non standardizzata in <@itl="x">, applicate la funzione To get the density for a non-standard <@lit="dnorm"> allo <@itl="z">-score di <@itl="x"> e moltiplicate il risultato così ottenuto per lo Jacobiano della trasformazione <@itl="z">, 1/σ, come illustrato nell'esempio seguente: 
+
+<code>          
+      mu = 100
+      sigma = 5
+      x = 109
+      fx = (1/sigma) * dnorm((x-mu)/sigma)
+</code>
+
+Vedi anche <@ref="cnorm">, <@ref="qnorm">. 
+
+# dsort matshape
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (serie o vettore)
+
+Ordina <@var="x"> in ordine discendente, saltando le osservazioni con valori mancanti se <@var="x"> è una variabile. Vedi anche <@ref="sort">, <@ref="values">. 
+
+# dummify transforms
+Risultato: 	lista 
+Argomenti:	<@var="x">  (serie)
+		<@var="omitval">  (scalare, opzionale)
+
+L'argomento <@var="x"> deve essere una variabile discreta. Questa funzione crea un insieme di variabili dummy (o binarie) che codificano i valori distinti della variabile. Per impostazione predefinita, il valore più piccolo della variabile originale è preso come categoria di riferimento e per tale valore non viene restituita alcuna dummy. 
+
+Il secondo argomento, opzionale, rappresenta il valore di <@var="x"> che deve essere assunto come categoria di riferimento, e quindi da omettere. L'effetto che si ottiene inserendo un solo argomento e tralasciando quello opzionale è equivalente a <@lit="dummify(x, min(x))">. Al fine di generare l'insieme completo delle dummy, non omettendo alcuna categoria, è possibile utilizzare il comando <@lit="dummify(x, NA)">. 
+
+Le variabili generate sono nominate in modo automatico secondo lo schema <@lit="D"><@var="varname"><@lit="_"><@var="i">, dove <@var="varname"> è il nome della variabile originale e <@var="i"> un indice in cui il valore iniziale è 1 ("1-based index"). Il nome originale della variabile è troncato se necessario e può essere modificato in caso di non unicità nell'insieme dei nomi così generato. 
+
+# easterday calendar
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Dato l'anno in <@var="x">, ritorna la data di Pasqua nel calendario gregoriano sotto forma dello scalare <@itl="mese + giorno/100">. Si not che, per questa convenzione, il 10 aprile è 4.1; quindi, 4.2 sarà il 20 aprile, non il 2 (che sarebbe 4.02). 
+
+<code>          
+      scalar e = easterday(2014)
+      scalar m = floor(e)
+      scalar d = 100*(e-m)
+</code>
+
+# eigengen linalg
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice quadrata)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+
+Calcola gli autovalori, e, se richiesto, gli autovettori destri della matrice <@itl="n">×<@itl="n"> <@var="A">. Se tutti gli autovalori sono reali, la funzione restituisce una matrice <@itl="n">×1; in caso contrario, il risultato è una matrice <@itl="n">×2, dove la prima colonna contiene le parti reali degli autovalori, mentre la seconda le corrispondenti parti immaginarie. 
+
+Il secondo argomento può essere il nome di una matrice esistente preceduto da <@lit="&"> (per indicare l'"indirizzo" della matrice in questione), e in tal caso gli autovettori destri vengono scritti in questa matrice, oppure la parola chiave <@lit="null">, e in tal caso gli autovettori non vengono riportati. 
+
+Quando il secondo argomento è diverso da <@lit="null">, la matrice stessa è sovrascritta (non è necessario abbia la dimensione giusta per ricevere il risultato). La matrice risultante è organizzata come segue: 
+
+<indent>
+• Se l'<@itl="i">-esimo autovalore è reale, l'<@itl="i">-esima colonna di <@itl="U"> conterrà l'autovettore corrispondente; 
+</indent>
+
+<indent>
+• Se l'<@itl="i">-esimo autovalore è complesso, l'<@itl="i">-esima colonna di <@var="U"> conterrà la parte reale dell'autovettore corrispondente e la colonna successiva la parte immaginaria. L'autovettore associato all'autovalore coniugato è il coniugato dell'autovettore. 
+</indent>
+
+In altre parole, gli autovettori compaiono nello stesso ordine degli autovalori, ma gli autovettori reali occupano una colonna, mentre quelli complessi ne occupano due (la parte reale è la prima); il numero totale di colonne è comunque <@itl="n">, perché l'autovettore coniugato è tralasciato. 
+
+Vedi anche <@ref="eigensym">, <@ref="eigsolve">, <@ref="qrdecomp">, <@ref="svd">. 
+
+# eigensym linalg
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice simmetrica)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+
+Funziona esattamente come <@ref="eigengen">, ma l'argomento <@var="A"> deve essere una matrice simmetrica (in questo caso i calcoli possono essere semplificati). Gli autovalori sono riportati in ordine crescente. 
+
+# eigsolve linalg
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice simmetrica)
+		<@var="B">  (matrice simmetrica)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+
+Risolve il problema degli autovalori generalizzati |<@itl="A"> – λ<@itl="B">| = 0, dove sia <@itl="A"> sia <@itl="B"> sono matrici simmetriche e <@itl="B"> è definita positiva. Gli autovalori vengono restituiti direttamente, ordinati in senso crescente. Il terzo argomento opzionale deve essere il nome di una matrice esistente preceduto da <@lit="&">. In tal caso, la funzione calcola anche gli autovettori generalizzati, che vengono salvati nella suddetta matrice. 
+
+# epochday calendar
+Risultato: 	scalare o serie 
+Argomenti:	<@var="anno">  (scalare o serie)
+		<@var="mese">  (scalare o serie)
+		<@var="giorno">  (scalare o serie)
+
+Ha come argomenti l'anno, il mese e il giorno e restituisce il numero di giorni nell'epoca corrente (che è uguale ad 1 per il 1 gennaio dell'anno 1 d.C.), ed è pari a 733786 al 01-01-2010. Se qualcuno degli argomenti è fornito sotto forma di variabile il valore restituito è una variabile, in caso contrario uno scalare. 
+
+Per la funzione inversa, v. <@ref="isodate">. 
+
+# errmsg strings
+Risultato: 	stringa 
+Argomento: 	<@var="errno">  (integer)
+
+Recupera il messaggio di errore di gretl associato a <@var="errno">. Si veda anche <@ref="$error">. 
+
+# exp math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce <@itl="e"><@sup="x">. Si noti che nel caso di una matrice la funzione è calcolata elemento per elemento. Per il calcolo dell'esponenziale di una matrice, si veda <@ref="mexp">. 
+
+# fcstats stats
+Risultato: 	matrice 
+Argomenti:	<@var="y">  (serie o vettore)
+		<@var="f">  (serie o vettore)
+
+Restituisce un vettore colonna contenente diverse statistiche utili per valutare la variabile <@var="f"> come previsione della variabile <@var="y"> nel campione corrente. Al posto delle due variabili, la funzione accetta come argomenti anche due vettori della stessa lunghezza. 
+
+La struttura del vettore restituito è la seguente: 
+
+<code>          
+      1  Errore Medio (Mean Error, ME)
+      2  Errore Quadratico Medio (Mean Squared Error, MSE)
+      3  Errore Medio Assoluto (Mean Absolute Error, MAE)
+      4  Errore Medio Percentuale (Mean Percentage Error, MPE)
+      5  Errore Medio Assoluto Percentuale (Mean Absolute Percentage Error, MAPE)
+      6  Coefficiente U di Theil (Theil's U) 
+      7  Proporzione della distorsione (Bias proportion, UM)
+      8  Proporzione della regressione (Regression proportion, UR)
+      9  Proporzione del disturbo (Disturbance proportion, UD)
+</code>
+
+Per maggiori dettagli sul calcolo di queste statistiche e l'interpretazione dei valori del coefficiente <@itl="U">, si veda <@pdf="la guida all'uso di gretl">. 
+
+# fdjac numerical
+Risultato: 	matrice 
+Argomenti:	<@var="b">  (vettore colonna)
+		<@var="fcall">  (function call)
+
+Calcola un'approssimazione numerica allo jacobiano associato al vettore <@var="b"> (con <@itl="n">elementi) e la trasformazione definita dall'argomento <@var="fcall">. Questa funzione deve avere <@var="b"> come suo primo argomento (in forma di puntatore o no), seguito da eventuali altri parametri, se necessario; deve restituire una matrice <@itl="m">×1. Se il comando va a buon fine, verrà restituita una matrice <@itl="m">×<@itl="n"> contenente lo jacobiano. Ad esempio: 
+
+<code>          
+      matrix J = fdjac(theta, myfunc(&theta, X))
+</code>
+
+La funzione può usare tre metodi diversi: differenza in avanti, differenza bilaterale o un'estrapolazione di Richardson a 4 nodi. Rispettivamente: 
+
+<@itl="J"><@sub="0"> = <@itl="(f(x+h) - f(x))/h"> 
+
+<@itl="J"><@sub="1"> = <@itl="(f(x+h) - f(x-h))/2h"> 
+
+<@itl="J"><@sub="2"> = <@itl="[8 (f(x+h) - f(x-h)) - (f(x+2h) - f(x-2h))] /12h"> 
+
+Queste tre alternative, in generale, rappresentano un compromesso diverso fra velocità e accuratezza. Per scegliere quale metodo usare, il comando <@xrf="set"> consente di impostare a 0, 1 o 2 la variabile <@lit="fdjac_quality">. 
+
+Per maggiori dettagli ed esempi si veda il capitolo sulle funzioni speciali in <@lit="genr"> in <@pdf="la guida all'uso di gretl">. 
+
+Vedi anche <@ref="BFGSmax">, <@xrf="set">. 
+
+# fft linalg
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Trasformata discreta reale di Fourier. Se la matrice di input <@var="X"> ha <@itl="n"> colonne, l'output avrà 2<@itl="n"> colonne, dove le parti reali sono salvate nelle colonne dispari e le parti complesse nelle colonne pari. 
+
+Se fosse necessario calcolare la trasformata di Fourier su diversi vettori con lo stesso numero di elementi, è numericamente più efficiente raggrupparli in una matrice piuttosto che invocare <@lit="fft"> separatamente per ciascuno di essi. Vedi anche <@ref="ffti">. 
+
+# ffti linalg
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Trasformata discreta reale di Fourier inversa. Si assume che <@var="X"> contenga <@itl="n"> vettori colonna complessi, con la parte reale nelle colonne pari e la parte immaginaria nelle colonne dispari: il numero totale di colonne sarà quindi pari a 2<@itl="n">. Il risultato è una matrice con <@itl="n"> colonne. 
+
+Se si desidera calcolare la trasformata di Fourier inversa su diversi vettori con lo stesso numero di elementi, è numericamente più efficiente raggrupparli in una matrice piuttosto che invocare <@lit="ffti"> separatamente per ciascuno di essi. Vedi anche <@ref="fft">. 
+
+# filter filters
+Risultato: 	serie 
+Argomenti:	<@var="x">  (serie o matrice)
+		<@var="a">  (scalare o vettore, opzionale)
+		<@var="b">  (scalare o vettore, opzionale)
+		<@var="y0">  (scalare, opzionale)
+
+Applica un filtro di tipo ARMA all'argomento <@var="x">. In formule, la trasformazione è 
+
+<@itl="y"><@sub="t"> = <@itl="a"><@sub="0"> <@itl="x"><@sub="t"> + <@itl="a"><@sub="1"> <@itl="x"><@sub="t-1"> + ... <@itl="a"><@sub="q"> <@itl="x"><@sub="t-q"> + <@itl="b"><@sub="1"> <@itl="y"><@sub="t-1"> + ... <@itl="b"><@sub="p"> <@itl="y"><@sub="t-p"> 
+
+Se l'argomento <@var="x"> è una variabile, il risultato sarà esso stesso una variabile. Se invece <@var="x"> è una matrice con <@itl="T"> righe e <@itl="k"> colonne, il risultato sarà una matrice delle stesse dimensioni, in cui il filtraggio vien fatto colonna per colonna. 
+
+I due argomenti <@var="a"> e <@var="b"> sono opzionali. Possono essere scalari, vettori o la parola chiave <@lit="null">. 
+
+Se <@var="a"> è uno scalare, viene usato come <@itl="a"><@sub="0"> e implica <@itl="q=0">; se è un vettore di <@itl="q+1"> elementi, contiene i coefficienti da <@itl="a"><@sub="0"> ad <@itl="a"><@sub="q">. Se <@var="a"> è <@lit="null"> oppure omesso, è equivalente ad <@itl="a"><@sub="0"><@itl="=1"> e <@itl="q=0">. 
+
+Se <@var="b"> è uno scalare, viene usato come <@itl="b"><@sub="1"> ed implica <@itl="p=1">; se è un vettore di <@itl="p"> elementi, essi sono interpretati come i coefficienti da <@itl="b"><@sub="1"> a <@itl="b"><@sub="p">. Se <@var="b"> è <@lit="null"> oppure omesso, è equivalente a <@itl="B(L)=1">. 
+
+L'argomento scalare opzionale <@var="y0"> rappresenta i valori di <@itl="y"> antecedenti all'inizio del campione (usato solo se <@itl="p>0">). Se omesso, si intende 0. Valori di <@var="x"> antecedenti all'inizio del campione sono sempre considerati 0. 
+
+Vedi anche <@ref="bkfilt">, <@ref="bwfilt">, <@ref="fracdiff">, <@ref="hpfilt">, <@ref="movavg">, <@ref="varsimul">. 
+
+Esempio: 
+
+<code>          
+      nulldata 5
+      y = filter(index, 0.5, -0.9, 1)
+      print index y --byobs
+      x = seq(1,5)' ~ (1 | zeros(4,1))
+      w = filter(x, 0.5, -0.9, 1)
+      print x w
+</code>
+
+produce 
+
+<code>          
+                   index            y   
+                          
+          1            1     -0.40000   
+          2            2      1.36000   
+          3            3      0.27600   
+          4            4      1.75160   
+          5            5      0.92356   
+          x (5 x 2)
+           
+            1   1 
+            2   0 
+            3   0 
+            4   0 
+            5   0 
+           
+          w (5 x 2)
+           
+              -0.40000     -0.40000 
+                1.3600      0.36000 
+               0.27600     -0.32400 
+                1.7516      0.29160 
+               0.92356     -0.26244
+</code>
+
+# firstobs data-utils
+Risultato: 	integer 
+Argomento: 	<@var="y">  (serie)
+
+Restituisce il primo valore non-mancante della variabile <@var="y">. Si noti che se si sta operando su un sottocampione ristretto, il valore ottenuto può essere più piccolo della variabile dollaro <@ref="$t1">. Vedi anche <@ref="lastobs">. 
+
+# fixname strings
+Risultato: 	stringa 
+Argomento: 	<@var="rawname">  (stringa)
+
+Destinato all'uso in relazione al comando <@xrf="join">. Restituisce il risultato della conversione di <@var="rawname"> in un identificatore gretl valido, che deve inizione con un carattere alfabetico, contenere esclusivamente caratteri (ASCII), numeri e trattino basso, e non deve eccedere i 31 caratteri. Le regole utilizzate per la conversione sono: 
+
+1. Eliminare qualsiasi carattere iniziale che non sia un carattere alfabetico. 
+
+2. Fino al limite dei 31 caratteri o al completamento dell'input: trascrivere i caratteri "legali"; saltare i caratteri "illegali" esclusi gli spazi; e sostituire uno o più spazi consecutivi con un trattino basso, a meno che il precedente carattere trascritto sia un trattino, nel qual caso lo spazio è saltato. 
+
+# floor math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="y">  (scalare, serie o matrice)
+
+Restituisce il più grande intero minore o uguale di <@var="x">. Nota: <@ref="int"> e <@lit="floor"> differiscono nel loro effetto su argomenti negativi: <@lit="int(-3.5)"> restituisce –3, mentre <@lit="floor(-3.5)"> produce –4. 
+
+# fracdiff filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="d">  (scalare)
+
+Restituisce la differenza frazionale di ordine <@var="d"> per la variabile <@var="y">. 
+
+Si noti che in teoria la differenziazione frazionale corrisponde ad un filtro infinitamente lungo. In pratica, i valori di <@itl="y"><@sub="t"> precedenti al campione estratto sono posti pari a zero. 
+
+# gammafun math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la funzione gamma di <@var="x">. 
+
+# getenv strings
+Risultato: 	stringa 
+Argomento: 	<@var="s">  (stringa)
+
+Se è definita una variabile di ambiente di nome <@var="s">, questa funzione restituisce una stringa contenente il valore di quella variabile, altrimenti restituisce una stringa vuota. Si veda anche <@ref="ngetenv">. 
+
+# getline strings
+Risultato: 	scalare 
+Argomenti:	<@var="source">  (stringa)
+		<@var="target">  (stringa)
+
+Questa funzione è usata per leggere righe successiva da <@var="source">, che dovrebbe essere una variabile stringa. Ad ogni chiamata una linea della fonte è scritta in <@var="target"> (anch'essa una variabile stringa), privata del carattere che produce una nuova linea. Il risultato è 1 se non c'è ancora qualcosa da leggere (incluse linee vuote), 0 se la lettura dalla fonte è stata completata. 
+
+Questo è un esempio in cui il contenuto di un file di testo è riportato su più righe: 
+
+<code>          
+      string s = readfile("data.txt")
+      string line
+      scalar i = 1
+      loop while getline(s, line)
+        printf "line %d = '%s'\n", i++, line
+          endloop
+</code>
+
+In questo esempio possiamo essere sicuri che la fonte è stata esaurita quando termina il ciclo. Se la fonte non può essere completata le chiamate di <@lit="getline"> dovrebbero essere seguite da una chiamata di "clean up", in cui <@var="target"> è sostituito da <@lit="null"> (o omesso) come segue 
+
+<code>          
+      getline(s, line)
+      getline(s, null)
+</code>
+
+Si noti che, anche se la posizione di lettura avanza ad ogni chiamata di <@lit="getline">, questa funzione non modifica <@var="source"> ma solo <@var="target">. 
+
+# ghk stats
+Risultato: 	matrice 
+Argomenti:	<@var="C">  (matrice)
+		<@var="A">  (matrice)
+		<@var="B">  (matrice)
+		<@var="U">  (matrice)
+
+Calcola l'approssimazione basata sull'algoritmo GHK (Geweke, Hajivassiliou, Keane) della funzione di ripartizione della normale multivariata; si veda <@bib="Geweke (1991);geweke91">. Il valore prodotto è un vettore <@itl="n">×1 di probabilità. 
+
+L'argomento <@var="C"> (<@itl="m">×<@itl="m">) deve contenere la scomposizione di Cholesky (triangolare inferiore) della matrice di covarianza delle <@itl="m"> variabili normali. Gli argomenti <@var="A"> e <@var="B"> dovrebbero essere entrambi <@itl="n">×<@itl="m">, fornendo rispettivamente il limite inferiore e superiore da applicare alle variabili per ciascuna delle <@itl="n"> osservazioni. Nel caso in cui le variabili siano illimitate, è necessario indicarlo utilizzando la costante <@ref="$huge"> o il suo opposto. 
+
+La matrice <@var="U"> deve essere di dimensione <@itl="m">×<@itl="r">, dove <@itl="r"> è il numero di estrazioni pseudo-casuali dalla distribuzione uniforme; funzioni idonee alla creazione di <@var="U"> sono <@ref="muniform"> e <@ref="halton">. 
+
+Nel seguente esempio, le variabili <@var="P"> e <@var="Q"> dovrebbero essere numericamente molto simili l'una all'altra, essendo <@var="P"> la "vera" probabilità e <@var="Q"> la sua approssimazione basata sull'algoritmo GHK: 
+
+<code>          
+      nulldata 20
+      series inf1 = -2*uniform()
+      series sup1 = 2*uniform()
+      series inf2 = -2*uniform()
+      series sup2 = 2*uniform()
+      scalar rho = 0.25
+      matrix V = {1, rho; rho, 1}
+      series P = cdf(D, rho, inf1, inf2) - cdf(D, rho, sup1, inf2) \
+      - cdf(D, rho, inf1, sup2) + cdf(D, rho, sup1, sup2)
+      C = cholesky(V)
+      U = muniform(2, 100)
+      series Q = ghk(C, {inf1, inf2}, {sup1, sup2}, U)
+</code>
+
+# gini stats
+Risultato: 	scalare 
+Argomento: 	<@var="y">  (serie)
+
+Produce l'indice di Gini per la variabile <@var="y">. 
+
+# ginv linalg
+Risultato: 	matrice 
+Argomento: 	<@var="A">  (matrice)
+
+Restituisce <@itl="A"><@sup="+">, l'inversa di Moore–Penrose o inversa generalizzata di <@var="A">, calcolata attraverso la scomposizione per valori singolari. 
+
+Questa matrice gode delle proprietà seguenti: <@itl="A"> <@itl="A"><@sup="+"> <@itl="A"> = <@itl="A"> e <@itl="A"><@sup="+"> <@itl="A"> <@itl="A"><@sup="+"> = <@itl="A"><@sup="+"> . I prodotti <@itl="A"> <@itl="A"><@sup="+"> e <@itl="A"><@sup="+"> <@itl="A">, inoltre, sono simmetrici per costruzione. 
+
+Vedi anche <@ref="inv">, <@ref="svd">. 
+
+# halton stats
+Risultato: 	matrice 
+Argomenti:	<@var="m">  (integer)
+		<@var="r">  (integer)
+		<@var="offset">  (integer, opzionale)
+
+Produce una matrice <@itl="m">×<@itl="r"> contenente <@itl="m"> sequenze di Halton di lunghezza <@itl="r">; <@itl="m"> è limitata ad un massimo di 40. Le sequenze sono costruite utilizzando i primi <@itl="m"> numeri primi. Se non diversamente specificato, i primi 10 elementi di ogni sequenza sono scartati: questo valore può essere modificato specificando l'argomento opzionale <@var="offset"> (che deve essere un numero intero non-negativo). Si veda <@bib="Halton and Smith (1964);halton64">. 
+
+# hdprod linalg
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="Y">  (matrice)
+
+Prodotto diretto orizzontale. I due argomenti devo avere lo stesso numero di righe, <@itl="r">. Il risultato è una matrice con <@itl="r"> righe, in cui la riga <@itl="i">-esima è il prodotto di Kronecker delle corrispondenti righe di <@var="X"> e <@var="Y">. 
+
+Non siamo a conoscenza di un nome standard per questa operazione nell'algebra delle matrici. "Prodotto diretto orizzontale" ("Horizontal direct product") è il modo con cui questa operazione viene chiamata nel linguaggio di programmazione GAUSS. 
+
+Esempio: il codice 
+
+<code>          
+      A = {1,2,3; 4,5,6}
+      B = {0,1; -1,1}
+      C = hdprod(A, B)
+</code>
+
+produce la matrice seguente: 
+
+<code>          
+         0    1    0    2    0    3 
+        -4    4   -5    5   -6    6
+</code>
+
+# hpfilt filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="lambda">  (scalare, opzionale)
+
+Restituisce la componente ciclica ottenuta dall'applicazione del filtro di Hodrick–Prescott alla variabile <@var="y">. Se il parametro di lisciaggio <@var="lambda"> non viene fornito questo viene automaticamente calcolato sulla base dei dati a disposizione: viene posto uguale 100 volte il quadrato della periodicità dei dati (100 per dati annuali, 1600 per dati trimestrali, e così via). Vedi anche <@ref="bkfilt">, <@ref="bwfilt">. 
+
+# I matbuild
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="n">  (integer)
+
+Produce la matrice identità con <@var="n"> righe e colonne. 
+
+# imaxc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce un vettore contenente gli indici riga dei massimi delle colonne di <@var="X">. Vedi anche <@ref="imaxr">, <@ref="iminc">, <@ref="maxc">. 
+
+# imaxr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce un vettore contenente gli indici colonna dei massimi delle righe di <@var="X">. Vedi anche <@ref="imaxc">, <@ref="iminr">, <@ref="maxr">. 
+
+# imhof probdist
+Risultato: 	scalare 
+Argomenti:	<@var="M">  (matrice)
+		<@var="x">  (scalare)
+
+Calcola Prob(<@itl="u'Au"> < <@itl="x">) per una forma quadratica di variabili normali standard, <@itl="u">, utilizzando la procedura sviluppata da <@bib="Imhof (1961);imhof61">. 
+
+Il primo argomento, <@var="M">, può essere una matrice quadrata o un vettore colonna, altrimenti viene visualizzato un messaggio di errore. Nel primo caso <@var="M"> è utilizzato per specificare <@itl="A">, nel secondo caso <@var="M"> viene considerato il vettore contenente gli autovalori di <@itl="A">. 
+
+Vedi anche <@ref="pvalue">. 
+
+# iminc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce un vettore contenente gli indici riga dei minimi delle colonne di <@var="X">. Vedi anche <@ref="imaxc">, <@ref="iminr">, <@ref="minc">. 
+
+# iminr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce un vettore contenente gli indici colonna dei minimi delle righe di <@var="X">. Vedi anche <@ref="imaxr">, <@ref="iminc">, <@ref="minr">. 
+
+# inbundle data-utils
+Risultato: 	integer 
+Argomenti:	<@var="b">  (bundle)
+		<@var="chiave">  (stringa)
+
+Controlla se il bundle <@var="b"> contiene un elemento di nome <@var="key">. Il valore restituito è un intero diverso a seconda del tipo di elemento: 0 indica nessun elemento, 1 scalare, 2 variabile, 3 matrice, 4 stringa e 5 bundle. Per recuperare la stringa associata al codice può essere utilizzata la funzione <@ref="typestr">. 
+
+# infnorm linalg
+Risultato: 	scalare 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce la norma infinito di <@var="X">, ovvero il massimo valore, lungo le righe di <@var="X">, della somma dei valori assoluti degli elementi nelle righe. 
+
+Vedi anche <@ref="onenorm">. 
+
+# inlist data-utils
+Risultato: 	integer 
+Argomenti:	<@var="L">  (lista)
+		<@var="y">  (serie)
+
+Restituisce la posizione di <@var="y"> (a partire dalla prima posizione) nella lista <@var="L">, o 0 se <@var="y"> non è presente in <@var="L">. Il secondo argomento può essere il nome di una variabile o il suo identificativo numerico (intero). 
+
+# int math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Tronca la parte frazionaria di <@var="x">. Si noti che <@lit="int"> e <@ref="floor"> differiscono in termini di risultato sui numeri negativi: <@lit="int(-3.5)"> restituisce –3, mentre <@lit="floor(-3.5)"> produce –4. Vedi anche <@ref="ceil">. 
+
+# inv linalg
+Risultato: 	matrice 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce l'inversa di <@var="A">. Se <@var="A"> è singolare o non quadrata viene visualizzato un messaggio di errore e non viene prodotto alcun risultato. Si noti che gretl controlla automaticamente la struttura di <@var="A"> e utilizza la procedura numerica più efficiente per il calcolo dell'inversa. 
+
+I tipi di matrice che sono controllati da gretl sono: identità; diagonale; simmetrica e positiva definita; simmetrica ma non positiva definita; triangolare. 
+
+Vedi anche <@ref="ginv">, <@ref="invpd">. 
+
+# invcdf probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="c">  (carattere)
+		<@var="…">  (vedi sotto)
+		<@var="p">  (scalare, serie o matrice)
+
+Funzione di distribuzione inversa. Restituisce il valore <@itl="x"> tale che <@itl="P(X < x) = p">, dove la distribuzione di <@itl="X"> è determinata dal carattere <@var="c">. Tra i due argomenti <@var="c"> e <@var="p">, zero o più argomenti addizionali sono richiesti al fine di specificare i parametri della distribuzione, secondo le regole seguenti: 
+
+<indent>
+• Normale standardizzata (c = z, n, or N): nessun argomento addizionale 
+</indent>
+
+<indent>
+• Gamma (g o G): forma; scala 
+</indent>
+
+<indent>
+• T di Student (t): numero di gradi di libertà 
+</indent>
+
+<indent>
+• Chi-quadrato (c, x, o X): numero di gradi di libertà 
+</indent>
+
+<indent>
+• F di Snedecor (f o F): gradi di libertà (num.); gradi di libertà (den.) 
+</indent>
+
+<indent>
+• Binomiale (b o B): probabilità; numero di prove 
+</indent>
+
+<indent>
+• Poisson (p o P): media 
+</indent>
+
+<indent>
+• GED standardizzata (E): forma 
+</indent>
+
+Vedi anche <@ref="cdf">, <@ref="critical">, <@ref="pvalue">. 
+
+# invmills probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Produce il reciproco del rapporto di Mills calcolato in <@var="x">, ossia il rapporto tra la densità della normale standard e il complemento della funzione di distribuzione della normale standard, entrambe valutate in <@var="x">. 
+
+Questa funzione utilizza un algoritmo dedicato che produce maggiore accuratezza rispetto al calcolo utilizzando <@ref="dnorm"> e <@ref="cnorm">, ma la differenza tra i due metodi è apprezzabile solo per valori di <@var="x"> negativi e molto grandi. 
+
+Vedi anche <@ref="cdf">, <@ref="cnorm">, <@ref="dnorm">. 
+
+# invpd linalg
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice definita positiva)
+
+Restituisce l'inversa di una matrice simmetrica, definita positiva <@var="A">. Questa funzione è leggermente più veloce di <@ref="inv"> per grandi matrici poichè non viene effettuato nessun controllo per la simmetria; per questa ragione deve essere utilizzata con attenzione. 
+
+# irf stats
+Risultato: 	matrice 
+Argomenti:	<@var="target">  (integer)
+		<@var="shock">  (integer)
+		<@var="alpha">  (scalare tra 0 e 1, opzionale)
+
+Questa funzione è disponibile solo quando l'ultimo modello stimato è un VAR o VECM. Produce una matrice contenente le risposte stimate della variabile <@var="target"> ad un impulso di una deviazione standard nella variabile <@var="shock">. Queste variabili sono identificate dalla loro posizione nella specificazione VAR: ad esempio, se <@var="target"> e <@var="shock"> sono rispettivamente pari a 1 e 3, la matrice che ne risulta fornisce le risposte della prima variabile nella specificazione VAR ad uno shock nella terza variabile. 
+
+Se si specifica l'argomento opzionale <@var="alpha">, la matrice dei risultati ha tre colonne: le stime puntuali delle risposte, seguite dai limiti superiore e inferiore dell'intervallo di confidenza per 1 – α ottenuti attraverso bootstrap. (Quindi <@var="alpha"> = 0.1 corrisponde a un intervallo di confidenza al 90 percento.) Se <@var="alpha"> è omesso o posto pari a zero, il risultato contiene solo le stime puntuali. 
+
+Il numero di periodi (righe) su cui sono calcolate le risposte è determinato automaticamente sulla base della frequenza delle osservazioni, ma questa impostazione può essere modificata attraverso il comando <@xrf="set">, ad esempio <@lit="set horizon 10">. 
+
+# irr math
+Risultato: 	scalare 
+Argomento: 	<@var="x">  (serie o vettore)
+
+Restituisce il tasso interno di rendimento (Internal Rate of Return) per <@var="x">, considerata come una sequenza di pagamenti (valori negativi) e riscossioni (valori positivi). Vedi anche <@ref="npv">. 
+
+# isconst data-utils
+Risultato: 	integer 
+Argomenti:	<@var="y">  (serie o vettore)
+		<@var="panel-code">  (integer, opzionale)
+
+Quando il secondo argomento (opzionale) non è specificato, produce 1 se <@var="y"> ha un valore costante per il campione corrente (o lungo tutta la sua lunghezza se <@var="y"> è un vettore), 0 altrimenti. 
+
+Il secondo argomento è accettato solo nel caso in cui il dataset corrente sia un panel e <@var="y"> sia una variabile. In questo caso un valore <@var="panel-code"> pari a 0 richiede un controllo per invarianza nel tempo, mentre un valore pari a 1 richiede un controllo di invarianza tra le unità cross-section (ossia, in ciascun istante temporale il valore di <@var="y"> è lo stesso per tutti i gruppi). 
+
+Se <@var="y"> è una variabile, i valori mancanti sono ignorati durante il controllo. 
+
+# isnan data-utils
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare o matrice)
+
+Dato un argomento scalare, restituisce 1 se <@var="x"> è "Not a Number" (NaN), 0 altrimenti. Se l'argomento è una matrice produce una matrice delle stesse dimensioni contenente 1 nelle posizioni in cui l'elemento corrispondente della matrice di input è NaN e 0 altrimenti. 
+
+# isnull data-utils
+Risultato: 	integer 
+Argomento: 	<@var="nome">  (stringa)
+
+Restituisce 0 se <@var="nome"> è l'identificativo di un oggetto già definito, che può essere uno scalare, una variabile, una matrice, una lista o un bundle; in caso contrario restituisce 1. 
+
+# isoconv calendar
+Risultato: 	scalare 
+Argomenti:	<@var="date">  (serie)
+		<@var="&year">  (riferimento a serie)
+		<@var="&month">  (riferimento a serie)
+		<@var="&day">  (riferimento a serie, opzionale)
+
+Data una variabile <@var="date"> contenente date nel formato "base" ISO 8601 (<@lit="YYYYMMDD">), questa funzione scrive l'anno, il mese e (opzionale) il giorno corrispondenti nella variabile nominata nel secondo e nei successivi argomenti. Un esempio, assumendo che la variabile <@lit="dates"> contenga valori a 8 cifre appropriati: 
+
+<code>          
+      series y, m, d
+      isoconv(dates, &y, &m, &d)
+</code>
+
+Il valore prodotto da questa funzione è 0 se completata con successo, non-zero nel caso di errori. 
+
+# isodate calendar
+Risultato: 	vedi sotto 
+Argomenti:	<@var="ed">  (scalare o serie)
+		<@var="as-string">  (boolean, opzionale)
+
+L'argomento <@var="ed"> è interpretato come una data in formato "epoch" (uguale a 1 per il primo gennaio nell'anno 1 AD). Il risultato di default — dello stesso tipo di <@var="ed"> — è un numero a 8 cifre, o una serie di tali numeri, del tipo <@lit="YYYYMMDD"> (formato "base" ISO 8601), che fornisce la data di calendario corrispondente al giorno epoch. 
+
+Se <@var="ed"> è uno scalare (solo) e il secondo argomento opzionale <@var="as-string"> è diverso da zero, il risultato non è numerico ma una stringa del tipo <@lit="YYYY-MM-DD"> (formato ISO 8601 "esteso"). 
+
+Per la funzione inversa, si veda <@ref="epochday">. 
+
+# iwishart stats
+Risultato: 	matrice 
+Argomenti:	<@var="S">  (matrice simmetrica)
+		<@var="v">  (integer)
+
+Data <@var="S"> (una matrice positiva definita <@itl="p">×<@itl="p">), restituisce un'estrazione dalla distribuzione inversa di Wishart con <@var="v"> gradi di libertà. La matrice che ne risulta è anch'essa <@itl="p">×<@itl="p">. Utilizza l'algoritmo di <@bib="Odell and Feiveson (1966);odell-feiveson66">. 
+
+# kdensity stats
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (serie)
+		<@var="scale">  (scalare, opzionale)
+		<@var="control">  (boolean, opzionale)
+
+Calcola la stima della densità kernel per la variabile <@var="x">. La matrice che ne risulta ha due colonne: la prima contiene un insieme di valori in ascissa equispaziati e la seconda colonna riporta le stime della densità in ciascuno di questi punti. 
+
+Il parametro opzionale <@var="scale"> può essere utilizzato per adattare il grado di lisciaggio rispetto al valore di default di 1.0 (valori più elevati producono un risultato più liscio). Il parametro <@var="control"> funziona come un booleano: si utilizza il kernel Gaussiano quando <@var="control"> è pari 0 (il valore di default); con un valore diverso da zero si utilizza il kernel di Epanechnikov. 
+
+Un grafico del risultato può essere ottenuto utilizzando il comando <@xrf="gnuplot">, come segue 
+
+<code>          
+      matrix d = kdensity(x)
+      gnuplot 2 1 --matrix=d --with-lines --suppress-fitted
+</code>
+
+# kfilter filters
+Risultato: 	scalare 
+Argomenti:	<@var="&E">  (riferimento a matrice, o <@lit="null">)
+		<@var="&V">  (riferimento a matrice, o <@lit="null">)
+		<@var="&S">  (riferimento a matrice, o <@lit="null">)
+		<@var="&P">  (riferimento a matrice, o <@lit="null">)
+		<@var="&G">  (riferimento a matrice, o <@lit="null">)
+
+Richiede che sia definito un filtro di Kalman. Effettua il passaggio in avanti del filtro e restituisce il valore 0 se il comando è andato a buon fine oppure 1 se si è verificato qualche problema numerico. 
+
+Gli argomenti opzionali vengono usati per recuperare le seguenti informazioni: <@var="E"> contiene la matrice degli errori di previsione a un passo in avanti e <@var="V"> la loro matrice di covarianza; <@var="S"> contiene le stime dei valori del vettore di stato e <@var="P"> la loro matrice di covarianza; <@var="G"> contiene il guadagno (Kalman gain). Tutte queste matrici hanno <@itl="T"> righe, corrispondenti alle <@itl="T"> osservazioni. Per le dimensioni colonna e altri dettagli, si veda <@pdf="la guida all'uso di gretl">. 
+
+Vedi anche <@xrf="kalman">, <@ref="ksmooth">, <@ref="ksimul">. 
+
+# ksimul filters
+Risultato: 	matrice 
+Argomenti:	<@var="v">  (matrice)
+		<@var="w">  (matrice)
+		<@var="&S">  (riferimento a matrice, o <@lit="null">)
+
+Richiede che sia stato definito un filtro di Kalman. Effettua una simulazione e produce una matrice contenente i valori simulati delle variabili osservabili. 
+
+L'argomento <@var="v"> contiene i disturbi simulati per l'equazione di transizione del vettore di stato e <@var="w"> contiene i disturbi per l'equazione delle osservazioni, se applicabile. L'argomento opzionale <@var="S"> può essere utilizzato per recuperare il vettore simulato degli stati. Per dettagli si veda <@pdf="la guida all'uso di gretl">. 
+
+Vedi anche <@xrf="kalman">, <@ref="kfilter">, <@ref="ksmooth">. 
+
+# ksmooth filters
+Risultato: 	matrice 
+Argomento: 	<@var="&P">  (riferimento a matrice, o <@lit="null">)
+
+Richiede che sia definito un filtro di Kalman. Effettua un passaggio all'indietro (smoothing) e restituisce una matrice con le stime smussate (smoothed) del vettore di stato. Per ottenere il MSE dello stato smussato, si può usare l'argomento opzionale <@var="P">. Per ulteriori dettagli, si veda <@pdf="la guida all'uso di gretl">. 
+
+Vedi anche <@xrf="kalman">, <@ref="kfilter">, <@ref="ksimul">. 
+
+# kurtosis stats
+Risultato: 	scalare 
+Argomento: 	<@var="x">  (serie)
+
+Produce il coefficiente di curtosi (in eccesso) della variabile <@var="x">, calcolato non considerando i valori mancanti. 
+
+# lags transforms
+Risultato: 	lista 
+Argomenti:	<@var="p">  (integer)
+		<@var="y">  (serie o lista)
+		<@var="bylag">  (boolean, opzionale)
+
+Genera i ritardi da 1 a <@var="p"> della variabile <@var="y">, o se <@var="y"> è una lista, di tutte le variabili nella lista. Se <@var="p"> = 0, il numero massimo di ritardi è scelto sulla base della periodicità dei dati; altrimenti <@var="p"> deve essere positivo. 
+
+Alle variabili così generate è automaticamente attribuito un nome sulla base del formato <@var="varname"><@lit="_"><@var="i"> dove <@var="varname"> è il nome della variabile originale e <@var="i"> è il valore del ritardo. Se necessario la parte originale del nome è troncata e può essere aggiustata in caso di ripetizioni nell'insieme dei nomi delle variabili così costruite. 
+
+Quando <@var="y"> è una lista e l'ordine di ritardo è maggiore di 1, l'ordinamento di default dei termini della lista che ne risulta è per variabile: tutti i ritardi della prima variabile nella lista in input sono seguiti da tutti i ritardi della seconda variabile, e così via. Il terzo argomento (opzionale) può essere utilizzato per cambiare tale impostazione: se <@var="bylag"> è diverso da zero i termini sono ordinati per ritardo: il primo ritardo di tutte le variabili in input, poi il secondo ritardo, e così via. 
+
+# lastobs data-utils
+Risultato: 	integer 
+Argomento: 	<@var="y">  (serie)
+
+Ultimo valore non-mancante per la variabile <@var="y">. Si noti che se si sta operando su un sottocampione ristretto, il valore prodotto può essere maggiore della variabile dollaro <@ref="$t2">. Vedi anche <@ref="firstobs">. 
+
+# ldet linalg
+Risultato: 	scalare 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Produce il logaritmo naturale del determinante di <@itl="A">, calcolato attraverso la fattorizzazione LU. Vedi anche <@ref="det">, <@ref="rcond">. 
+
+# ldiff transforms
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="y">  (serie o lista)
+
+Calcola le differenze logaritmiche; i valori iniziali sono posti uguali a <@lit="NA">. 
+
+Quando viene restituita una lista alle singole variabili così generate è automaticamente attribuito un nome sulla base del formato <@lit="ld_"><@var="varname"> dove <@var="varname"> è il nome della variabile originale. Se necessario il nome viene troncato e può essere modificato in caso di ripetizioni nell'insieme dei nomi delle variabili così costruite. 
+
+Vedi anche <@ref="diff">, <@ref="sdiff">. 
+
+# lincomb transforms
+Risultato: 	serie 
+Argomenti:	<@var="L">  (lista)
+		<@var="b">  (vettore)
+
+Calcola una nuova variabile ottenuta come combinazione lineare delle variabili nella lista <@var="L">. I coefficienti sono dati dal vettore <@var="b">, che deve avere lunghezza uguale al numero di variabili in <@var="L">. 
+
+Vedi anche <@ref="wmean">. 
+
+# ljungbox stats
+Risultato: 	scalare 
+Argomenti:	<@var="y">  (serie)
+		<@var="p">  (integer)
+
+Calcola la statistica Q di Ljung–Box per la serie y <@var="y"> usando <@var="p"> ritardi e il campione corrente. L'ordine di ritardo deve essere maggiore o uguale a 1 e inferiore al numero di osservazioni disponibili. 
+
+Questa statistica può essere confrontata con la distribuzione chi-quadro con <@var="p"> gradi di libertà per sottoporre a test l'ipotesi che la variabile <@var="y"> sia serialmente incorrelata. Vedi anche <@ref="pvalue">. 
+
+# lngamma math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Logaritmo della funzione gamma di <@var="x">. 
+
+# log math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie, matrice o lista)
+
+Logaritmo naturale di <@var="x">; genera <@lit="NA"> per valori non positivi. Nota: <@lit="ln"> può essere usato al posto di di <@lit="log">. 
+
+Quando restituisce una lista alle singole variabili viene automaticamente assegnato un nome sulla base del formato <@lit="l_"><@var="varname"> dove <@var="varname"> è il nome della variabile originale. Se necessario il nome viene troncato e può essere modificato in caso di ripetizioni nell'insieme dei nomi delle variabili così costruite. 
+
+# log10 math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Logaritmo in base 10 di <@var="x">; produce <@lit="NA"> per valori non positivi. 
+
+# log2 math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Logaritmo in base 2 di <@var="x">; produce <@lit="NA"> per valori non positivi. 
+
+# loess stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="x">  (serie)
+		<@var="d">  (integer, opzionale)
+		<@var="q">  (scalare, opzionale)
+		<@var="robust">  (boolean, opzionale)
+
+Effettua una regressione polinomiale ponderata localmente e restituisce una variabile contenente i valori previsti di <@var="y"> per ogni elemento non mancante di <@var="x">. Viene usato il metodo descritto in <@bib="William Cleveland (1979);cleveland79">. 
+
+Gli argomenti opzionali <@var="d"> e <@var="q"> specificano rispettivamente l'ordine del polinomio in <@var="x"> e la proporzione di punti da usare nella stima locale. I valori predefiniti sono <@var="d"> = 1 e <@var="q"> = 0.5. Gli altri valori consentiti per <@var="d"> sono 0 e 2. Con <@var="d"> = 0 la regressione locale si riduce a una forma di media mobile. Il valore di <@var="q"> dev'essere compreso fra 0 e 1; più grande è il valore, più liscia sarà la stima. 
+
+Assegnando all'argomento <@var="robust"> un valore non-zero, le regressioni locali sono effettuate due volte, con pesi modificati sulla base dei residui dell'iterazione precedente per ridurre l'effetto degli outlier. 
+
+Si vedano anche <@ref="nadarwat"> e <@pdf="la guida all'uso di gretl"> per maggiori dettagli sui metodi nonparametrici. 
+
+# logistic math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la funzione logistica calcolata nell'argomento <@var="x">: <@itl="e"><@sup="x">/(1 + <@itl="e"><@sup="x">). Se <@var="x"> è una matrice, la funzione è applicata elemento per elemento. 
+
+# lower matbuild
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice)
+
+Restituisce una matrice <@itl="n">×<@itl="n"> triangolare inferiore: gli elementi sulla diagonale o sotto di essa sono uguali al valore corrispondente in <@var="A">; i restanti valori sono pari a zero. 
+
+Vedi anche <@ref="upper">. 
+
+# lrvar filters
+Risultato: 	scalare 
+Argomenti:	<@var="y">  (serie o vettore)
+		<@var="k">  (integer)
+
+Restituisce la varianza di lungo periodo di <@var="y"> calcolata utilizzando il kernel di Bartlett con finestra <@var="k">. 
+
+# max stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="y">  (serie o lista)
+
+Se l'argomento <@var="y"> è una variabile, restituisce il massimo valore (scalare) tra le osservazioni non-mancanti della serie. Se l'argomento è una lista, restituisce una variabile i cui elementi corrispondono al massimo dei valori delle variabili nella lista per ciascuna osservazione. 
+
+Vedi anche <@ref="min">, <@ref="xmax">, <@ref="xmin">. 
+
+# maxc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce i massimi per colonna di <@var="X">. Vedi anche <@ref="imaxc">, <@ref="maxr">, <@ref="minc">. 
+
+# maxr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce i massimi per riga di <@var="X">. Vedi anche <@ref="imaxr">, <@ref="maxc">, <@ref="minr">. 
+
+# mcorr stats
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola la matrice di correlazione considerando ogni colonna di <@var="X"> come una variabile. Vedi anche <@ref="corr">, <@ref="cov">, <@ref="mcov">. 
+
+# mcov stats
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola la matrice di covarianza considerando ogni colonna di <@var="X"> come una variabile. Vedi anche <@ref="corr">, <@ref="cov">, <@ref="mcorr">. 
+
+# mcovg stats
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="u">  (vettore, opzionale)
+		<@var="w">  (vettore, opzionale)
+		<@var="p">  (integer)
+
+Restituisce la matrice covariogramma corrispondente a una matrice <@itl="T">×<@itl="k"> <@var="X"> (di solito contenente regressori), un vettore (opzionale) <@itl="T">-variato <@var="u"> (di solito contenente i residui), un vettore (opzionale) di dimensione (<@itl="p">+1) di pesi <@var="w"> e un ordine di ritardo scalare <@var="p"> che deve essere maggiore o uguale a 0. 
+
+La matrice prodotta è data da 
+
+sum_{j=-p}^p sum_j w_{|j|} (X_t' u_t u_{t-j} X_{t-j}) 
+
+Se <@var="u"> è specificato come <@lit="null"> il termine <@itl="u"> è omesso, e se <@var="w"> è <@lit="null"> tutti i pesi sono considerati pari a 1.0. 
+
+# mean stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="x">  (serie o lista)
+
+Se <@var="x"> è una variabile, restituisce la media campionaria (scalare) calcolata non considerando le osservazioni mancanti (se presenti). 
+
+Se <@var="x"> è una lista, produce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è la media dei valori delle variabili nella lista per l'osservazione <@itl="t">, o <@lit="NA"> se ci sono valori mancanti in <@itl="t">. 
+
+# meanc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola le medie per colonna di <@var="X">. Vedi anche <@ref="meanr">, <@ref="sumc">, <@ref="sdc">. 
+
+# meanr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola le medie per riga di <@var="X">. Vedi anche <@ref="meanc">, <@ref="sumr">. 
+
+# median stats
+Risultato: 	scalare 
+Argomento: 	<@var="y">  (serie)
+
+Calcola la mediana delle osservazioni non mancanti della variabile <@var="y">. Vedi anche <@ref="quantile">. 
+
+# mexp linalg
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Calcola l'esponenziale della matrice <@var="A">, usando l'algoritmo 11.3.1 di <@bib="Golub and Van Loan (1996);golub96">. 
+
+# min stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="y">  (serie o lista)
+
+Se l'argomento <@var="y"> è una variabile calcola il minimo (scalare) delle osservazioni non mancanti della variabile. Se l'argomento è una lista, restituisce una variabile i cui elementi sono il minimo dei valori delle variabili incluse nella lista in corrispondenza di ciascuna osservazione. 
+
+Vedi anche <@ref="max">, <@ref="xmax">, <@ref="xmin">. 
+
+# minc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola i minimi delle colonne di <@var="X">. Vedi anche <@ref="iminc">, <@ref="maxc">, <@ref="minr">. 
+
+# minr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Calcola i minimi delle righe di <@var="X">. Vedi anche <@ref="iminr">, <@ref="maxr">, <@ref="minc">. 
+
+# missing data-utils
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o lista)
+
+Crea una variabile binaria uguale a 1 se <@var="x"> è <@lit="NA">. Se <@var="x"> è una variabile, il confronto viene effettuato elemento per elemento; se <@var="x"> è una lista di variabili, il risultato è una variabile con elementi pari a 1 per le osservazioni per le quali almeno una delle variabili incluse nella lista ha valore mancante, e 0 altrimenti. 
+
+Vedi anche <@ref="misszero">, <@ref="ok">, <@ref="zeromiss">. 
+
+# misszero data-utils
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare o serie)
+
+Converte gli <@lit="NA"> in zeri. Se <@var="x"> è una variabile la conversione è effettuata elemento per elemento. Vedi anche <@ref="missing">, <@ref="ok">, <@ref="zeromiss">. 
+
+# mlag stats
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="p">  (scalare o vettore)
+		<@var="m">  (scalare, opzionale)
+
+Sposta in alto o in basso le righe di <@var="X">. Se <@var="p"> è uno scalare positivo, restituisce una matrice nella quale le colonne di <@var="X"> sono spostate verso il basso di <@var="p"> righe e le prime <@var="p"> righe sono riempite con il valore <@var="m">. Se <@var="p"> è un numero negativo, <@var="X"> è spostata verso l'alto e le ultime righe sono riempite con il valore <@var="m">. Se <@var="m"> viene omesso, al suo posto si utilizza un valore nullo. 
+
+Se <@var="p"> è un vettore, l'operazione precedente è svolta per ciascun elemento di <@var="p">, unendo le matrici così ottenute in senso orizzontale. 
+
+# mnormal matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Restituisce una matrice di <@var="r"> righe e <@var="c"> colonne, contenene numeri pseudocasuali generati da una normale standardizzata. Vedi anche <@ref="normal">, <@ref="muniform">. 
+
+# mols stats
+Risultato: 	matrice 
+Argomenti:	<@var="Y">  (matrice)
+		<@var="X">  (matrice)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+		<@var="&V">  (riferimento a matrice, o <@lit="null">)
+
+Restituisce una matrice <@itl="k">×<@itl="n"> di stime di parametri ottenute con la regressione dei minimi quadrati ordinari della matrice <@itl="T">×<@itl="n"> <@var="Y"> sulla matrice <@itl="T">×<@itl="k"> <@var="X">. 
+
+Se il terzo argomento non è <@lit="null">, la matrice <@itl="T">×<@itl="n"> <@var="U"> contiene i residui. Se l'ultimo argomento viene indicato e non è <@lit="null">, la matrice <@itl="k">×<@itl="k"> <@var="V"> conterrà (a) la matrice di covarianza delle stime dei parametri, se <@var="Y"> ha una sola colonna, o (b) <@itl="X'X"><@sup="-1"> se <@var="Y"> ha più colonne. 
+
+Di default, le stime sono ottenute usando una scomposizione di Cholesky, ricorrendo alla scomposizione QR se le colonne di <@var="X"> sono quasi collineari. E' possibile imporre l'uso della scomposizione SVD usando il comando <@lit="set svd on">. 
+
+Vedi anche <@ref="mpols">, <@ref="mrls">. 
+
+# monthlen calendar
+Risultato: 	integer 
+Argomenti:	<@var="mese">  (integer)
+		<@var="anno">  (integer)
+		<@var="gioset">  (integer)
+
+Restituisce il numero di giorni (rilevanti) in un dato mese e anno; l'argomento <@var="gioset"> può essere 5, 6 o 7, e indica il numero di giorni nella settimana da contare (il 6 omette le domeniche, il 5 anche i sabati). 
+
+# movavg filters
+Risultato: 	serie 
+Argomenti:	<@var="x">  (serie)
+		<@var="p">  (scalare)
+		<@var="control">  (integer, opzionale)
+
+A seconda del parametro <@var="p">, calcola una media mobile semplice o con pesi esponenziali della variabile input <@var="x">. 
+
+Se <@var="p"> > 1, viene calcolata una media mobile semplice a <@var="p"> termini; in altre parole, la media aritmetica da x(t) a x(t+p-1). Se viene indicato un valore non nullo per il parametro opzionale <@var="control"> la media mobile è centrata, in caso contrario è "retrospettiva" (usa solo l'osservazione corrente e quelle passate, ma non quelle future). 
+
+Se <@var="p"> è una frazione positiva viene calcolata una media mobile esponenziale: y(t) = p*x(t) + (1-p)*y(t-1). Di default la variabile calcolata, y, è inizializzata usando il primo valore valido di <@var="x">, ma il parametro <@var="control"> può essere usato per specificare il numero di osservazioni iniziali che dovrebbero essere incluse nella media usata per calcolare y(0). Un valore nullo di <@var="control"> indica che dovrebbero essere usate tutte le osservazioni. 
+
+# mpols stats
+Risultato: 	matrice 
+Argomenti:	<@var="Y">  (matrice)
+		<@var="X">  (matrice)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+
+Funziona esattamente come <@ref="mols">, tranne che i calcoli sono effettuati in precisione multipla usando la libreria GMP. 
+
+Di default GMP usa 256 bit per ogni numero a virgola mobile, ma questa convenzione può essere modificata usando la variabile d'ambiente <@lit="GRETL_MP_BITS">, e.g. <@lit="GRETL_MP_BITS=1024">. 
+
+# mrandgen probdist
+Risultato: 	matrice 
+Argomenti:	<@var="d">  (stringa)
+		<@var="p1">  (scalare)
+		<@var="p2">  (scalare, condizionale)
+		<@var="p3">  (scalare, condizionale)
+		<@var="rows">  (integer)
+		<@var="cols">  (integer)
+Esempi: 	<@lit="matrix mx = mrandgen(u, 0, 100, 50, 1)">
+		<@lit="matrix mt14 = mrandgen(t, 14, 20, 20)">
+
+Funziona come <@ref="randgen"> tranne che il valore calcolato è una matrice anzichè una variabile. Gli argomenti iniziali di questa funzione (il cui numero dipende dalla distribuzione specificata) sono come quelli descritti per <@lit="randgen">, ma devono essere seguiti da due interi per specificare il numero di righe (<@var="r">) e colonne (<@var="c">) della matrice casuale desiderata. 
+
+Il primo esempio fornito sopra calcola un vettore colonna casuale uniforme di 50 elementi, mentre il secondo specifica una matrice casuale 20×20 con elementi tratti dalla distribuzione <@itl="t"> con 14 gradi di libertà. 
+
+Vedi anche <@ref="mnormal">, <@ref="muniform">. 
+
+# mread matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="nomefile">  (stringa)
+		<@var="import">  (boolean, opzionale)
+
+Legge una matrice da un file di testo. La stringa <@var="nomefile"> deve contenere il nome del file da cui deve essere letta la matrice. Se questo nome ha estensione "<@lit=".gz">", si assume che il file sia stato creato con compressione gzip. 
+
+Il file in questione può iniziare con un numero di commenti qualsiasi, definiti come linee che iniziano con il carattere <@lit="#">; queste linee sono ignorate. A parte questo, il contenuto deve rispettare le regole seguenti: 
+
+<indent>
+• La prima riga non commentata deve contenere due interi, separati da uno spazio o un tabulatore, che indicano rispettivamente il numero di righe e di colonne. 
+</indent>
+
+<indent>
+• Le colonne devono essere separate da spazi o caratteri. 
+</indent>
+
+<indent>
+• Il separatore decimale deve essere il punto, "<@lit=".">". 
+</indent>
+
+Se viene indicato un valore non nullo per l'argomento opzionale <@var="import">, la ricerca del file di input avviene all'interno della directory "dot" dell'utente. Questa funzione è pensata per essere usata in combinazione con le funzioni che esportano matrici illustrate nel contesto del comando <@xrf="foreign">. In questo caso l'argomento <@var="fname"> dovrebbe essere semplicemente un nome di file, senza indicazione del percorso. 
+
+Se dovesse verificarsi un errore (per esempio dovuto al fatto che il file è inaccessibile o mal formattato) la funzione restituisce una matrice vuota. 
+
+Vedi anche <@ref="mwrite">. 
+
+# mreverse matshape
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce una matrice contenente le righe di <@var="X"> in ordine inverso. Per ottenere una matrice in cui le colonne di <@var="X"> appaiano in ordine inverso si usi: 
+
+<code>          
+      matrix Y = mreverse(X')'
+</code>
+
+# mrls stats
+Risultato: 	matrice 
+Argomenti:	<@var="Y">  (matrice)
+		<@var="X">  (matrice)
+		<@var="R">  (matrice)
+		<@var="q">  (vettore colonna)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+		<@var="&V">  (riferimento a matrice, o <@lit="null">)
+
+Minimi quadrati vincolati: calcola una matrice <@itl="k">×<@itl="n"> di stime dei parametri ottenute regredendo con il metodo dei minimi quadrati la matrice <@itl="T">×<@itl="n"> <@var="Y"> sulla matrice <@itl="T">×<@itl="k"> m<@var="X"> sotto i vincoli lineari <@itl="RB"> = <@itl="q">, dove <@itl="B"> indica il vettore dei coefficienti incolonnati. <@var="R"> deve avere <@itl="k"> * <@itl="n"> colonne; ogni riga della matrice rappresenta un vincolo lineare. Il numero di righe di <@var="q"> deve essere pari al numero di righe di <@var="R">. 
+
+Se il quinto argomento non è <@lit="null">, la matrice <@itl="T">×<@itl="n"> <@var="U"> contiene i residui. Se viene indicato l'ultimo argomento e non è <@lit="null">, la matrice <@itl="k">×<@itl="k"> <@var="V"> contiene la versione vincolata della matrice <@itl="X'X"><@sup="-1">. La matrice di varianza delle stime dell'equazione <@itl="i"> può essere costruita moltiplicando la sottomatrice opportuna di <@var="V"> per una stima della varianza dell'errore di quell'equazione. 
+
+# mshape matshape
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Riorganizza gli elementi di <@var="X"> in una matrice con <@var="r"> righe e <@var="c"> colonne. Gli elementi vengono letti da <@var="X"> e inseriti nel risultato della funzione in ordine di colonna. Se <@var="X"> contiene meno di <@itl="k"> = <@itl="rc"> elementi, questi ultimi vengono ripetuti ciclicamente; in caso contrario, se <@var="X"> ha più elementi ne vengono usati solo i primi <@itl="k">. 
+
+Vedi anche <@ref="cols">, <@ref="rows">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# msortby matshape
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="j">  (integer)
+
+Restituisce una matrice nella quale le righe di <@var="X"> sono riordinate per valore crescente degli elementi nella colonna <@var="j">. Il riordinamento è stabile: le righe che contengono lo stesso valore nella colonna <@var="j"> mantengono l'ordinamento relativo preesistente. 
+
+# muniform matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Restituisce una matrice di <@var="r"> righe e <@var="c"> colonne contenente numeri pseudocasuali estratti da una uniforme (0,1). Nota: per generare uno scalare pseudocasuale uniforme è consigliabile usare la funzione <@ref="randgen1">. 
+
+Vedi anche <@ref="mnormal">, <@ref="uniform">. 
+
+# mwrite data-utils
+Risultato: 	integer 
+Argomenti:	<@var="X">  (matrice)
+		<@var="fname">  (stringa)
+		<@var="export">  (boolean, opzionale)
+
+Copia la matrice <@var="X"> in un file di testo di nome <@var="fname">. Nella prima riga il file contiene due interi separati da un tabulatore corrispondenti ai numeri di riga e di colonna; nelle righe seguenti sono indicati gli elementi della matrice in notazione scientifica, separati da tabulatori (una riga per ciascuna linea). 
+
+Se il file <@var="fname"> esiste già verrà sovrascritto. Il valore restituito è 0 in caso l'esecuzione venga portata a termine correttamente; se si verifica un errore, per esempio dovuto al fatto che il file non può essere sovrascritto, il valore restituito sarà non nullo. 
+
+Se viene indicato un valore non nullo per l'argomento <@var="export">, il file di output sarà salvato nella directory "dot" dell'utente, e ad esso per default sarà possibile accedere usando le funzioni che caricano matrici descritte nell'ambito del comando <@xrf="foreign">. In questo caso è necessario indicare come secondo argomento il nome del file privo del percorso. 
+
+Le matrici memorizzate usando il comando <@lit="mwrite"> possono essere facilmente lette da altri programmi; v. <@pdf="la guida all'uso di gretl"> per ulteriori dettagli. 
+
+E' disponibile un'estensione del comportamento base di questa funzione: se <@var="fname"> ha estensione "<@lit=".gz">", il file viene salvato usando la compressione gzip. 
+
+Vedi anche <@ref="mread">. 
+
+# mxtab stats
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (serie o vettore)
+		<@var="y">  (serie o vettore)
+
+Restituisce una matrice contenente una tabella a doppia entrata dei valori contenuti in <@var="x"> (nel senso delle righe) e <@var="y"> (nel senso delle colonne). I due argomenti devono essere dello stesso tipo (entrambe variabili e entrambi vettori colonna), e visto l'uso che tipicamente viene fatto di questa funzione si assume che contengano solo valori interi. 
+
+Vedi anche <@ref="values">. 
+
+# nadarwat stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="x">  (serie)
+		<@var="h">  (scalare)
+
+Stima nonparametrica della media condizionale di <@var="y"> dato <@var="x"> col metodo di Nadaraya–Watson. Restituisce una variabile contenente la stima nonparametrica di <@itl="E(y"><@sub="i"><@itl="|x"><@sub="i"><@itl=")"> per ogni elemento non mancante della variabile <@var="x">. 
+
+La funzione kernel <@itl="K"> è data da <@itl="K = exp(-x"><@sup="2"><@itl=" / 2h)"> per <@itl="|x| < T"> e 0 altrimenti. 
+
+L'argomento <@var="h">, noto come ampiezza di banda, è un parametro (reale positivo) indicato dall'utente. Normalmente, è un numero piccolo: valori grandi di <@var="h"> rendono <@itl="m(x)"> più liscia; una scelta molto comune è <@itl="n"><@sup="-0.2">. Per maggiori dettagli, si veda <@pdf="la guida all'uso di gretl">. 
+
+Lo scalare <@itl="T"> viene usato per prevenire problemi numerici che si verificano quando la funzione kernel è calcolata troppo lontano dallo zero e viene detto parametro di taglio. 
+
+Quest'ultimo può essere modificato a piacere mediante il comando <@lit="set nadarwat_trim">; è espresso come multiplo di <@var="h">, e il valore di default è 4. 
+
+L'utente può indicare un valore negativo per l'ampiezza di banda: ciò viene interpretato come una sintassi comvenzionale per la cosiddetta variante "leave-one-out" dello stimatore, ossia una variante che non usa la <@itl="i">-esima osservazione per calcolare <@itl="m(x"><@sub="i"><@itl=")">. Questa variante rende il procedimento numericamente più robusto e il suo uso è sovente consigliato quando lo stimatore è usato a fini inferenziali. Ovviamente, l'ampiezza di banda effettivamente usata è il valore assoluto di <@var="h">. 
+
+# nelem data-utils
+Risultato: 	integer 
+Argomento: 	<@var="L">  (lista)
+
+Restituisce il numero di elementi nella lista <@var="L">. 
+
+# ngetenv strings
+Risultato: 	scalare 
+Argomento: 	<@var="s">  (stringa)
+
+Se è stata definita una variabile d'ambiente <@var="s"> e le è stato assegnato un valore numerico, restituisce tale valore; in caso contrario restituisce NA. V anche <@ref="getenv">. 
+
+# nobs stats
+Risultato: 	integer 
+Argomento: 	<@var="y">  (serie)
+
+Restituisce il numero di osservazioni non mancanti per la variabile <@var="y"> nella selezione corrente del campione. 
+
+# normal probdist
+Risultato: 	serie 
+Argomenti:	<@var="μ">  (scalare)
+		<@var="σ">  (scalare)
+
+Genera una sequenza di numeri pseudo-casuali tratti dalla distribuzione normale di media μ e deviazione standard σ. Se non vengono forniti gli argomenti vengono generate realizzazioni tratte dalla distribuzione <@itl="N">(0,1). I valori sono prodotti usando il metodo Ziggurat <@bib="(Marsaglia e Tsang, 2000);marsaglia00">. 
+
+Vedi anche <@ref="randgen">, <@ref="mnormal">, <@ref="muniform">. 
+
+# npv math
+Risultato: 	scalare 
+Argomenti:	<@var="x">  (serie o vettore)
+		<@var="r">  (scalare)
+
+Restituisce il Valore Attuale Netto (VAN) di <@var="x">, considerato come una sequenza di esborsi (se negativi) e introiti (se positivi), valutati a un tasso d'interesse annuo <@var="r">; <@var="r"> dev'essere espresso in valore non percentuale (5<@lit="%"> = 0.05). Il primo valore è considerato come riferito al periodo "presente" e non viene scontato. Per emulare una funzione che calcola il VAN scontando anche il primo valore, inserite uno zero all'inizio della sequenza degli input. 
+
+La funzione può gestire frequenze di osservazione annuali, trimestrali, mensili e prive di data (le osservazioni prive di data sono considerate annuali). 
+
+Vedi anche <@ref="irr">. 
+
+# NRmax numerical
+Risultato: 	scalare 
+Argomenti:	<@var="b">  (vettore)
+		<@var="f">  (function call)
+		<@var="g">  (function call, opzionale)
+		<@var="h">  (function call, opzionale)
+
+Massimizzazione numerica mediante il metodo di Newton–Raphson. Il vettore <@var="b"> deve contenere i valori iniziali dei parametri, e l'argomento <@var="f"> deve specificare una funzione che calcola il criterio (scalare) da massimizzare, dati i valori correnti dei parametri e altre informazioni rilevanti. Se l'obiettivo è di minimizzare il criterio, la funzione deve restituire il criterio cambiato di segno. Se l'esecuzione viene completata con successo, <@lit="NRmax"> restituisce il valore massimizzato del criterio e <@var="b"> contiene i valori dei parametri corrispondenti al massimo. 
+
+Gli argomenti opzionali in terza e in quarta posizione permettono di specificare rispettivamente le derivate analitiche e una matrice Hessiana analitica (negativa). Le funzioni indicate come <@var="g"> e <@var="h"> devono assumere come primo argomento una matrice predefinita con le stesse dimensioni rispettivamente del gradiente e dell'Hessiana, indicati sotto forma di puntatore. Devono inoltre accettare il vettore dei parametri come argomento (sotto forma di puntatore o altro). Gli altri argomenti sono opzionali. Se si omette uno o entrambi gli argomenti opzionali viene utilizzata un'approssimazione numerica. 
+
+Per maggiori dettagli ed esempi si veda il capitolo relativo ai metodi numerici in <@pdf="la guida all'uso di gretl">. Vedi anche <@ref="BFGSmax">, <@ref="fdjac">. 
+
+# nullspace linalg
+Risultato: 	matrice 
+Argomento: 	<@var="A">  (matrice)
+
+Calcola lo spazio nullo a destra di <@var="A"> usando la scomposizione a valori singolari (SVD); il risultato è una matrice <@itl="B"> tale che il prodotto <@itl="AB"> è una matrice nulla, tranne quando <@var="A"> è di rango colonna pieno, caso in cui viene restituita una matrice vuota. In caso contrario, se <@var="A"> è <@itl="m">×<@itl="n">, <@itl="B"> sarà <@itl="n"> per (<@itl="n"> – <@itl="r">), dove <@itl="r"> è il rango di <@var="A">. 
+
+Vedi anche <@ref="rank">, <@ref="svd">. 
+
+# obs data-utils
+Risultato: 	serie 
+
+Restituisce una serie di interi consecutivi, partendo da 1 in corrispondenza con l'inizio del dataset. Si noti che il risultato è indipendente dal sottocampionamento. Questa funzione è particolarmente utile con dataset di serie storiche. Nota: la funzione <@lit="t"> è un sinonimo perfetto di <@lit="obs">. 
+
+Vedi anche <@ref="obsnum">. 
+
+# obslabel data-utils
+Risultato: 	stringa 
+Argomento: 	<@var="t">  (integer)
+
+Restituisce l'etichetta per la <@var="t">-esima osservazione, dove <@var="t"> è un indice che parte da 1. La funzione inversa è <@ref="obsnum">. 
+
+# obsnum data-utils
+Risultato: 	integer 
+Argomento: 	<@var="s">  (stringa)
+
+Restituisce un intero corrispondente all'osservazione specificata dalla stringa <@itl="s">. Si noti che il risultato è invariante al sottocampionamento. Questa funzione è particolarmente utile con campioni di serie storiche. Ad esempio, il codice 
+
+<code>          
+      open denmark 
+      k = obsnum(1980:1)
+</code>
+
+produce <@lit="k = 25">, ciò che indica che il primo trimestre 1980 è la venticinquesima osservazione nel dataset <@lit="denmark">. 
+
+Vedi anche <@ref="obs">, <@ref="obslabel">. 
+
+# ok data-utils
+Risultato: 	vedi sotto 
+Argomento: 	<@var="x">  (scalare, serie, matrice o lista)
+
+Se <@var="x"> è uno scalare, la funzione restituisce 1 se <@var="x"> non è <@lit="NA">, altrimenti 0. Se <@var="x"> è una variabile la funzione restituisce una serie contenente valore 1 per le osservazioni non mancanti e zero altrimenti. Se <@var="x"> è una lista il risultato è una variabile con zero in corrispondenza delle osservazioni per le quali almeno una variabile nella lista ha un valore mancante e 1 altrimenti. 
+
+Se <@var="x"> è una matrice il comportamento è leggermente diverso, dato che le matrici non possono contenere <@lit="NA">: la funzione restituisce una matrice delle stesse dimensioni di <@var="x">, con elementi pari a 1 nelle posizioni corrispondenti a elementi di <@var="x"> finiti, e 0 di quelli non finiti (o infiniti o not-a-number, in conformità con lo standard IEEE 754). 
+
+Vedi anche <@ref="missing">, <@ref="misszero">, <@ref="zeromiss">. Notare che queste funzioni non possono essere applicate a matrici. 
+
+# onenorm linalg
+Risultato: 	scalare 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce la norma-1 della matrice <@var="X">; in altre parole, il massimo fra le colonne di <@var="X"> della somma dei valori assoluti degli elementi della colonna. 
+
+Vedi anche <@ref="infnorm">, <@ref="rcond">. 
+
+# ones matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Restituisce una matrice con <@itl="r"> righe e <@itl="c"> colonne con elementi tutti pari a 1. 
+
+Vedi anche <@ref="seq">, <@ref="zeros">. 
+
+# orthdev transforms
+Risultato: 	serie 
+Argomento: 	<@var="y">  (serie)
+
+La funzione è applicabile solo se il dataset corrente ha struttura panel. Calcola le deviazioni ortogonali in avanti della variabile <@var="y">. 
+
+Talvolta questa trasformazione viene utilizzata talvolta al posto delle differenze per rimuovere gli effetti individuali da dati panel. Per assicurare la compatibilità con le differenze prime, le deviazioni sono memorizzate alla data successiva a quella che corrisponde alla loro effettiva collocazione temporale (in altre parole, il valore alla data <@itl="t"> è la deviazione che in realtà si riferisce alla data <@itl="t"> – 1). In questo modo viene persa la prima osservazione di ogni serie storica e non l'ultima. Vedi anche <@ref="diff">. 
+
+# pdf probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="c">  (carattere)
+		<@var="…">  (vedi sotto)
+		<@var="x">  (scalare, serie o matrice)
+Esempi: 	<@lit="f1 = pdf(N, -2.5)">
+		<@lit="f2 = pdf(X, 3, y)">
+		<@lit="f3 = pdf(W, shape, scale, y)">
+
+Calcola funzioni di densità o di probabilità. Restituisce la densità (se continue) o la probabilità (se discrete) in <@var="x"> della distribuzione identificata dal carattere <@var="c">. Si veda <@ref="cdf"> per dettagli sugli argomenti. Le distribuzioni supportate dalla funzione <@lit="pdf"> sono la normale, <@itl="t"> di Student, chi-quadro, <@itl="F">, gamma, Weibull, Generalized Error, binomiale and Poisson. Si noti che per la binomiale e la Poisson ciò che viene calcolato è in effetti la probabilità nel punto specificato. 
+
+Per la normale, si veda anche la funzione <@ref="dnorm">. 
+
+# pergm stats
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (serie o vettore)
+		<@var="bandwidth">  (scalare, opzionale)
+
+Se viene fornito solo il primo argomento la funzione calcola il periodogramma campionario per la variabile o il vettore indicati. Se viene fornito anche il secondo argomento, la funzione calcola una stima dello spettro di <@var="x"> usando una finestra di ritardi di Bartlett con la banda indicata, fino a un massimo pari alla metà delle osservazioni (<@itl="T">/2). 
+
+Restituisce una matrice con due colonne e <@itl="T">/2 righe: la prima colonna contiene la frequenza, ω, da 2π/<@itl="T"> a π, ae la seconda la densità spettrale corrispondente. 
+
+# pmax stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione può essere applicata solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente i massimi della variabile <@var="y"> per ciascuna unità cross-section (ripetuti per tutti i periodi temporali). 
+
+Se viene fornito il secondo argomento opzionale le osservazioni per le quali il valore di <@var="mask"> è nullo vengono ignorate. 
+
+Vedi anche <@ref="pmin">, <@ref="pmean">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">, <@ref="psum">. 
+
+# pmean stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Calcola la media per ciascuna unità della variabile <@var="y">; in altre parole, la somma delle osservazioni valide relative a ciascuna unità divisa per il loro numero. 
+
+Se viene indicato il secondo parametro opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Vedi anche <@ref="pmax">, <@ref="pmin">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">, <@ref="psum">. 
+
+# pmin stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente i minimi della variabile <@var="y"> per ciascuna unità della cross-section (replicati per ogni periodo temporale). 
+
+Se viene fornito il secondo argomento opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Vedi anche <@ref="pmax">, <@ref="pmean">, <@ref="pnobs">, <@ref="psd">, <@ref="pshrink">, <@ref="psum">. 
+
+# pnobs stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente il numero di osservazioni valide della variabile <@var="y"> per ciascuna unità della cross-section (replicato per ogni periodo temporale). 
+
+Se viene fornito il secondo argomento opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Vedi anche <@ref="pmax">, <@ref="pmin">, <@ref="pmean">, <@ref="psd">, <@ref="pshrink">, <@ref="psum">. 
+
+# polroots linalg
+Risultato: 	matrice 
+Argomento: 	<@var="a">  (vettore)
+
+Calcola le radici di un polinomio. Se il polinomio è di grado <@itl="p">, il vettore <@var="a"> deve contenere <@itl="p"> + 1 coefficienti in ordine crescente, i.e. partendo dalla costante e terminando con il coefficiente di <@itl="x"><@sup="p">. 
+
+Se tutte le radici sono reali vengono restituite in un vettore colonna di lunghezza <@itl="p">; in caso contrario viene restituita una matrice <@itl="p">×2 con la parte reale delle radici nella prima colonna e la parte immaginaria nella seconda. 
+
+# polyfit filters
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="q">  (integer)
+
+Interpola con il metodo dei polinomi ortogonali un trend polinomiale di ordine <@var="q"> alla variabile <@var="y"> in input. La variabile contiene i valori interpolati. 
+
+# princomp stats
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="p">  (integer)
+		<@var="covmat">  (boolean, opzionale)
+
+Data la matrice <@var="X"> di dimensioni <@itl="T">×<@itl="k">, contenente <@itl="T"> osservazioni su <@itl="k"> variabili, e un intero positivo <@var="p"> inferiore o uguale a <@itl="k">, questa funzione restituisce una matrice <@itl="T">×<@itl="p"> <@itl="P">, contenente le prime <@itl="p"> componenti principali di <@var="X">. 
+
+Il terzo parametro è opzionale e ha l'effetto di una condizione logica: se non nullo le componenti principali vengono calcolate sulla base della matrice di covarianza delle colonne di <@var="X"> (il default è usare la matrice di correlazione). 
+
+Gli elementi di <@itl="P"> sono calcolati come la somma da <@itl="i"> a <@itl="k"> di <@itl="Z"><@sub="ti"> per <@itl="v"><@sub="ji">, dove <@itl="Z"><@sub="ti"> è il valore standardizzato della variabile <@itl="i"> all'osservazione <@itl="t"> e <@itl="v"><@sub="ji"> è l'autovettore <@itl="j"> della matrice di correlazione (o covarianza) delle <@itl="X"><@sub="i">, con autovettori ordinati in ordine decrescente degli autovalori corrispondenti. 
+
+Vedi anche <@ref="eigensym">. 
+
+# prodc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce il prodotto degli elementi di <@var="X">, per colonna. Vedi anche <@ref="prodr">, <@ref="meanc">, <@ref="sdc">, <@ref="sumc">. 
+
+# prodr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce il prodotto degli elementi di <@var="X">, per riga. Vedi anche <@ref="prodc">, <@ref="meanr">, <@ref="sumr">. 
+
+# psd stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente la deviazione standard campionaria della variabile <@itl="y"> per ciascuna unità della cross-section (con valori ripetuti per ciascuna data). Il denominatore utilizzato è la numerosità campionaria per ciascuna unità meno 1, a meno che il numero di osservazioni valide per l'unità in questione sia 1 (nel qual caso viene restituito uno zero) o 0 (nel qual caso viene <@lit="NA">). 
+
+Se viene fornito il secondo argomento opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Nota: questa funzione rende possibile controllare se una certa variabile (per esempio <@lit="X">) è costante nel tempo usando la condizione <@lit="max(psd(X)) = 0">. 
+
+Vedi anche <@ref="pmax">, <@ref="pmin">, <@ref="pmean">, <@ref="pnobs">, <@ref="pshrink">, <@ref="psum">. 
+
+# psdroot linalg
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice simmetrica)
+
+Calcola una variante generalizzata della scomposizione di Cholesky della matrice <@var="A">, che deve essere semidefinita positiva (ma può essere singolare). Se la matrice in input non è quadrata la funzione genera un messaggio d'errore, ma la simmetria viene data per scontata, e non viene verificata; la funzione legge solo il triangolo inferiore di <@var="A">. Il risultato è una matrice triangolare inferiore <@itl="L"> che soddisfa la condizione <@itl="A = LL'">. Gli elementi indeterminati della soluzione vengono posti pari a zero. 
+
+Nel caso in cui <@var="A"> sia definita positiva, v. <@ref="cholesky">. 
+
+# pshrink data-utils
+Risultato: 	matrice 
+Argomento: 	<@var="y">  (serie)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce un vettore colonna contenente la prima osservazione valide della serie <@var="y"> per ciascuna unità in cross-section del panel all'interno dell'intervallo campionario corrente. Le unità che non hanno nessuna osservazione valida per la serie in input vengono ignorate. 
+
+Questa funzione permette di compattare le variabili create da funzioni come <@ref="pmax"> e <@ref="pmean">, che replicano per tutti i periodi temporali un valore relativo a ogni unità della cross-section. 
+
+# psum stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente la somma rispetto al tempo della variabile <@var="y"> per ogni unità della cross-section, replicando per tutti i periodi i valori così ottenuti. Nel calcolo delle somme le osservazioni mancanti vengono ignorate. 
+
+Se viene fornito il secondo argomento opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Vedi anche <@ref="pmax">, <@ref="pmean">, <@ref="pmin">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">. 
+
+# pvalue probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="c">  (carattere)
+		<@var="…">  (vedi sotto)
+		<@var="x">  (scalare, serie o matrice)
+Esempi: 	<@lit="p1 = pvalue(z, 2.2)">
+		<@lit="p2 = pvalue(X, 3, 5.67)">
+		<@lit="p2 = pvalue(F, 3, 30, 5.67)">
+
+Calcola un <@itl="P">-value. Restituisce <@itl="P(X > x)">, dove la distribuzione <@itl="X"> è determinata dal carattere <@var="c">. Fra gli argomenti <@var="c"> e <@var="x"> è necessario indicare zero o più argomenti aggiuntivi per specificare i parametri della distribuzione; v. <@ref="cdf"> per ulteriori dettagli. Le distribuzioni che la funzione <@lit="pval"> può gestire sono la normale standard, <@itl="t">, chi quadrato, <@itl="F">, gamma, binomiale, Poisson, Weibull e Generalized Error. 
+
+Vedi anche <@ref="critical">, <@ref="invcdf">, <@ref="urcpval">, <@ref="imhof">. 
+
+# pxsum stats
+Risultato: 	serie 
+Argomenti:	<@var="y">  (serie)
+		<@var="mask">  (serie, opzionale)
+
+Questa funzione è applicabile solo se il dataset corrente ha struttura panel. Restituisce una variabile contenente la somma dei valori di <@var="y"> rispetto alle unità della cross-section in ciascun periodo, replicando i valori così ottenuti per ciascuna unità. 
+
+Se viene fornito il secondo argomento opzionale le osservazioni corrispondenti a un valore nullo di <@var="mask"> sono ignorate. 
+
+Si noti che questa funzione lavora lungo una dimensione diversa da quella utilizzata dalla funzione <@ref="pmean">. 
+
+# qform linalg
+Risultato: 	matrice 
+Argomenti:	<@var="x">  (matrice)
+		<@var="A">  (matrice simmetrica)
+
+Calcola la forma quadratica <@itl="Y = xAx'">. L'uso di questa funzione al posto della consueta moltiplicazione matriciale garantisce maggiore velocità e accuratezza. Se le dimensioni di <@var="x"> e <@var="A"> non sono compatibili o se <@var="A"> non è simmetrica viene restituito un messaggio d'errore. 
+
+# qnorm probdist
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce i quantili della normale standardizzata. Se <@var="x"> non è fra 0 e 1, restituisce <@lit="NA">. Vedi anche <@ref="cnorm">, <@ref="dnorm">. 
+
+# qrdecomp linalg
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="&R">  (riferimento a matrice, o <@lit="null">)
+
+Calcola la scomposizione QR di una matrice <@itl="m">×<@itl="n"> <@var="X">, in altre parole <@itl="X = QR"> dove <@itl="Q"> è una matrice ortogonale <@itl="m">×<@itl="n"> e <@itl="R"> è una matrice triangolare superiore <@itl="n">×<@itl="n">. La matrice <@itl="Q"> viene restituita direttamente, mentre <@itl="R"> può essere recuperata usando il secondo argomento opzionale. 
+
+Vedi anche <@ref="eigengen">, <@ref="eigensym">, <@ref="svd">. 
+
+# quadtable stats
+Risultato: 	matrice 
+Argomenti:	<@var="n">  (integer)
+		<@var="type">  (integer, opzionale)
+		<@var="a">  (scalare, opzionale)
+		<@var="b">  (scalare, opzionale)
+
+Restituisce una matrice <@itl="n">×2 da usare per la quadratura di Gauss (integrazione numerica). La prima colonna contiene i nodi o ascisse, la seconda colonna contiene i pesi. 
+
+Il primo argomento specifica il numero dei punti (righe) da calcolare. Il secondo argomento specifica il codice del tipo di quadratura da utilizzare: 1 Gauss–Hermite (predefinita); 2 Gauss–Legendre; 3 Gauss–Laguerre. Il significato dei parametri opzionali <@var="a"> e <@var="b"> dipende dal <@var="tipo"> selezionato, come spiegato sotto. 
+
+La quadratura di Gauss è un metodo per l'approssimazione numerica di un integrale definito di una qualche funzione di interesse. Si rappresenti la funzione come il prodotto <@itl="f(x)W(x)">. I diversi tipi di quadratura differiscono nella specificazione della componente <@itl="W(x)">: nel caso di Hermite questa è uguale a exp(–<@itl="x"><@sup="2">); nel caso di Laguerre, è data da exp(–<@itl="x">); infine, nel caso di Legendre, si ha semplicemente <@itl="W(x)"> = 1. 
+
+Per ciascuna specificazione di <@itl="W">, si può calcolare un insieme di nodi, <@itl="x"><@sub="i">, e pesi, <@itl="w"><@sub="i">, tali che la somma da <@itl="i">=1 a <@itl="n"> di <@itl="w"><@sub="i"><@itl="f">(<@itl="x"><@sub="i">) approssima l'integrale desiderato. Viene usato il metodo di <@bib="Golub and Welsch (1969);golub69">. 
+
+Quando si seleziona il metodo di Gauss–Legendre, gli argomenti opzionali <@var="a"> e <@var="b"> possono essere utilizzati per controllare i limiti inferiore e superiore di integrazione; i valori predefiniti sono –1 e 1. (Nella quadratura di Hermite i limiti sono fissati a meno e più infinito, mentre in quella di Laguerre sono fissati a 0 e infinito.) 
+
+Nella quadratura di Hermite <@var="a"> e <@var="b"> svolgono un ruolo differente: possono essere utilizzati per sostituire la forma predefinita di <@itl="W">(<@itl="x">) con la distribuzione normale (strettamente associata) con media <@var="a"> e deviazione standard <@var="b">. Per esempio, fornire valori 0 e 1 per questi parametri ha l'effetto di trasformare <@itl="W">(<@itl="x">) nella funzione di densità di una normale standard, il che è equivalente a moltiplicare i nodi predefiniti per la radice quadrata di 2 e dividere i pesi per la radice quadrata di π. 
+
+# quantile stats
+Risultato: 	scalare o matrice 
+Argomenti:	<@var="y">  (serie o matrice)
+		<@var="p">  (scalare tra 0 e 1)
+
+Se <@var="y"> è una serie, restituisce il suo <@var="p">-esimo quantile. Ad esempio, se <@itl="p"> = 0.5, si avrà la mediana. 
+
+Se l'argomento è invece una matrice, restituisce un vettore riga contenente i <@var="p">-esimi quantili per le colonne di <@var="y">; in pratica, ogni colonna è trattata come se fosse una serie. 
+
+Inoltre, se <@var="y"> è una matrice, si può usare una forma alternativa del secondo argomento: <@var="p"> può essere un vettore. In tal caso, il valore restituito è una matrice <@itl="m">×<@itl="n">, dove <@var="m"> è il numero di elementi in <@var="p"> e <@var="n"> il numero di colonne di <@var="y">. 
+
+# randgen probdist
+Risultato: 	serie 
+Argomenti:	<@var="d">  (stringa)
+		<@var="p1">  (scalare o serie)
+		<@var="p2">  (scalare o serie, condizionale)
+		<@var="p3">  (scalare, condizionale)
+Esempi: 	<@lit="series x = randgen(u, 0, 100)">
+		<@lit="series t14 = randgen(t, 14)">
+		<@lit="series y = randgen(B, 0.6, 30)">
+		<@lit="series g = randgen(G, 1, 1)">
+		<@lit="series P = randgen(P, mu)">
+
+Generatore di numeri casuali. L'argomento <@var="d"> è una stringa (nella maggior parte dei casi semplicemente un singolo carattere) che specifica la distribuzione da cui i numeri pseudo-casuali sono generati. Gli argomenti da <@var="p1"> a <@var="p3"> specificano i parametri della distribuzione selezionata. Il numero di tali parametri dipende dalla distribuzione. Per le distribuzioni diverse dalla beta-binomiale, i parametri <@var="p1"> e (se applicabile) <@var="p2"> devono essere scalari o variabili: se sono scalari, la serie generata è identicamente distribuita; se al contrario almeno uno dei due parametri in ingresso è una serie, per ciascuna osservazione la distribuzione è condizionata al valore dei parametri corrispondenti. Nel caso della beta-binomiale tutti i parametri devono essere scalari. 
+
+Le specifiche sono fornite sotto: il codice stringa per ogni distribuzione è mostrato fra parentesi, seguito dall'interpretazione dell'argomento <@var="p1"> e, ove applicabile, <@var="p2"> e <@var="p3">. 
+
+<indent>
+• Uniforme (continua) (u o U): minimo, massimo 
+</indent>
+
+<indent>
+• Uniforme (discreta) (i): minimo, massimo 
+</indent>
+
+<indent>
+• Normale (z, n, o N): media, deviazione standard 
+</indent>
+
+<indent>
+• t di Student (t): gradi di libertà 
+</indent>
+
+<indent>
+• Chi quadro (c, x, o X): gradi di libertà 
+</indent>
+
+<indent>
+• F di Snedecor (f o F): gradi di libertà (num.), gradi di libertà (den.) 
+</indent>
+
+<indent>
+• Gamma (g o G): forma, scala 
+</indent>
+
+<indent>
+• Binomiale (b o B): probabilità, numero di prove 
+</indent>
+
+<indent>
+• Poisson (p o P): media 
+</indent>
+
+<indent>
+• Weibull (w o W): forma, scala 
+</indent>
+
+<indent>
+• Generalized Error (E): forma 
+</indent>
+
+<indent>
+• Beta (beta): forma1, forma2 
+</indent>
+
+<indent>
+• Beta-Binomiale (bb): prove, forma1, forma2 
+</indent>
+
+Vedi anche <@ref="normal">, <@ref="uniform">, <@ref="mrandgen">, <@ref="randgen1">. 
+
+# randgen1 probdist
+Risultato: 	scalare 
+Argomenti:	<@var="d">  (carattere)
+		<@var="p1">  (scalare)
+		<@var="p2">  (scalare, condizionale)
+Esempi: 	<@lit="scalar x = randgen1(z, 0, 1)">
+		<@lit="scalar g = randgen1(g, 3, 2.5)">
+
+Funziona come <@ref="randgen"> eccetto per il fatto che il valore restituito è uno scalare invece di una variabile. 
+
+Il primo esempio sopra restituisce un valore da una distribuzione normale standard, mentre il secondo restituisce un valore generato da una distribuzione Gamma con parametro di forma 3 e parametro di scala 2.5. 
+
+Vedi anche <@ref="mrandgen">. 
+
+# randint probdist
+Risultato: 	integer 
+Argomenti:	<@var="min">  (integer)
+		<@var="max">  (integer)
+
+Restituisce un numero pseudo-casuale intero nell'intervallo chiuso [<@var="min">, <@var="max">]. Vedi anche <@ref="randgen">. 
+
+# rank linalg
+Risultato: 	integer 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce il rango di <@var="X">, calcolato numericamente mediante la scomposizione a valori singolari (SVD). Vedi anche <@ref="svd">. 
+
+# ranking stats
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="y">  (serie o vettore)
+
+Restituisce una variabile o un vettore con i ranghi di <@itl="y">. Il rango di un'osservazione <@itl="i"> è pari al numero di elementi della variabile minori di <@itl="y"><@sub="i"> più metà del numero di elementi della serie uguali a <@itl="y"><@sub="i">. (Intuitivamente, è possibile pensare al punteggio negli scacchi, dove per ogni vittoria si assegna un punto mentre per ogni patta si assegna mezzo punto.) Al numero così calcolato si aggiunge uno, cosicché al rango più basso è associato 1 invece di 0. 
+
+Vedi anche <@ref="sort">, <@ref="sortby">. 
+
+# rcond linalg
+Risultato: 	scalare 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce il reciproco del numero di condizionamento di <@var="A"> rispetto alla norma-1. In molte circostanze, questa grandezza è migliore del determinante come misura di sensibilità di <@var="A"> a operazioni numeriche come l'inversione. 
+
+Il valore è calcolato come il reciproco del prodotto della norma-1 di <@var="A"> per la norma-1 dell'inversa di <@var="A">. 
+
+Vedi anche <@ref="det">, <@ref="ldet">, <@ref="onenorm">. 
+
+# readfile strings
+Risultato: 	stringa 
+Argomenti:	<@var="fname">  (stringa)
+		<@var="codeset">  (stringa, opzionale)
+
+Se un file di nome <@var="fname"> esiste ed è leggibile, restituisce una stringa con il contenuto del file. In caso contrario restituisce un errore. 
+
+Nel caso in cui <@var="fname"> inizia con l'identificatore di un protocollo internet supportato (<@lit="http://">, <@lit="ftp://">, <@lit="https://">), la funzione richiama libcurl per scaricare la risorsa. 
+
+Se il testo da leggere non ha una codifica UTF-8, gretl cerca di ricodificarlo a partire dalla codifica locale, nel caso non sia UTF-8, o da ISO-8859-15 in caso contrario. Se questo comportamento predefinito non si adatta alle vostre esigenze è possibile utilizzare il secondo argomento opzionale per specificare la codifica. Per esempio, nel caso si desideri leggere un testo nella codifica Microsoft codepage 1251, diversa dal sistema in uso in locale, è possibile fornire come secondo argomento <@lit=""cp1251"">. 
+
+Si vedano anche le funzioni <@ref="sscanf"> e <@ref="getline">. 
+
+# regsub strings
+Risultato: 	stringa 
+Argomenti:	<@var="s">  (stringa)
+		<@var="match">  (stringa)
+		<@var="repl">  (stringa)
+
+Restituisce una copia di <@var="s"> in cui tutte le occorrenze del tipo <@var="match"> sono sostituite con <@var="repl">. Gli argomenti <@var="match"> e <@var="repl"> sono interpretati come espressioni regolari in stile Perl. 
+
+Si veda anche <@ref="strsub"> per semplici sostituzioni di stringhe letterali. 
+
+# remove data-utils
+Risultato: 	integer 
+Argomento: 	<@var="fname">  (stringa)
+
+Se il file <@var="fname"> esiste e l'utente ha i permessi di scrittura, lo cancella. Restituisce 0 se il comando è andato a buon fine, non-zero se il file non esiste o non può essere cancellato. 
+
+# replace data-utils
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="x">  (serie o matrice)
+		<@var="find">  (scalare o vettore)
+		<@var="subst">  (scalare o vettore)
+
+Sostituisce ogni elemento di <@var="x"> uguale all'<@itl="i">-esimo elemento di <@var="find"> con il corrispondente elemento di <@var="subst">. 
+
+Se <@var="find"> è uno scalare, anche <@var="subst"> deve essere uno scalare. Se <@var="find"> e <@var="subst"> sono entrambi vettori, devono avere lo stesso numero di elementi. Se infine <@var="find"> è un vettore e <@var="subst"> uno scalare, tutte le corrispondenze saranno sostituite con <@var="subst">. 
+
+Esempio: 
+
+<code>          
+     a = {1,2,3;3,4,5}
+     find = {1,3,4}
+     subst = {-1,-8, 0}
+     b = replace(a, find, subst)
+     print a b
+</code>
+
+genera 
+
+<code>          
+          a (2 x 3)
+           
+            1   2   3 
+            3   4   5 
+           
+          b (2 x 3)
+           
+            -1    2   -8 
+            -8    0    5
+</code>
+
+# resample stats
+Risultato: 	stesso tipo dell'argomento 
+Argomenti:	<@var="x">  (serie o matrice)
+		<@var="b">  (integer, opzionale)
+
+Ricampiona da <@var="x"> con reintroduzione. Nel caso in cui l'argomento sia una variabile, ciascun valore della variabile restituita, <@itl="y"><@sub="t">, è estratto da tutti i valori di <@itl="x"><@sub="t"> con uguale probabilità. Quando l'argomento è una matrice, ciascuna riga della matrice restituita è estratta dalle righe di <@var="x"> con uguale probabilità. 
+
+L'argomento opzionale <@var="b">, che deve essere un numero intero maggiore o uguale a 2, indica la lunghezza del blocco nel ricampionamento a blocchi mobili (moving blocks). L'effetto è che l'output generato è il risultato di un'estrazione casuale con reintroduzione dall'insieme di tutte le possibili sequenze contigue di lunghezza <@var="b"> nell'input. (Nel caso l'input sia una matrice, i blocchi estratti sono sequenze contigue di righe della matrice.) Se la lunghezza dei dati non è un multiplo della lunghezza del blocco, l'ultimo blocco estratto è troncato per adattarlo. 
+
+# round math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Approssima all'intero più vicino. Si noti che, quando <@itl="x"> si trova esattamente nel mezzo tra due numeri interi, la funzione restituisce l'intero più distante da zero. Così, per esempio, 2.5 è approssimato a 3, ma <@lit="round(-3.5)"> restituisce –4. Questa è la convenzione di solito seguita nei fogli di calcolo, anche se altri programmi possono seguire convenzioni diverse. Vedi anche <@ref="ceil">, <@ref="floor">, <@ref="int">. 
+
+# rownames matbuild
+Risultato: 	integer 
+Argomenti:	<@var="M">  (matrice)
+		<@var="s">  (lista o stringa)
+
+Attribuisce dei nomi alle righe della matrice <@var="M"> di dimensioni <@itl="m">×<@itl="n">. Se <@var="s"> è una lista, i nomi sono copiati da quelli delle variabili; la lista deve avere tanti elementi quante sono le righe di <@var="M">. Se <@var="s"> è una stringa, deve contenere un numero appropriato di sub-stringhe separate da spazi. Restituisce 0 se la funzione è andata a buon fine, non-zero altrimenti. Si veda anche <@ref="colnames">. 
+
+Esempio: 
+
+<code>          
+      matrix M = {1,2;2,1;4,1} 
+      rownames(M, "Row1 Row2 Row3")
+      print M
+</code>
+
+# rows matshape
+Risultato: 	integer 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce il numero di righe della matrice <@var="X">. Vedi anche <@ref="cols">, <@ref="mshape">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# sd stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="x">  (serie o lista)
+
+Se <@var="x"> è una variabile, restituisce l'errore quadratico medio campionario (scalare) saltando i valori mancanti. 
+
+Se, invece, <@var="x"> è una lista, restituisce una variabile <@itl="y"> tale per cui <@itl="y"><@sub="t"> è l'errore quadratico medio delle variabili nella lista all'osservazione <@itl="t">, o <@lit="NA"> se ci sono dei valori mancanti <@itl="t">. 
+
+Vedi anche <@ref="var">. 
+
+# sdc stats
+Risultato: 	vettore riga 
+Argomenti:	<@var="X">  (matrice)
+		<@var="df">  (scalare, opzionale)
+
+Restituisce le deviazioni standard delle colonne di <@var="X">. Se <@var="df"> è positivo, è utilizzato come divisore nel calcolo delle varianze delle colonne, in caso contrario il divisore utilizzato è il numero di righe di <@var="X"> (in altre parole non viene applicata nessuna correzione per i gradi di libertà). Vedi anche <@ref="meanc">, <@ref="sumc">. 
+
+# sdiff transforms
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="y">  (serie o lista)
+
+Calcola le differenze stagionali: <@itl="y(t) - y(t-k)">, dove <@itl="k"> è la periodicità del dataset corrente (si veda <@ref="$pd">). I valori iniziali sono fissati a <@lit="NA">. 
+
+Quando viene restituita una lista alle singole variabili viene automaticamente assegnato un nome secondo il formato <@lit="sd_"><@var="varname">, dove <@var="varname"> è il nome della variabile originaria. Se necessaril il nome viene troncato e può essere modificato in caso di non unicità all'interno dell'insieme di nomi costruiti in questo modo. 
+
+Vedi anche <@ref="diff">, <@ref="ldiff">. 
+
+# selifc matshape
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice)
+		<@var="b">  (vettore riga)
+
+Seleziona da <@var="A"> solo le colonne per le quali l'elemento corrispondente di <@var="b"> è non nullo. <@var="b"> deve essere un vettore riga con lo stesso numero di colonne di <@var="A">. 
+
+Vedi anche <@ref="selifr">. 
+
+# selifr matshape
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice)
+		<@var="b">  (vettore colonna)
+
+Seleziona da <@var="A"> solo le righe per le quali l'elemento corrispondente di <@var="b"> è non nullo. <@var="b"> deve essere un vettore colonna con lo stesso numero di righe di <@var="A">. 
+
+Vedi anche <@ref="selifc">, <@ref="trimr">. 
+
+# seq matbuild
+Risultato: 	vettore riga 
+Argomenti:	<@var="a">  (integer)
+		<@var="b">  (integer)
+		<@var="k">  (integer, opzionale)
+
+Con due soli argomenti, restituisce un vettore riga di interi consecutivi, con <@var="a"> come primo elemento e <@var="b"> come ultimo. Se <@var="a"> è maggiore di <@var="b">, la sequenza sarà decrescente. L'eventuale parte non intera viene ignorata per entrambi gli argomenti. 
+
+In caso sia presente il terzo argomento, la funzione restituisce un vettore riga contenente una sequenza di interi che inizia con <@var="a"> e in ciascun passaggio è incrementata (o diminuita, nel caso in cui <@var="a"> sia maggiore di <@var="b">) di <@var="k">. Il valore finale è il più grande elemento della sequenza minore o uguale a <@var="b"> (o mutatis mutandis, nel caso in cui <@var="a"> sia maggiore di <@var="b">). L'argomento <@var="k"> deve essere positivo; nel caso non sia un intero la parte decimale è ignorata. 
+
+Vedi anche <@ref="ones">, <@ref="zeros">. 
+
+# setnote data-utils
+Risultato: 	integer 
+Argomenti:	<@var="b">  (bundle)
+		<@var="key">  (stringa)
+		<@var="note">  (stringa)
+
+Imposta una nota descrittiva per l'oggetto identificato dalla chiave <@var="key"> nel bundle <@var="b">. Essa verrà mostrata quando il comando <@lit="print"> viene applicato al bundle. Questa funzione restituisce 0 se è andata a buon fine e non nullo in caso contrario (ad esempio, se nel bundle <@var="b"> non esiste un oggetto associato alla chiave <@var="key">). 
+
+# simann numerical
+Risultato: 	scalare 
+Argomenti:	<@var="b">  (vettore)
+		<@var="f">  (function call)
+		<@var="maxit">  (integer, opzionale)
+
+Implementa il simulated annealing (letteralmente "ricottura simulata", che prende il nome dal processo di ricottura utilizzato per migliorare le caratteristiche delle leghe metalliche), che può essere utile nel migliorare l'inizializzazione nei problemi di ottimizzazione numerica. 
+
+Il primo argomento deve contenere il valore iniziale di un vettore di parametri. Il secondo argomento specifica la funzione da chiamare che restituisce il valore (scalare) da massimizzare. Il terzo argomento, opzionale, specifica il massimo numero di iterazioni (il valore predefinito è 1024). In caso di successo, <@lit="simann"> restituisce il valore finale del massimando. 
+
+Per maggiori dettagli ed esempi si veda il capitolo sui metodi numerici in <@pdf="la guida all'uso di gretl">. Vedi anche <@ref="BFGSmax">, <@ref="NRmax">. 
+
+# sin math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Funzione seno di <@var="x">. Vedi anche <@ref="cos">, <@ref="tan">, <@ref="atan">. 
+
+# sinh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce il seno iperbolico di <@var="x">. 
+
+Vedi anche <@ref="asinh">, <@ref="cosh">, <@ref="tanh">. 
+
+# skewness stats
+Risultato: 	scalare 
+Argomento: 	<@var="x">  (serie)
+
+Restituisce il valore dell'indice di asimmetria per la serie <@var="x">, non considerando le osservazioni mancanti. 
+
+# sort matshape
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (serie o vettore)
+
+Ordina <@var="x"> in senso crescente, non considerando le osservazioni mancanti nel caso in cui <@itl="x"> sia una variabile. Vedi anche <@ref="dsort">, <@ref="values">. In particolare, per le matrici si veda <@ref="msortby">. 
+
+# sortby stats
+Risultato: 	serie 
+Argomenti:	<@var="y1">  (serie)
+		<@var="y2">  (serie)
+
+Restituisce una variabile contenente gli elementi di <@var="y2"> ordinati per valore crescente del primo argomento, <@var="y1">. Vedi anche <@ref="sort">, <@ref="ranking">. 
+
+# sqrt math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Radice quadrata di <@var="x">; genera <@lit="NA"> in caso di valori negativi. 
+
+Si noti che se l'argomento è una matrice l'operazione viene effettuata elemento per elemento e dato che le matrici non possono contenere <@lit="NA">, eventuali valori negativi generano un errore. Per la "radice quadrata matriciale", v. <@ref="cholesky">. 
+
+# sscanf strings
+Risultato: 	integer 
+Argomenti:	<@var="src">  (stringa)
+		<@var="format">  (stringa)
+		... (vedi sotto)
+
+Legge valori da <@var="src"> seguendo il formato <@var="format"> e assegna questi valori a uno o più degli argomenti seguenti, rappresentati dai punti. Restituisce il numero di valori assegnati. Questa funzione rappresenta una versione semplificata della funzione <@lit="sscanf"> usata nel linguaggio di programmazione C. 
+
+La <@var="stringa"> può essere una stringa vera e propria, racchiusa tra virgolette doppie, o il nome di una variabile stringa predefinita. <@var="format"> è definito in modo simile alla stringa di formato del comando <@xrf="printf"> (si veda oltre). <@var="args"> è una lista separata da virgole che contiene i nomi di variabili predefinite cui verranno assegnati i valori letti da <@var="src">. (Per chi conosce C: è possibile ma non indispensabile prefissare con <@lit="&"> i nomi delle variabili numeriche). 
+
+Le regole specificate in <@var="format"> vengono usate per analizzare <@var="src">. Le specifiche iniziano con un carattere <@lit="%">, e comprendono <@lit="%f">, <@lit="%g"> o <@lit="%lf"> per i numeri a virgola mobile; <@lit="%d"> per gli interi; <@lit="%s"> per le stringhe, e <@lit="%m"> per le matrici. È possibile inserire un numero intero positivo dopo il carattere percentuale per impostare il numero massimo di caratteri da leggere per ogni tipo di specifica (o il numero massimo di righe nel caso di conversione in matrici). In alternativa è possibile inserire un carattere <@lit="*"> dopo il percentuale per sopprimere la conversione di un certo numero di caratteri della stringa (e saltando così eventuali caratteri che in caso contrario verrebbero convertiti per un certo tipo). Ad esempio, <@lit="%3d"> converte i 3 caratteri successivi di <@var="src"> in un numero intero, se possibile; <@lit="%*g"> salta tutti i caratteri in <@var="src"> che potrebbero essere convertiti in un numero a virgola mobile. 
+
+La conversione in matrici funziona nel modo seguente: viene letta ogni riga dell'input e vengono contati i campi numerici (separati da spazi o tabulatori). In questo modo viene definito il numero di colonne della matrice. Vengono quindi lette tutte le righe seguenti che contengono lo stesso numero di colonne numeriche, ma è comunque possibile limitare il numero massimo di righe da leggere procedendo come descritto sopra. 
+
+Oltre alla conversione di <@lit="%s"> per le stringhe, è disponibile anche una versione semplificata del formato C <@lit="%"><@var="N"><@lit="["><@var="chars"><@lit="]">. In questo formato, <@var="N"> è il numero massimo di caratteri da leggere, e <@var="chars"> è un insieme di caratteri accettabili, racchiusi tra parentesi quadre; la lettura si ferma se si raggiunge il limite di <@var="N"> o se si incontra un carattere non compreso nell'insieme ammissibile. La funzione dell'insieme <@var="chars"> può essere invertita specificando un accento circonflesso <@lit="^"> come primo carattere dell'insieme; in questo caso, la lettura si ferma se si incontra un carattere dell'insieme specificato. Al contrario del C, il carattere trattino non ha alcuna funzione speciale in questo contesto. 
+
+Se la stringa non corrisponde esattamente al formato specificato, il numero di conversioni effettuate può risultare diverso dal numero di argomenti indicati. Per gretl questo non è necessariamente un errore, tuttavia può essere utile controllare il numero di conversioni effettuate, pari al valore restituito dalla funzione. 
+
+Ecco alcuni esempi: 
+
+<code>          
+     scalar x
+     scalar y
+     sscanf("123456", "%3d%3d", x, y)
+     sprintf S, "1 2 3 4\n5 6 7 8"
+     S
+     matrix m
+     sscanf(S, "%m", m)
+     print m
+</code>
+
+# sst stats
+Risultato: 	scalare 
+Argomento: 	<@var="y">  (serie)
+
+Restituisce la somma dei quadrati degli scarti dalla media per le osservazioni valide nella variabile <@var="y">. Vedi anche <@ref="var">. 
+
+# strlen strings
+Risultato: 	integer 
+Argomento: 	<@var="s">  (stringa)
+
+Restituisce il numero di caratteri nella stringa <@var="s">. Si note che questo può non coincidere col numero di byte se sono presenti caratteri al di fuori del campo ASCII stampabile (ad esempio, lettere accentate). 
+
+# strncmp strings
+Risultato: 	integer 
+Argomenti:	<@var="s1">  (stringa)
+		<@var="s2">  (stringa)
+		<@var="n">  (scalare, opzionale)
+
+Confronta le due stringhe fornite come argomenti e restituisce un intero minore, uguale, o maggiore di zero se <@var="s1"> risulta rispettivamente essere minore, combaciare, o essere maggiore di <@var="s2">, fino ai primi <@var="n"> caratteri. Se <@var="n"> è omesso, il confronto procede fin dove possibile. 
+
+Si noti che per verificare l'uguaglianza di due stringhe non è necessaria alcuna funzione, come in <@lit="if (s1 == s2) ..."> 
+
+# strsplit strings
+Risultato: 	stringa 
+Argomenti:	<@var="s">  (stringa)
+		<@var="i">  (integer)
+
+Restituisce l'elemento <@var="i">-esimo della stringa <@var="s"> separato da spazi. L'indice <@var="i"> è a base 1 e la funzione genera un errore se <@var="i"> è minore di 1. Nel caso in cui <@var="s"> non contenga spazi e <@var="i"> sia uguale ad 1, la funzione restituisce una copia dell'intera stringa in ingresso; in caso contrario, se <@var="i"> è maggiore del numero di elementi separati da spazio la funzione restituisce una stringa vuota. 
+
+# strstr strings
+Risultato: 	stringa 
+Argomenti:	<@var="s1">  (stringa)
+		<@var="s2">  (stringa)
+
+Cerca all'interno della stringa <@var="s1"> un'occorrenza della stringa <@var="s2">. Nel caso venga trovata una corrispondenza la funzione restituisce una copia della porzione di <@var="s1"> che inizia con <@var="s2">; in caso contrario, la funzione restituisce una stringa vuota. 
+
+# strstrip strings
+Risultato: 	stringa 
+Argomento: 	<@var="s">  (stringa)
+
+Restituisce una copia dell'argomento <@var="s"> da cui sono stati rimossi gli spazi bianchi iniziali e finali. 
+
+# strsub strings
+Risultato: 	stringa 
+Argomenti:	<@var="s">  (stringa)
+		<@var="find">  (stringa)
+		<@var="subst">  (stringa)
+
+Restituisce una copia di <@var="s"> in cui tutte le occorrenze di <@var="find"> sono sostituite con <@var="subst">. V. anche <@ref="regsub"> per una funzione più complessa che permette di sostituire stringhe sulla base di espressioni regolari. 
+
+# substr strings
+Risultato: 	stringa 
+Argomenti:	<@var="s">  (stringa)
+		<@var="start">  (integer)
+		<@var="end">  (integer)
+
+Restituisce la sottostringa di <@var="s"> dal carattere <@var="start"> al carattere <@var="end"> compresi. L'indicizzazione è a base 1. 
+
+# sum stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="x">  (serie, matrice o lista)
+
+Se <@var="x"> è una variabile restituisce la somma (scalare) delle osservazioni non mancanti in <@var="x">. Si veda anche <@ref="sumall">. 
+
+Se <@var="x"> è una matrice restituisce la somma degli elementi della matrice. 
+
+Se <@var="x"> è una lista, restituisce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è la somma dei valori delle variabili nella lista all'osservazione <@itl="t">, o <@lit="NA"> se ci sono valori mancanti all'osservazione <@itl="t">. 
+
+# sumall stats
+Risultato: 	scalare 
+Argomento: 	<@var="x">  (serie)
+
+Restituisce la somma delle osservazioni di <@var="x"> nel campione corrente, o <@lit="NA"> se ci sono valori mancanti. 
+
+# sumc stats
+Risultato: 	vettore riga 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce le somme per colonna di <@var="X">. Vedi anche <@ref="meanc">, <@ref="sumr">. 
+
+# sumr stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce le somme per riga di <@var="X">. Vedi anche <@ref="meanr">, <@ref="sumc">. 
+
+# svd linalg
+Risultato: 	vettore riga 
+Argomenti:	<@var="X">  (matrice)
+		<@var="&U">  (riferimento a matrice, o <@lit="null">)
+		<@var="&V">  (riferimento a matrice, o <@lit="null">)
+
+Esegue la scomposizione a valori singolari (SVD) della matrice <@var="X">. 
+
+I valori singolari sono restituiti in un vettore riga. I vettori singolari sinistri e/o destri <@itl="U"> e <@itl="V"> possono essere ottenuti fornendo valori non nulli per, rispettivamente, gli argomenti 2 e 3. Per una matrice <@lit="A">, il codice 
+
+<code>          
+      s = svd(A, &U, &V) 
+      B = (U .* s) * V
+</code>
+
+dovrebbe generare <@lit="B"> identica ad <@lit="A"> (precisione numerica a parte). 
+
+Vedi anche <@ref="eigengen">, <@ref="eigensym">, <@ref="qrdecomp">. 
+
+# tan math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Funzione tangente di <@var="x">. Vedi anche <@ref="atan">, <@ref="cos">, <@ref="sin">. 
+
+# tanh math
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare, serie o matrice)
+
+Restituisce la tangente iperbolica di <@var="x">. 
+
+Vedi anche <@ref="atanh">, <@ref="cosh">, <@ref="sinh">. 
+
+# toepsolv linalg
+Risultato: 	vettore colonna 
+Argomenti:	<@var="c">  (vettore)
+		<@var="r">  (vettore)
+		<@var="b">  (vettore)
+
+Risolve un sistema di Toeplitz di equazioni lineari, cioè <@itl="Tx = b"> dove <@itl="T"> è una matrice quadrata il cui elemento <@itl="T"><@sub="i,j"> è uguale a <@itl="c"><@sub="i-j"> per <@itl="i>=j"> e a <@itl="r"><@sub="j-i"> per <@itl="i<=j">. Si noti che i primi elementi di <@itl="c"> e <@itl="r"> devono essere uguali; in caso contrario la funzione restituisce un errore. In caso di successo, la funzione restituisce il vettore <@itl="x">. 
+
+L'algoritmo usato sfrutta la speciale struttura della matrice <@itl="T">, che lo rende molto più efficiente di altri algoritmi meno specifici, specialmente per sistemi di grandi dimensioni. Attenzione: in certi casi, la funzione può restituire un errore di singolarità anche se la matrice <@itl="T"> non è effettivamente singolare; questo problema tuttavia non si presenta quando <@itl="T"> è definita positiva. 
+
+# tolower strings
+Risultato: 	stringa 
+Argomento: 	<@var="s">  (stringa)
+
+Restituisce una copia di <@var="s"> in cui ogni lettera maiuscola è convertita in minuscola. 
+
+# toupper strings
+Risultato: 	stringa 
+Argomento: 	<@var="s">  (stringa)
+
+Restituisce una copia di <@var="s"> in cui ogni lettera minuscola è convertita in maiuscola. 
+
+# tr linalg
+Risultato: 	scalare 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce la traccia della matrice <@var="A">, ovvero la somma degli elementi lungo la diagonale. Vedi anche <@ref="diag">. 
+
+# transp linalg
+Risultato: 	matrice 
+Argomento: 	<@var="X">  (matrice)
+
+Trasposizione della matrice <@var="X">. Si noti che per ottenere la trasposta di una matrice nella maggior parte dei casi è possibile utilizzare l'operatore apice: <@lit="X'">. 
+
+# trimr matshape
+Risultato: 	matrice 
+Argomenti:	<@var="X">  (matrice)
+		<@var="ttop">  (integer)
+		<@var="tbot">  (integer)
+
+Restituisce una matrice che è una copia di <@var="X"> con <@var="ttop"> righe eliminate partendo dall'alto e <@var="tbot"> righe eliminate partendo dal basso. Gli ultimi due argomenti devono essere non-negativi e la somma dei due deve essere minore del numero totale di righe di <@var="X">. 
+
+Vedi anche <@ref="selifr">. 
+
+# typestr data-utils
+Risultato: 	stringa 
+Argomento: 	<@var="typecode">  (integer)
+
+Restituisce il nome del tipo di dati di gretl corrispondente a <@var="typecode">. È utilizzata insieme alla funzione <@ref="inbundle">. Il valore restituito è: "scalar", "series", "matrix", "string", "bundle" o "null". 
+
+# uniform probdist
+Risultato: 	serie 
+Argomenti:	<@var="a">  (scalare)
+		<@var="b">  (scalare)
+
+Genera una serie di numeri pseudo-casuali uniformi nell'intervallo (<@var="a">, <@var="b">), oppure, in assenza di argomenti, nell'intervallo (0,1). L'algoritmo usato è il Mersenne Twister sviluppato da <@bib="Saito and Matsumoto (2008);saito_matsumoto08">. 
+
+Vedi anche <@ref="randgen">, <@ref="normal">, <@ref="mnormal">, <@ref="muniform">. 
+
+# uniq stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="x">  (serie o vettore)
+
+Restituisce un vettore che contiene gli elementi distinti di <@var="x">, non ordinati ma nell'ordine in cui compaiono. Si veda <@ref="values"> per una variante che ordina gli elementi. 
+
+# unvech matbuild
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="v">  (vettore)
+
+Restituisce una matrice simmetrica <@itl="n">×<@itl="n"> ottenuta riordinando gli elementi di <@itl="v">. Il numero di elementi in <@itl="v"> deve essere un intero triangolare, ossia un numero <@itl="k"> che può essere scritto come <@itl="k = n(n+1)/2">, con <@itl="n"> intero. Questa funzione è l'inversa della funzione <@ref="vech">. 
+
+Vedi anche <@ref="mshape">, <@ref="vech">. 
+
+# upper matbuild
+Risultato: 	matrice quadrata 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce una matrice triangolare superiore <@itl="n">×<@itl="n">: gli elementi sulla e sopra la diagonale sono uguali ai corrispondenti elementi di <@var="A">; i restanti elementi sono zero. 
+
+Vedi anche <@ref="lower">. 
+
+# urcpval probdist
+Risultato: 	scalare 
+Argomenti:	<@var="tau">  (scalare)
+		<@var="n">  (integer)
+		<@var="niv">  (integer)
+		<@var="itv">  (integer)
+
+<@itl="P">-value della statistica test per il test di radici unitarie di Dickey–Fuller e del test di cointegrazione di Engle–Granger, calcolato usando il metodo proposto da <@bib="James MacKinnon (1996);mackinnon96">. 
+
+Gli argomenti sono i seguenti: <@var="tau"> indica la statistica test; <@var="n"> è il numero di osservazioni (o 0 per il risultato asintotico); <@var="niv"> è il numero di variabili potenzialmente cointegrate nel test di cointegrazione (o 1 per il test univariato di radici unitarie); <@var="itv"> è il codice di specificazione del modello: 1 per il modello senza costante, 2 per il modello con costante inclusa, 3 per il modello con costante e trend lineare, 4 per il modello con costante e trend quadratico. 
+
+Si noti che se il test è "aumentato" con i ritardi della variabile dipendente, si deve fornire un valore 0 all'argomento <@var="n"> per ottenere il risultato asintotico. 
+
+Vedi anche <@ref="pvalue">. 
+
+# values stats
+Risultato: 	vettore colonna 
+Argomento: 	<@var="x">  (serie o vettore)
+
+Restituisce un vettore contenente gli elementi distinti di <@var="x"> ordinati in senso crescente. Se si desidera troncare all'intero i valori prima di applicare questa funzione è possibile usare l'espressione <@lit="values(int(x))">. 
+
+Vedi anche <@ref="uniq">, <@ref="dsort">, <@ref="sort">. 
+
+# var stats
+Risultato: 	scalare o serie 
+Argomento: 	<@var="x">  (serie o lista)
+
+Se <@var="x"> è una variabile, restituisce la sua varianza campionaria (uno scalare), saltando i valori mancanti. 
+
+Se <@var="x"> è una lista, restituisce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è la varianza campionaria dei valori delle variabili nella lista all'osservazione <@itl="t">, o <@lit="NA"> se ci sono valori mancanti a <@itl="t">. 
+
+In ogni caso, la somma delle deviazioni al quadrato dalla media è divisa per (<@itl="n"> – 1) se <@itl="n"> > 1. In caso contrario, la varianza restituita è nulla se <@itl="n"> = 1, o <@lit="NA"> se <@itl="n"> = 0. 
+
+Vedi anche <@ref="sd">. 
+
+# varname strings
+Risultato: 	stringa 
+Argomento: 	<@var="v">  (integer o lista)
+
+Se l'argomento è uno scalare restituisce il nome della variabile con numero ID <@var="v"> o genera un errore nel caso in cui una tale variabile non esista. 
+
+Se l'argomento è una lista restituisce una stringa contenente i nomi delle variabili nella lista, separati da virgole. Se la lista fornita è vuota, la stringa restituita sarà vuota. 
+
+# varnum data-utils
+Risultato: 	integer 
+Argomento: 	<@var="varname">  (stringa)
+
+Restituisce il numero ID della variabile <@var="varname">, o NA se tale variabile non esiste. 
+
+# varsimul linalg
+Risultato: 	matrice 
+Argomenti:	<@var="A">  (matrice)
+		<@var="U">  (matrice)
+		<@var="y0">  (matrice)
+
+Simula un VAR di ordine <@itl="p"> con <@itl="n"> variabili, cioè <@itl="y(t) = A1 y(t-1) + ... + Ap y(t-p) + u(t)."> La matrice dei coefficienti <@var="A"> è formata incolonnando orizzontalmente le matrici <@itl="A"><@sub="i">. Si tratta di una matrice <@itl="n">×<@itl="np">, con una riga per ogni equazione. Ciò corrisponde alle prime <@itl="n"> righe della matrice <@lit="$compan"> fornita dai comandi <@lit="var"> e <@lit="vecm"> di gretl. 
+
+I vettori <@itl="u_t"> sono contenuti (sotto forma di righe) nella matrice <@var="U"> (<@itl="T">×<@itl="n">). I valori iniziali sono in <@var="y0"> (<@itl="p">×<@itl="n">). 
+
+Se il VAR contiene termini deterministici e/o regressori esogeni, essi possono essere gestiti racchiudendoli nella matrice <@var="U">: ciascuna riga di <@var="U"> diventa allora <@itl="u(t) = B' x(t) + e(t)."> 
+
+La matrice in uscita ha<@itl="T"> + <@itl="p"> righe e <@itl="n"> colonne; contiene i <@itl="p"> valori iniziali delle variabili endogene più i <@itl="T"> valori simulati. 
+
+Vedi anche <@ref="$compan">, <@xrf="var">, <@xrf="vecm">. 
+
+# vec matbuild
+Risultato: 	vettore colonna 
+Argomento: 	<@var="X">  (matrice)
+
+Restituisce le colonne di <@var="X"> una sotto l'altra in un vettore colonna. Vedi anche <@ref="mshape">, <@ref="unvech">, <@ref="vech">. 
+
+# vech matbuild
+Risultato: 	vettore colonna 
+Argomento: 	<@var="A">  (matrice quadrata)
+
+Restituisce, sotto forma di vettore colonna, gli elementi di <@var="A"> sulla diagonale e al di sopra di essa. L'uso tipico di questa funzione è con matrici simmetriche, nel qual caso la sua funzione inversa è <@ref="unvech">. Vedi anche <@ref="vec">. 
+
+# weekday calendar
+Risultato: 	integer 
+Argomenti:	<@var="anno">  (integer)
+		<@var="mese">  (integer)
+		<@var="giorno">  (integer)
+
+Fornisce il giorno della settimana (Domenica = 0, Lunedì = 1, ecc.) corrispondente alla data specificata dai tre argomenti, o <@lit="NA"> se la data non è valida. 
+
+# wmean stats
+Risultato: 	serie 
+Argomenti:	<@var="Y">  (lista)
+		<@var="W">  (lista)
+
+Restituisce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è la media ponderata dei valori delle variabili nella lista <@var="Y"> all'osservazione <@itl="t">; i rispettivi pesi devono essere contenuti nella lista <@var="W"> e possono quindi cambiare nel tempo. Le due liste <@var="Y"> e <@var="W"> devono avere lo stesso numero di elementi ed i pesi devono essere non-negativi. 
+
+Vedi anche <@ref="wsd">, <@ref="wvar">. 
+
+# wsd stats
+Risultato: 	serie 
+Argomenti:	<@var="Y">  (lista)
+		<@var="W">  (lista)
+
+Restituisce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è l'errore quadratico medio ponderato dei valori delle variabili nella lista <@var="Y"> all'osservazione <@itl="t">; i rispettivi pesi devono essere contenuti nella lista <@var="W">, e possono quindi cambiare nel tempo. Le due liste <@var="Y"> e <@var="W"> devono avere lo stesso numero di elementi ed i pesi devono essere non-negativi. 
+
+Vedi anche <@ref="wmean">, <@ref="wvar">. 
+
+# wvar stats
+Risultato: 	serie 
+Argomenti:	<@var="X">  (lista)
+		<@var="W">  (lista)
+
+Restituisce una variabile <@itl="y"> tale che <@itl="y"><@sub="t"> è la varianza campionaria ponderata dei valori delle variabili nella lista <@var="Y"> all'osservazione <@itl="t">; i rispettivi pesi devono essere contenuti nella lista <@var="W">, e possono quindi cambiare nel tempo. Le due liste <@var="Y"> e <@var="W"> devono avere lo stesso numero di elementi ed i pesi devono essere non-negativi. 
+
+Vedi anche <@ref="wmean">, <@ref="wsd">. 
+
+# xmax math
+Risultato: 	scalare 
+Argomenti:	<@var="x">  (scalare)
+		<@var="y">  (scalare)
+
+Fornisce il maggiore fra <@var="x"> e <@var="y">, o <@lit="NA"> se uno dei due valori è mancante. 
+
+Vedi anche <@ref="xmin">, <@ref="max">, <@ref="min">. 
+
+# xmin math
+Risultato: 	scalare 
+Argomenti:	<@var="x">  (scalare)
+		<@var="y">  (scalare)
+
+Fornisce il minore fra <@var="x"> e <@var="y">, o <@lit="NA"> se uno dei due valori è mancante. 
+
+Vedi anche <@ref="xmax">, <@ref="max">, <@ref="min">. 
+
+# xpx transforms
+Risultato: 	lista 
+Argomento: 	<@var="L">  (lista)
+
+Fornisce una lista che contiene i quadrati e i prodotti incrociati delle variabili elencate nella lista <@var="L">. Ai quadrati viene assegnato un nome secondo lo schema <@lit="sq_"><@var="varname">, mentre per i prodotti incrociati si utilizza <@var="var1"><@lit="_"><@var="var2">. Se necessario i nomi delle variabili in input possono essere troncati e il nome delle variabili in output possono essere cambiati in caso di duplicazione dei nomi nella lista fornita. 
+
+# zeromiss data-utils
+Risultato: 	stesso tipo dell'argomento 
+Argomento: 	<@var="x">  (scalare o serie)
+
+Converte gli zeri in <@lit="NA">s. Se <@var="x"> è una variabile la conversione viene fatta elemento per elemento. Vedi anche <@ref="missing">, <@ref="misszero">, <@ref="ok">. 
+
+# zeros matbuild
+Risultato: 	matrice 
+Argomenti:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Genera una matrice di zero con <@itl="r"> righe e <@itl="c"> colonne. Vedi anche <@ref="ones">, <@ref="seq">. 
+

@@ -1,0 +1,3050 @@
+
+## Acessores
+
+# $ahat access
+Output: 	series 
+
+Tem que ser acedido após a estimação de um modelo de dados de painel com efeitos fixos. Retorna uma série contendo as estimativas dos efeitos fixos individuais (interceptores unitários). 
+
+# $aic access
+Output: 	scalar 
+
+Retorna o Critério de Informação de Akaike para o último modelo estimado, se disponível. Consultar <@pdf="the Gretl User's Guide"> para detalhes sobre o cálculo. 
+
+# $bic access
+Output: 	scalar 
+
+Retorna o Critério de Informação Bayesiano de Schwarz para o último modelo estimado, se disponível. Consultar <@pdf="the Gretl User's Guide"> para detalhes sobre o cálculo. 
+
+# $chisq access
+Output: 	scalar 
+
+Retorna a estatística qui-quadrado global para o último modelo estimado, se disponível. 
+
+# $coeff access
+Output: 	matrix or scalar 
+Argument: 	<@var="s">  (name of coefficient, optional)
+
+Sem argumentos, <@lit="$coeff"> retorna um vector coluna contendo os coeficientes estimados para o último modelo. Com o argumento opcional do tipo texto retorna um escalar, designadamente o parâmetro estimado com o nome <@var="s">. See also <@ref="$stderr">, <@ref="$vcv">. 
+
+Exemplo: 
+
+<code>          
+     open bjg
+     arima 0 1 1 ; 0 1 1 ; lg 
+     b = $coeff               # obtém um vector
+     macoef = $coeff(theta_1) # obtém um escalar
+</code>
+
+Se o "modelo" em questão é realmente um sistema, o resultado depende das características do sistema: no caso de VARs e VECMs o valor retornado é uma matriz com uma coluna por equação, senão é um vector coluna contendo os coeficientes para a primeira equação seguidos pelos da segunda equação, e por aí adiante. 
+
+# $command access
+Output: 	string 
+
+Tem que ser acedido após a estimação de modelo; retorna o nome do comando, por exemplo <@lit="ols"> ou <@lit="probit">. 
+
+# $compan access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VAR ou VECM; retorna a matriz companheira. 
+
+# $datatype access
+Output: 	scalar 
+
+Retorna um valor inteiro representando o tipo de conjunto de dados que está carregado: 0 = sem dados; 1 = dados de secção-cruzada (sem data); 2 = dados de série temporal; 3 = dados de painel. 
+
+# $depvar access
+Output: 	string 
+
+Tem que ser acedido após a estimação de um modelo de equação singular; retorna o nome da variável dependente. 
+
+# $df access
+Output: 	scalar 
+
+Retorna os graus de liberdade do último modelo estimado. Se o último modelo era na realidade um sistema de equações, o valor retornado é o grau de liberdade por equação; se este for diferente nas equações então o valor é o número de observações menos o número médio de coeficientes por equação (arredondado para o inteiro mais próximo). 
+
+# $dwpval access
+Output: 	scalar 
+
+Retorna o valor p para a estatística Durbin–Watson para o último modelo estimado, se disponível. Isto é determinado usando um procedimento Imhof. 
+
+# $ec access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VECM; retorna a matriz contendo os termos de correção de erro. O número de linhas é igual ao número de observações usadas e o número de colunas é igual ao nível de cointegração do sistema. 
+
+# $error access
+Output: 	scalar 
+
+Retorna o código de erro interno do programa, que será diferente de zero no caso de ter acontecido um erro mas este tenha sido apanhado num bloco <@xrf="catch">. Note que ao usar este acessor o código de erro interno ficará reiniciado a zero. Consultar também <@ref="errmsg">. Se você pretender uma mensagem de erro associada a um certo <@lit="$error"> então tem que guardar o valor numa variável temporária, tal como em 
+
+<code>          
+     errval = $error
+     if (errval) 
+       printf "Obtido o erro %d (%s)\n", errval, errmsg(errval);
+     endif
+</code>
+
+See also <@xrf="catch">, <@ref="errmsg">. 
+
+# $ess access
+Output: 	scalar 
+
+Retorna o erro de soma de quadrados do último modelo estimado, se disponível. 
+
+# $evals access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VECM; retorna um vector contendo os valores próprios que são utilizados no cálculo do teste traço da cointegração. 
+
+# $fcast access
+Output: 	matrix 
+
+Tem que ser acedido a seguir a um comando de predição <@xrf="fcast">; retorna os valores de predição numa matriz. Se o modelo em que a predição se baseou é um sistema de equações a matriz retornada terá uma coluna por equação, caso contrário será um vector coluna. 
+
+# $fcerr access
+Output: 	matrix 
+
+Tem que ser acedido a seguir a um comando de predição <@xrf="fcast">; retorna os erros padrão de uma predição, se disponível, numa matriz. Se o modelo em que a predição se baseou é um sistema de equações a matriz retornada terá uma coluna por equação, caso contrário será um vector coluna. 
+
+# $fevd access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VAR. Retorna a matriz contendo a decomposição de erro da predição. Esta matriz tem <@itl="h"> linhas onde <@itl="h"> é um horizonte de predição, que pode ser escolhido com <@lit="set horizon"> ou, caso contrário, é determinado automaticamente baseado na frequência dos dados. No caso de VAR com <@itl="p"> variáveis, a matriz tem <@itl="p"><@sup="2"> colunas. A fracção da predição de erro para a variável <@itl="i"> associável à inovação na variável <@itl="j"> encontra-se na coluna (<@itl="i"> – 1)<@itl="p"> + <@itl="j">. 
+
+# $Fstat access
+Output: 	scalar 
+
+Retorna a estatística F global do último modelo estimado, se disponível. 
+
+# $gmmcrit access
+Output: 	scalar 
+
+Tem que ser acedido a seguir a um bloco <@lit="gmm">. Retorna o valor da função objetivo no seu mínimo. 
+
+# $h access
+Output: 	series 
+
+Tem que ser acedido a seguir a um comando <@lit="garch">. Retorna a série da variância condicional estimada. 
+
+# $hausman access
+Output: 	row vector 
+
+Tem que ser acedido após a estimação de modelo <@lit="tsls"> ou <@lit="painel"> com a opção de efeitos aleatórios. Retorna um vector 1×3 contendo o valor da estatística de teste Hausmam, com os graus de liberdade correspondentes e o valor p do teste, por essa ordem. 
+
+# $hqc access
+Output: 	scalar 
+
+Retorna o Critério de Informação de Hannan-Quinn para o último modelo estimado, se disponível. Consultar <@pdf="the Gretl User's Guide"> para detalhes sobre o cálculo. 
+
+# $huge access
+Output: 	scalar 
+
+Retorna um enorme número positivo. Por omissão isto é 1,0E100, mas o valor pode ser moficado usando o comando <@xrf="set">. 
+
+# $jalpha access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VECM, e retorna a matriz das cargas. Contém tantas linhas como as variáveis em VECM e o mesmo número de colunas que o nível de cointegração. 
+
+# $jbeta access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VECM, e retorna a matriz de cointegração. Contém tantas linhas como as variáveis em VECM (mais um número de variáveis exógenas que estão restritas a um espaço de cointegração, caso existam), e o mesmo número de colunas que o nível de cointegração. 
+
+# $jvbeta access
+Output: 	square matrix 
+
+Tem que ser acedido após a estimação de VECM, e retorna a matriz de covariância estimada para os elementos dos vectores de cointegração. 
+
+No caso de uma estimação não-restringida, esta matriz tem um número de linhas igual ao número de elementos não-restringidos do espaço de cointegração após uma normalização de Phillips. Se, no entanto, um sistema restringido for estimado por meio de um comando <@lit="restrict"> com a opção <@lit="--full">, será retornada uma matriz singular com <@itl="(n+m)r"> linhas (onde <@itl="n"> é o número de variáveis endógenas, <@itl="m"> é o número de variáveis exógenas no espaço de cointegração, e <@itl="r"> o nível de cointegração). 
+
+Exemplo: o código 
+
+<code>          
+     open denmark.gdt
+     vecm 2 1 LRM LRY IBO IDE --rc --seasonals -q
+     s0 = $jvbeta
+     restrict --full
+     b[1,1] = 1
+     b[1,2] = -1
+     b[1,3] + b[1,4] = 0
+     end restrict
+     s1 = $jvbeta
+     print s0
+     print s1
+</code>
+
+produz o seguinte resultado. 
+
+<code>          
+     s0 (4 x 4)
+       0.019751     0.029816  -0.00044837     -0.12227 
+       0.029816      0.31005     -0.45823     -0.18526 
+    -0.00044837     -0.45823       1.2169    -0.035437 
+       -0.12227     -0.18526    -0.035437      0.76062 
+     s1 (5 x 5)
+     0.0000       0.0000       0.0000       0.0000       0.0000 
+     0.0000       0.0000       0.0000       0.0000       0.0000 
+     0.0000       0.0000      0.27398     -0.27398    -0.019059 
+     0.0000       0.0000     -0.27398      0.27398     0.019059 
+     0.0000       0.0000    -0.019059     0.019059    0.0014180
+</code>
+
+# $llt access
+Output: 	series 
+
+Para certos modelos estimados por Máxima Verosimilhança, retorna uma série de valores de log-verosimilhança por observação. Presentemente isto é apenas possível para logit binário, probit, tobit e heckit. 
+
+# $lnl access
+Output: 	scalar 
+
+Retorna o log-verosimilhança para último modelo estimado (quando aplicável). 
+
+# $macheps access
+Output: 	scalar 
+
+Retorna o valor do "épsilon de máquina", que dá um limite superior para o erro relativo devido aos arredondamentos da aritmética de vírgula flutuante de dupla-precisão. 
+
+# $mnlprobs access
+Output: 	matrix 
+
+Deve seguir-se à estimação de um modelo logit multinomial (apenas), obtém uma matriz que contém as probabilidades de cada possível resultado em cada observação no intervalo da amostra do modelo. Cada linha representa uma observação e cada coluna um resultado. 
+
+# $ncoeff access
+Output: 	integer 
+
+Retorna o número total de coeficientes estimados no último modelo. 
+
+# $nobs access
+Output: 	integer 
+
+Retorna o número de observações na amostra presentemente selecionada. 
+
+# $nvars access
+Output: 	integer 
+
+Retorna o número de variáveis no conjunto de dados (incluindo a constante). 
+
+# $obsdate access
+Output: 	series 
+
+Applicable when the current dataset is time-series with annual, quarterly, monthly or decennial frequency, or is dated daily or weekly, or when the dataset is a panel with time-series information set appropriately (see the <@xrf="setobs"> command). The returned series holds 8-digit numbers on the pattern <@lit="YYYYMMDD"> (ISO 8601 "basic" date format), which correspond to the day of the observation, or the first day of the observation period in case of a time-series frequency less than daily. 
+
+Such a series can be helpful when using the <@xrf="join"> command. 
+
+# $obsmajor access
+Output: 	series 
+
+Applicable when the observations in the current dataset have a major:minor structure, as in quarterly time series (year:quarter), monthly time series (year:month), hourly data (day:hour) and panel data (individual:period). Returns a series holding the major or low-frequency component of each observation (for example, the year). 
+
+See also <@ref="$obsminor">, <@ref="$obsmicro">. 
+
+# $obsmicro access
+Output: 	series 
+
+Applicable when the observations in the current dataset have a major:minor:micro structure, as in dated daily time series (year:month:day). Returns a series holding the micro or highest-frequency component of each observation (for example, the day). 
+
+See also <@ref="$obsmajor">, <@ref="$obsminor">. 
+
+# $obsminor access
+Output: 	series 
+
+Applicable when the observations in the current dataset have a major:minor structure, as in quarterly time series (year:quarter), monthly time series (year:month), hourly data (day:hour) and panel data (individual:period). Returns a series holding the minor or high-frequency component of each observation (for example, the month). 
+
+See also <@ref="$obsmajor">, <@ref="$obsmicro">. 
+
+# $pd access
+Output: 	integer 
+
+Retorna a frequência ou periodicidade dos dados (por exemplo, 4 para dados trimestrais). No caso de dados de painel, o valor retornado é o comprimento da série temporal. 
+
+# $pi access
+Output: 	scalar 
+
+Retorna o valor de π com precisão dupla. 
+
+# $pvalue access
+Output: 	scalar or matrix 
+
+Retorna o valor p da estatística de teste que foi determinada pelo último comando com testes de hipóteses explícito (por exemplo, <@lit="chow">). Consultar <@pdf="the Gretl User's Guide"> para detalhes. 
+
+Na maior parte dos casos, o valor retornado é um escalar, mas por vezes é uma matriz (por exemplo, um traço e o max-lambda, ou valores p de um teste de cointegração de Johansen); nesse caso os valores na matriz estão dispostos de igual modo como nos resultados escritos. 
+
+See also <@ref="$test">. 
+
+# $rho access
+Output: 	scalar 
+Argument: 	<@var="n">  (scalar, optional)
+
+Sem argumentos, retorna o coeficiente autoregressivo de primeira ordem para os resíduos do último modelo. Após se ter estimado um modelo com o comando <@lit="ar">, a sintaxe <@lit="$rho(n)"> retorna a estimativa correspondente de ρ(<@itl="n">). 
+
+# $rsq access
+Output: 	scalar 
+
+Retorna o <@itl="R"><@sup="2"> não ajustado do último modelo estimado, se disponível. 
+
+# $sample access
+Output: 	series 
+
+Tem que ser acedido após a estimação de um modelo com uma única equação. Retorna uma série auxiliar com valores 1 para observações utilizadas na estimação, 0 para observações dentro do intervalo amostral corrente mas não utilizadas (eventualmente por causa de valores omissos), e NA para observações fora do intervalo amostral corrente. 
+
+Se você desejar calcular estatísticas baseadas na amostra que foi utilizada para um dado modelo, você pode fazer, por exemplo: 
+
+<code>          
+     ols y 0 xlist
+     genr sdum = $sample
+     smpl sdum --dummy
+</code>
+
+# $sargan access
+Output: 	row vector 
+
+Tem que ser acedido a seguir a um comando <@lit="tsls">. Retorna um vector 1×3, contendo o valor do Sargan over-identification test estatística, a corresponding graus de liberdade e valor p, por essa ordem. 
+
+# $sigma access
+Output: 	scalar or matrix 
+
+Requer que tenha sido estimado um modelo. Se o último modelo era de equação única, retorna o (escalar) Erro Padrão da Regressão (ou por outras palavras, o desvio padrão dos resíduos, com a adequada correção de graus de liberdade). Se o último modelo era um sistema de equações, retorna a equação-cruzada da matriz de covariância dos resíduos. 
+
+# $stderr access
+Output: 	matrix or scalar 
+Argument: 	<@var="s">  (name of coefficient, optional)
+
+Sem argumentos, <@lit="$stderr"> retorna um vector coluna contendo o erro padrão dos coeficientes para o último modelo. Com o argumento opcional de texto, retorna um escalar, designadamente o erro padrão do parâmetro com o nome <@var="s">. 
+
+Se o "modelo" em questão é realmente um sistema, o resultado depende das características do sistema: para VARs e VECMs o valor retornado é uma matriz com uma coluna por equação, senão é um vector coluna contendo os coeficientes para a primeira equação seguidos pelos da segunda equação, e por aí adiante. 
+
+See also <@ref="$coeff">, <@ref="$vcv">. 
+
+# $stopwatch access
+Output: 	scalar 
+
+Tem que ser precedido por <@lit="set stopwatch">, o que activa a medição do tempo de CPU. O primeiro uso deste acessor contém os segundos de tempo de CPU que passaram desde o comando <@lit="set stopwatch">. Em cada acesso o relógio é reinicializado, por isso as chamadas subsequentes de <@lit="$stopwatch"> obtêm os segundos de tempo de CPU desde o último acesso. 
+
+# $sysA access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação simultânea de equações de sistema. Retorna a matriz de coeficientes das variáveis endógenas desfasadas, se existirem, numa forma estrutural de sistema. Consultar o comando <@xrf="system">. 
+
+# $sysB access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação simultânea de equações de sistema. Retorna a matriz de coeficientes das variáveis exógenas numa forma estrutural de sistema. Consultar o comando <@xrf="system">. 
+
+# $sysGamma access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação simultânea de equações de sistema. Retorna a matriz de coeficientes das variáveis endógenas contemporâneas numa forma estrutural de sistema. Consultar o comando <@xrf="system">. 
+
+# $sysinfo access
+Output: 	bundle 
+
+Returns a bundle containing information on the capabilities of the gretl build and the system on which gretl is running. The members of the bundle are as follows: 
+
+<indent>
+• <@lit="mpi">: integer, equals 1 if the system supports MPI (Message Passing Interface), otherwise 0. 
+</indent>
+
+<indent>
+• <@lit="omp">: integer, equals 1 if gretl is built with support for Open MP, otherwise 0. 
+</indent>
+
+<indent>
+• <@lit="nproc">: integer, the number of processors available. 
+</indent>
+
+<indent>
+• <@lit="mpimax">: integer, the maximum number of MPI processes that can be run in parallel. This is zero if MPI is not supported, otherwise it equals the local <@lit="nproc"> value unless an MPI hosts file has been specified, in which case it is the sum of the number of processors or "slots" across all the machines referenced in that file. 
+</indent>
+
+<indent>
+• <@lit="wordlen">: integer, either 32 or 64 for 32- and 64-bit systems respectively. 
+</indent>
+
+<indent>
+• <@lit="os">: string representing the operating system, either <@lit="linux">, <@lit="osx">, <@lit="windows"> or <@lit="other">. 
+</indent>
+
+<indent>
+• <@lit="hostname">: the name of the host machine on which the current gretl process is running (with a fallback of <@lit="localhost"> in case the name cannot be determined). 
+</indent>
+
+Note that individual elements in the bundle can be accessed using "dot" notation without any need to copy the whole bundle under a user-specified name. For example, 
+
+<code>          
+     if $sysinfo.os == "linux"
+       # do something linux-specific
+     endif
+</code>
+
+# $T access
+Output: 	integer 
+
+Retorna o número de observações utilizadas durante a estimação do último modelo. 
+
+# $t1 access
+Output: 	integer 
+
+Retorna o índice de base 1 da primeira observação na amostra correntemente selecionada. 
+
+# $t2 access
+Output: 	integer 
+
+Retorna o índice de base 1 da última observação na amostra correntemente selecionada. 
+
+# $test access
+Output: 	scalar or matrix 
+
+Retorna o valor da estatística de teste que foi determinado pelo último comando com testes de hipóteses explícito, se algum (por exemplo, <@lit="chow">). Consultar <@pdf="the Gretl User's Guide"> para detalhes. 
+
+Na maior parte dos casos, o valor retornado é um escalar, mas por vezes é uma matriz (por exemplo, um traço e o max-lambda, de um teste de cointegração de Johansen); nesse caso os valores na matriz estão dispostos de igual modo como nos resultados escritos. 
+
+See also <@ref="$pvalue">. 
+
+# $trsq access
+Output: 	scalar 
+
+Retorna <@itl="TR"><@sup="2"> (tamanho da amostra vezes R-quadrado) do último modelo, se disponível. 
+
+# $uhat access
+Output: 	series 
+
+Retorna os resíduos do último modelo. Isto pode ter significados diferentes para diferentes estimadores. Por exemplo, depois de uma estimação ARMA, <@lit="$uhat"> conterá o erro de predição um-passo-à-frente; depois de um modelo probit, conterá os resíduos generalizados. 
+
+Se o "modelo" em questão é realmente um sistema (VAR ou VECM, ou sistema de equações simultâneas), <@lit="$uhat"> sem parâmetros obtém uma matriz de resíduos, uma coluna por equação. 
+
+# $unit access
+Output: 	series 
+
+Apenas válido para conjunto de dados de painel. Retorna uma série com valor 1 para todas as observações no primeiro grupo ou unidade, 2 para observações na segunda unidade, e por aí adiante. 
+
+# $vcv access
+Output: 	matrix or scalar 
+Arguments:	<@var="s1">  (name of coefficient, optional)
+		<@var="s2">  (name of coefficient, optional)
+
+Sem argumentos, <@lit="$vcv"> retorna uma matriz quadrada contendo a matriz de covariância estimada para os coeficientes do último modelo. Se o último modelo é de equação única, então você pode fornecer nomes de dois parâmetros em parênteses para obter a covariância estimada entre os dois parâmetros chamados <@var="s1"> e <@var="s2">. See also <@ref="$coeff">, <@ref="$stderr">. 
+
+Este acessor não pode ser utilizado para modelos VARs ou VECMs; para modelos deste tipo veja <@ref="$sigma"> e <@ref="$xtxinv">. 
+
+# $vecGamma access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VECM; retorna uma matriz onde as matrizes Gama (coeficientes das diferenças desfasadas das variáveis cointegradas) estão lado-a-lado. Cada linha representa uma equação; para VECM com grau de desfasamento <@itl="p"> existem <@itl="p"> – 1 sub-matrizes. 
+
+# $version access
+Output: 	scalar 
+
+Retorna um valor inteiro que representa a versão do programa. A versão de gretl em texto tem a forma <@lit="x.y.z"> (por exemplo, 1.7.6). O valor de retorno deste acessor é formado por <@lit="10000*x + 100*y + z">, sendo que 1.7.6 resulta em 10706. 
+
+# $vma access
+Output: 	matrix 
+
+Tem que ser acedido após a estimação de VAR ou VECM; retorna a matriz contendo a representação VMA até um grau definido com o comando <@lit="set horizon">. Consultar <@pdf="the Gretl User's Guide"> para detalhes. 
+
+# $windows access
+Output: 	integer 
+
+Retorna 1 se gretl estiver a correr em MS Windows, 0 caso contrário. Condicionando pelo valor desta variável você pode escrever chamadas a comandos de sistema que são portáveis entre diferentes sistemas operativos. 
+
+Ver também o comando <@xrf="shell">. 
+
+# $xlist access
+Output: 	list 
+
+Retorna a lista de regressores do último modelo (apenas para modelos com uma única equação). 
+
+# $xtxinv access
+Output: 	matrix 
+
+Seguindo a estimação de VAR ou VECM (apenas), retorna <@itl="X'X"><@sup="-1">, onde <@itl="X"> é a matriz conjunta de regressores utilizados em cada uma das equações. Este acessor não está disponível para VECM estimado com uma restrição imposta sobre α, a matriz "cargas" . 
+
+# $yhat access
+Output: 	series 
+
+Retorna os valores ajustados da última regressão. 
+
+# $ylist access
+Output: 	list 
+
+Se o modelo anteriormente estimado foi um VAR, VECM ou sistema de equações simultâneas, retorna a lista associada de variáveis endógenas. Se o último modelo tem apenas uma equação, este acessor retorna uma lista com um único elemento, a variável dependente. No caso especial do modelo biprobit a lista contém dois elementos. 
+
+## Funções
+
+# abs math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Retorna o valor absoluto de <@var="x">. 
+
+# acos math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Retorna o arcoseno de <@var="x">, ou seja, um valor de cujo cosseno é <@var="x">. O resultado é em radianos; o argumento deve variar de –1 a 1. 
+
+# acosh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the inverse hyperbolic cosine of <@var="x"> (positive solution). <@var="x"> should be greater than 1; otherwise, NA is returned. See also <@ref="cosh">. 
+
+# aggregate stats
+Output: 	matrix 
+Arguments:	<@var="x">  (series or list)
+		<@var="byvar">  (series or list)
+		<@var="funcname">  (string)
+
+In the simplest version, both <@var="x"> and <@var="byvar"> are individual series. In that case this function returns a matrix with three columns: the first holds the distinct values of <@var="byvar">, sorted in ascending order; the second holds the count of observations at which <@var="byvar"> takes on each of these values; and the third holds the values of the statistic specified by <@var="funcname"> calculated on series <@var="x">, using only those observations at which <@var="byvar"> takes on the value given in the first column. 
+
+More generally, if <@var="byvar"> is a list with <@itl="n"> members then the left-hand <@itl="n"> columns hold the combinations of the distinct values of each of the <@itl="n"> series and the count column holds the number of observations at which each combination is realized. If <@var="x"> is a list with <@itl="m"> members then the rightmost <@itl="m"> columns hold the values of the specified statistic for each of the <@var="x"> variables, again calculated on the sub-sample indicated in the first column(s). 
+
+The following values of <@var="funcname"> are supported "natively": <@ref="sum">, <@ref="sumall">, <@ref="mean">, <@ref="sd">, <@ref="var">, <@ref="sst">, <@ref="skewness">, <@ref="kurtosis">, <@ref="min">, <@ref="max">, <@ref="median">, <@ref="nobs"> and <@ref="gini">. Each of these functions takes a series argument and returns a scalar value, and in that sense can be said to "aggregate" the series in some way. You may give the name of a user-defined function as the aggregator; like the built-ins, such a function must take a single series argument and return a scalar value. 
+
+Note that although a count of cases is provided automatically the <@lit="nobs"> function is not redundant as an aggregator, since it gives the number of valid (non-missing) observations on <@var="x"> at each <@var="byvar"> combination. 
+
+For a simple example, suppose that <@lit="region"> represents a coding of geographical region using integer values 1 to <@itl="n">, and <@lit="income"> represents household income. Then the following would produce an <@itl="n">×3 matrix holding the region codes, the count of observations in each region, and mean household income for each of the regions: 
+
+<code>          
+     matrix m = aggregate(income, region, mean)
+</code>
+
+For an example using lists, let <@lit="gender"> be a male/female dummy variable, let <@lit="race"> be a categorical variable with three values, and consider the following: 
+
+<code>          
+     list BY = gender race
+     list X = income age
+     matrix m = aggregate(X, BY, sd)
+</code>
+
+The <@lit="aggregate"> call here will produce a 6×5 matrix. The first two columns hold the 6 distinct combinations of gender and race values; the middle column holds the count for each of these combinations; and the rightmost two columns contain the sample standard deviations of <@lit="income"> and <@lit="age">. 
+
+Note that if <@var="byvar"> is a list, some combinations of the <@var="byvar"> values may not be present in the data (giving a count of zero). In that case the value of the statistics for <@var="x"> are recorded as <@lit="NaN"> (not a number). If you want to ignore such cases you can use the <@ref="selifr"> function to select only those rows that have a non-zero count. The column to test is one place to the right of the number of <@var="byvar"> variables, so we can do: 
+
+<code>          
+     matrix m = aggregate(X, BY, sd)
+     scalar c = nelem(BY)
+     m = selifr(m, m[,c+1])
+</code>
+
+# argname strings
+Output: 	string 
+Argument: 	<@var="s">  (string)
+
+For <@var="s"> the name of a parameter to a user-defined function, returns the name of the corresponding argument, or an empty string if the argument was anonymous. 
+
+# asin math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the arc sine of <@var="x">, that is, the value whose sine is <@var="x">. The result is in radians; the input should be in the range –1 to 1. 
+
+# asinh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the inverse hyperbolic sine of <@var="x">. See also <@ref="sinh">. 
+
+# atan math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the arc tangent of <@var="x">, that is, the value whose tangent is <@var="x">. The result is in radians. 
+
+# atanh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the inverse hyperbolic tangent of <@var="x">. See also <@ref="tanh">. 
+
+# atof strings
+Output: 	scalar 
+Argument: 	<@var="s">  (string)
+
+Closely related to the C library function of the same name. Returns the result of converting the string <@var="s"> (or the leading portion thereof, after discarding any initial white space) to a floating-point number. Unlike C's <@lit="atof">, however, the decimal character is always assumed (for reasons of portability) to be "<@lit=".">". Any characters that follow the portion of <@var="s"> that converts to a floating-point number under this assumption are ignored. 
+
+If none of <@var="s"> (following any discarded white space) is convertible under the stated assumption, <@lit="NA"> is returned. 
+
+<code>          
+     # examples
+     x = atof("1.234") # gives x = 1.234 
+     x = atof("1,234") # gives x = 1
+     x = atof("1.2y")  # gives x = 1.2
+     x = atof("y")     # gives x = NA
+     x = atof(",234")  # gives x = NA
+</code>
+
+See also <@ref="sscanf"> for more flexible string to numeric conversion. 
+
+# bessel math
+Output: 	same type as input 
+Arguments:	<@var="type">  (character)
+		<@var="v">  (scalar)
+		<@var="x">  (scalar, series or matrix)
+
+Computes one of the Bessel function variants for order <@var="v"> and argument <@var="x">. The return value is of the same type as <@var="x">. The specific function is selected by the first argument, which must be <@lit="J">, <@lit="Y">, <@lit="I">, or <@lit="K">. A good discussion of the Bessel functions can be found on Wikipedia; here we give a brief account. 
+
+case <@lit="J">: Bessel function of the first kind. Resembles a damped sine wave. Defined for real <@var="v"> and <@var="x">, but if <@var="x"> is negative then <@var="v"> must be an integer. 
+
+case <@lit="Y">: Bessel function of the second kind. Defined for real <@var="v"> and <@var="x"> but has a singularity at <@var="x"> = 0. 
+
+case <@lit="I">: Modified Bessel function of the first kind. An exponentially growing function. Acceptable arguments are as for case <@lit="J">. 
+
+case <@lit="K">: Modified Bessel function of the second kind. An exponentially decaying function. Diverges at <@var="x"> = 0 and is not defined for negative <@var="x">. Symmetric around <@var="v"> = 0. 
+
+# BFGSmax numerical
+Output: 	scalar 
+Arguments:	<@var="b">  (vector)
+		<@var="f">  (function call)
+		<@var="g">  (function call, optional)
+
+Numerical maximization via the method of Broyden, Fletcher, Goldfarb and Shanno. The vector <@var="b"> should hold the initial values of a set of parameters, and the argument <@var="f"> should specify a call to a function that calculates the (scalar) criterion to be maximized, given the current parameter values and any other relevant data. If the object is in fact minimization, this function should return the negative of the criterion. On successful completion, <@lit="BFGSmax"> returns the maximized value of the criterion, and <@var="b"> holds the parameter values which produce the maximum. 
+
+The optional third argument provides a means of supplying analytical derivatives (otherwise the gradient is computed numerically). The gradient function call <@var="g"> must have as its first argument a pre-defined matrix that is of the correct size to contain the gradient, given in pointer form. It also must take the parameter vector as an argument (in pointer form or otherwise). Other arguments are optional. 
+
+For more details and examples see the chapter on numerical methods in <@pdf="the Gretl User's Guide">. See also <@ref="NRmax">, <@ref="fdjac">, <@ref="simann">. 
+
+# bkfilt filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="f1">  (integer, optional)
+		<@var="f2">  (integer, optional)
+		<@var="k">  (integer, optional)
+
+Returns the result from application of the Baxter–King bandpass filter to the series <@var="y">. The optional parameters <@var="f1"> and <@var="f2"> represent, respectively, the lower and upper bounds of the range of frequencies to extract, while <@var="k"> is the approximation order to be used. If these arguments are not supplied then the following default values are used: <@var="f1"> = 8, <@var="f1"> = 32, <@var="k"> = 8. See also <@ref="bwfilt">, <@ref="hpfilt">. 
+
+# boxcox filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="d">  (scalar)
+
+Returns the Box–Cox transformation with parameter <@var="d"> for the positive series <@var="y">. 
+
+The transformed series is (<@itl="y"><@sup="d"> - 1)/<@itl="d"> for <@itl="d"> not equal to zero, or log(<@itl="y">) for <@itl="d"> = 0. 
+
+# bwfilt filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="n">  (integer)
+		<@var="omega">  (scalar)
+
+Returns the result from application of a low-pass Butterworth filter with order <@var="n"> and frequency cutoff <@var="omega"> to the series <@var="y">. The cutoff is expressed in degrees and must be greater than 0 and less than 180. Smaller cutoff values restrict the pass-band to lower frequencies and hence produce a smoother trend. Higher values of <@var="n"> produce a sharper cutoff, at the cost of possible numerical instability. 
+
+Inspecting the periodogram of the target series is a useful preliminary when you wish to apply this function. See <@pdf="the Gretl User's Guide"> for details. See also <@ref="bkfilt">, <@ref="hpfilt">. 
+
+# cdemean stats
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Centers the columns of matrix <@var="X"> around their means. 
+
+# cdf probdist
+Output: 	same type as input 
+Arguments:	<@var="c">  (character)
+		<@var="…">  (see below)
+		<@var="x">  (scalar, series or matrix)
+Examples: 	<@lit="p1 = cdf(N, -2.5)">
+		<@lit="p2 = cdf(X, 3, 5.67)">
+		<@lit="p3 = cdf(D, 0.25, -1, 1)">
+
+Cumulative distribution function calculator. Returns <@itl="P(X ≤ x)">, where the distribution <@itl="X"> is determined by the character <@var="c">. Between the arguments <@var="c"> and <@var="x">, zero or more additional scalar arguments are required to specify the parameters of the distribution, as follows. 
+
+<indent>
+• Standard normal (c = z, n, or N): no extra arguments 
+</indent>
+
+<indent>
+• Bivariate normal (D): correlation coefficient 
+</indent>
+
+<indent>
+• Student's t (t): degrees of freedom 
+</indent>
+
+<indent>
+• Chi square (c, x, or X): degrees of freedom 
+</indent>
+
+<indent>
+• Snedecor's F (f or F): df (num.); df (den.) 
+</indent>
+
+<indent>
+• Gamma (g or G): shape; scale 
+</indent>
+
+<indent>
+• Binomial (b or B): probability; number of trials 
+</indent>
+
+<indent>
+• Poisson (p or P): Mean 
+</indent>
+
+<indent>
+• Weibull (w or W): shape; scale 
+</indent>
+
+<indent>
+• Generalized Error (E): shape 
+</indent>
+
+Note that most cases have aliases to help memorizing the codes. The bivariate normal case is special: the syntax is <@lit="x = cdf(D, rho, z1, z2)"> where <@lit="rho"> is the correlation between the variables <@lit="z1"> and <@lit="z2">. 
+
+See also <@ref="pdf">, <@ref="critical">, <@ref="invcdf">, <@ref="pvalue">. 
+
+# cdiv linalg
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="Y">  (matrix)
+
+Complex division. The two arguments must have the same number of rows, <@itl="n">, and either one or two columns. The first column contains the real part and the second (if present) the imaginary part. The return value is an <@itl="n">×2 matrix or, if the result has no imaginary part, an <@itl="n">-vector. See also <@ref="cmult">. 
+
+# ceil math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Ceiling function: returns the smallest integer greater than or equal to <@var="x">. See also <@ref="floor">, <@ref="int">. 
+
+# cholesky linalg
+Output: 	square matrix 
+Argument: 	<@var="A">  (positive definite matrix)
+
+Peforms a Cholesky decomposition of the matrix <@var="A">, which is assumed to be symmetric and positive definite. The result is a lower-triangular matrix <@itl="L"> which satisfies <@itl="A = LL'">. The function will fail if <@var="A"> is not symmetric or not positive definite. See also <@ref="psdroot">. 
+
+# chowlin transforms
+Output: 	matrix 
+Arguments:	<@var="Y">  (matrix)
+		<@var="xfac">  (integer)
+		<@var="X">  (matrix, optional)
+
+Expands the input data, <@var="Y">, to a higher frequency, using the interpolation method of <@bib="Chow and Lin (1971);chowlin71">. It is assumed that the columns of <@var="Y"> represent data series; the returned matrix has as many columns as <@var="Y"> and <@var="xfac"> times as many rows. 
+
+The second argument represents the expansion factor: it should be 3 for expansion from quarterly to monthly or 4 for expansion from annual to quarterly, these being the only supported factors. The optional third argument may be used to provide a matrix of covariates at the higher (target) frequency. 
+
+The regressors used by default are a constant and quadratic trend. If <@var="X"> is provided, its columns are used as additional regressors; it is an error if the number of rows in <@var="X"> does not equal <@var="xfac"> times the number of rows in <@var="Y">. 
+
+# cmult linalg
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="Y">  (matrix)
+
+Complex multiplication. The two arguments must have the same number of rows, <@itl="n">, and either one or two columns. The first column contains the real part and the second (if present) the imaginary part. The return value is an <@itl="n">×2 matrix, or, if the result has no imaginary part, an <@itl="n">-vector. See also <@ref="cdiv">. 
+
+# cnorm probdist
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the cumulative distribution function for a standard normal. See also <@ref="dnorm">, <@ref="qnorm">. 
+
+# colname strings
+Output: 	string 
+Arguments:	<@var="M">  (matrix)
+		<@var="col">  (integer)
+
+Retrieves the name for column <@var="col"> of matrix <@var="M">. If <@var="M"> has no column names attached the value returned is an empty string; if <@var="col"> is out of bounds for the given matrix an error is flagged. See also <@ref="colnames">. 
+
+# colnames matbuild
+Output: 	scalar 
+Arguments:	<@var="M">  (matrix)
+		<@var="s">  (named list or string)
+
+Attaches names to the columns of the <@itl="T">×<@itl="k"> matrix <@var="M">. If <@var="s"> is a named list, the column names are copied from the names of the variables; the list must have <@itl="k"> members. If <@var="s"> is a string, it should contain <@itl="k"> space-separated sub-strings. The return value is 0 on successful completion, non-zero on error. See also <@ref="rownames">. 
+
+Example: 
+
+<code>          
+     matrix M = {1, 2; 2, 1; 4, 1}
+     colnames(M, "Col1 Col2")
+     print M
+</code>
+
+# cols matshape
+Output: 	integer 
+Argument: 	<@var="X">  (matrix)
+
+Returns the number of columns of <@var="X">. See also <@ref="mshape">, <@ref="rows">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# corr stats
+Output: 	scalar 
+Arguments:	<@var="y1">  (series or vector)
+		<@var="y2">  (series or vector)
+
+Computes the correlation coefficient between <@var="y1"> and <@var="y2">. The arguments should be either two series, or two vectors of the same length. See also <@ref="cov">, <@ref="mcov">, <@ref="mcorr">. 
+
+# corrgm stats
+Output: 	matrix 
+Arguments:	<@var="x">  (series, matrix or list)
+		<@var="p">  (integer)
+		<@var="y">  (series or vector, optional)
+
+If only the first two arguments are given, computes the correlogram for <@var="x"> for lags 1 to <@var="p">. Let <@itl="k"> represent the number of elements in <@var="x"> (1 if <@var="x"> is a series, the number of columns if <@var="x"> is a matrix, or the number of list-members is <@var="x"> is a list). The return value is a matrix with <@var="p"> rows and 2<@itl="k"> columns, the first <@itl="k"> columns holding the respective autocorrelations and the remainder the respective partial autocorrelations. 
+
+If a third argument is given, this function computes the cross-correlogram for each of the <@itl="k"> elements in <@var="x"> and <@var="y">, from lead <@var="p"> to lag <@var="p">. The returned matrix has 2<@itl="p"> + 1 rows and <@itl="k"> columns. If <@var="x"> is series or list and <@var="y"> is a vector, the vector must have just as many rows as there are observations in the current sample range. 
+
+# cos math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the cosine of <@var="x">. 
+
+# cosh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the hyperbolic cosine of <@var="x">. 
+
+See also <@ref="acosh">, <@ref="sinh">, <@ref="tanh">. 
+
+# cov stats
+Output: 	scalar 
+Arguments:	<@var="y1">  (series or vector)
+		<@var="y2">  (series or vector)
+
+Returns the covariance between <@var="y1"> and <@var="y2">. The arguments should be either two series, or two vectors of the same length. See also <@ref="corr">, <@ref="mcov">, <@ref="mcorr">. 
+
+# critical probdist
+Output: 	same type as input 
+Arguments:	<@var="c">  (character)
+		<@var="…">  (see below)
+		<@var="p">  (scalar, series or matrix)
+Examples: 	<@lit="c1 = critical(t, 20, 0.025)">
+		<@lit="c2 = critical(F, 4, 48, 0.05)">
+
+Critical value calculator. Returns <@itl="x"> such that <@itl="P(X > x) = p">, where the distribution <@itl="X"> is determined by the character <@var="c">. Between the arguments <@var="c"> and <@var="p">, zero or more additional scalar arguments are required to specify the parameters of the distribution, as follows. 
+
+<indent>
+• Standard normal (c = z, n, or N): no extra arguments 
+</indent>
+
+<indent>
+• Student's t (t): degrees of freedom 
+</indent>
+
+<indent>
+• Chi square (c, x, or X): degrees of freedom 
+</indent>
+
+<indent>
+• Snedecor's F (f or F): df (num.); df (den.) 
+</indent>
+
+<indent>
+• Binomial (b or B): probability; trials 
+</indent>
+
+<indent>
+• Poisson (p or P): mean 
+</indent>
+
+See also <@ref="cdf">, <@ref="invcdf">, <@ref="pvalue">. 
+
+# cum transforms
+Output: 	same type as input 
+Argument: 	<@var="x">  (series or matrix)
+
+Cumulates <@var="x"> (that is, creates a running sum). When <@var="x"> is a series, produces a series <@itl="y"> each of whose elements is the sum of the values of <@var="x"> to date; the starting point of the summation is the first non-missing observation in the currently selected sample. When <@var="x"> is a matrix, its elements are cumulated by columns. 
+
+See also <@ref="diff">. 
+
+# deseas filters
+Output: 	series 
+Arguments:	<@var="x">  (series)
+		<@var="c">  (character, optional)
+
+Depends on having TRAMO/SEATS or X-12-ARIMA installed. Returns a deseasonalized (seasonally adjusted) version of the input series <@var="x">, which must be a quarterly or monthly time series. To use X-12-ARIMA give <@lit="X"> as the second argument; to use TRAMO give <@lit="T">. If the second argument is omitted then X-12-ARIMA is used. 
+
+Note that if the input series has no detectable seasonal component this function will fail. Also note that both TRAMO/SEATS and X-12-ARIMA offer numerous options; <@lit="deseas"> calls them with all options at their default settings. For both programs, the seasonal factors are calculated on the basis of an automatically selected ARIMA model. One difference between the programs which can sometimes make a substantial difference to the results is that by default TRAMO performs a prior adjustment for outliers while X-12-ARIMA does not. 
+
+# det linalg
+Output: 	scalar 
+Argument: 	<@var="A">  (square matrix)
+
+Returns the determinant of <@var="A">, computed via the LU factorization. See also <@ref="ldet">, <@ref="rcond">. 
+
+# diag matbuild
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Returns the principal diagonal of <@var="X"> in a column vector. Note: if <@var="X"> is an <@itl="m">×<@itl="n"> matrix, the number of elements of the output vector is min(<@itl="m">, <@itl="n">). See also <@ref="tr">. 
+
+# diagcat matbuild
+Output: 	matrix 
+Arguments:	<@var="A">  (matrix)
+		<@var="B">  (matrix)
+
+Returns the direct sum of <@var="A"> and <@var="B">, that is a matrix holding <@var="A"> in its north-west corner and <@var="B"> in its south-east corner. If both <@var="A"> and <@var="B"> are square, the resulting matrix is block-diagonal. 
+
+# diff transforms
+Output: 	same type as input 
+Argument: 	<@var="y">  (series, matrix or list)
+
+Computes first differences. If <@var="y"> is a series, or a list of series, starting values are set to <@lit="NA">. If <@var="y"> is a matrix, differencing is done by columns and starting values are set to 0. 
+
+When a list is returned, the individual variables are automatically named according to the template <@lit="d_"><@var="varname"> where <@var="varname"> is the name of the original series. The name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+See also <@ref="cum">, <@ref="ldiff">, <@ref="sdiff">. 
+
+# digamma math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the digamma (or Psi) function of <@var="x">, that is the derivative of the log of the Gamma function. 
+
+# dnorm probdist
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the density of the standard normal distribution at <@var="x">. To get the density for a non-standard normal distribution at <@itl="x">, pass the <@itl="z">-score of <@itl="x"> to the <@lit="dnorm"> function and multiply the result by the Jacobian of the <@itl="z"> transformation, namely 1 over σ, as illustrated below: 
+
+<code>          
+     mu = 100
+     sigma = 5
+     x = 109
+     fx = (1/sigma) * dnorm((x-mu)/sigma)
+</code>
+
+See also <@ref="cnorm">, <@ref="qnorm">. 
+
+# dsort matshape
+Output: 	same type as input 
+Argument: 	<@var="x">  (series or vector)
+
+Sorts <@var="x"> in descending order, skipping observations with missing values when <@var="x"> is a series. See also <@ref="sort">, <@ref="values">. 
+
+# dummify transforms
+Output: 	list 
+Arguments:	<@var="x">  (series)
+		<@var="omitval">  (scalar, optional)
+
+The argument <@var="x"> should be a discrete series. This function creates a set of dummy variables coding for the distinct values in the series. By default the smallest value is taken as the omitted category and is not explicitly represented. 
+
+The optional second argument represents the value of <@var="x"> which should be treated as the omitted category. The effect when a single argument is given is equivalent to <@lit="dummify(x, min(x))">. To produce a full set of dummies, with no omitted category, use <@lit="dummify(x, NA)">. 
+
+The generated variables are automatically named according to the template <@lit="D"><@var="varname"><@lit="_"><@var="i"> where <@var="varname"> is the name of the original series and <@var="i"> is a 1-based index. The original portion of the name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+# easterday calendar
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Given the year in argument <@var="x">, returns the date of Easter in the Gregorian calendar as <@itl=" month + day/100">. Note that April the 10th, is, under this convention, 4.1; hence, 4.2 is April the 20th, not April the 2nd (which would be 4.02). 
+
+<code>          
+     scalar e = easterday(2014)
+     scalar m = floor(e)
+     scalar d = 100*(e-m)
+</code>
+
+# eigengen linalg
+Output: 	matrix 
+Arguments:	<@var="A">  (square matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+
+Computes the eigenvalues, and optionally the right eigenvectors, of the <@itl="n">×<@itl="n"> matrix <@var="A">. If all the eigenvalues are real an <@itl="n">×1 matrix is returned; otherwise the result is an <@itl="n">×2 matrix, the first column holding the real components and the second column the imaginary components. 
+
+The second argument must be either the name of an existing matrix preceded by <@lit="&"> (to indicate the "address" of the matrix in question), in which case an auxiliary result is written to that matrix, or the keyword <@lit="null">, in which case the auxiliary result is not produced. 
+
+If a non-null second argument is given, the specified matrix will be over-written with the auxiliary result. (It is not required that the existing matrix be of the right dimensions to receive the result.) It will be organized as follows: 
+
+<indent>
+• If the <@itl="i">-th eigenvalue is real, the <@itl="i">-th column of <@itl="U"> will contain the corresponding eigenvector; 
+</indent>
+
+<indent>
+• If the <@itl="i">-th eigenvalue is complex, the <@itl="i">-th column of <@var="U"> will contain the real part of the corresponding eigenvector and the next column the imaginary part. The eigenvector for the conjugate eigenvalue is the conjugate of the eigenvector. 
+</indent>
+
+In other words, the eigenvectors are stored in the same order as the eigenvalues, but the real eigenvectors occupy one column, whereas complex eigenvectors take two (the real part comes first); the total number of columns is still <@itl="n">, because the conjugate eigenvector is skipped. 
+
+See also <@ref="eigensym">, <@ref="eigsolve">, <@ref="qrdecomp">, <@ref="svd">. 
+
+# eigensym linalg
+Output: 	matrix 
+Arguments:	<@var="A">  (symmetric matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+
+Works just as <@ref="eigengen">, but the argument <@var="A"> must be symmetric (in which case the calculations can be reduced). The eigenvalues are returned in ascending order. 
+
+# eigsolve linalg
+Output: 	matrix 
+Arguments:	<@var="A">  (symmetric matrix)
+		<@var="B">  (symmetric matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+
+Solves the generalized eigenvalue problem |<@itl="A"> – λ<@itl="B">| = 0, where both <@itl="A"> and <@itl="B"> are symmetric and <@itl="B"> is positive definite. The eigenvalues are returned directly, arranged in ascending order. If the optional third argument is given it should be the name of an existing matrix preceded by <@lit="&">; in that case the generalized eigenvectors are written to the named matrix. 
+
+# epochday calendar
+Output: 	scalar or series 
+Arguments:	<@var="year">  (scalar or series)
+		<@var="month">  (scalar or series)
+		<@var="day">  (scalar or series)
+
+Returns the number of the day in the current epoch specified by year, month and day. The epoch day equals 1 for the first of January in the year 1 AD; it stood at 733786 on 2010-01-01. If any of the arguments are given as series the value returned is a series, otherwise it is a scalar. 
+
+For the inverse function, see <@ref="isodate">. 
+
+# errmsg strings
+Output: 	string 
+Argument: 	<@var="errno">  (integer)
+
+Retrieves the gretl error message associated with <@var="errno">. See also <@ref="$error">. 
+
+# exp math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns <@itl="e"><@sup="x">. Note that in case of matrices the function acts element by element. For the matrix exponential function, see <@ref="mexp">. 
+
+# fcstats stats
+Output: 	matrix 
+Arguments:	<@var="y">  (series or vector)
+		<@var="f">  (series or vector)
+
+Produces a column vector holding several statistics which may be used for evaluating the series <@var="f"> as a forecast of the series <@var="y"> over the current sample range. Two vectors of the same length may be given in place of two series arguments. 
+
+The layout of the returned vector is as follows: 
+
+<code>          
+     1  Mean Error (ME)
+     2  Mean Squared Error (MSE)
+     3  Mean Absolute Error (MAE)
+     4  Mean Percentage Error (MPE)
+     5  Mean Absolute Percentage Error (MAPE)
+     6  Theil's U 
+     7  Bias proportion, UM
+     8  Regression proportion, UR
+     9  Disturbance proportion, UD
+</code>
+
+For details on the calculation of these statistics, and the interpretation of the <@itl="U"> values, please see <@pdf="the Gretl User's Guide">. 
+
+# fdjac numerical
+Output: 	matrix 
+Arguments:	<@var="b">  (column vector)
+		<@var="fcall">  (function call)
+
+Calculates a numerical approximation to the Jacobian associated with the <@itl="n">-vector <@var="b"> and the transformation function specified by the argument <@var="fcall">. The function call should take <@var="b"> as its first argument (either straight or in pointer form), followed by any additional arguments that may be needed, and it should return an <@itl="m">×1 matrix. On successful completion <@lit="fdjac"> returns an <@itl="m">×<@itl="n"> matrix holding the Jacobian. Example: 
+
+<code>          
+     matrix J = fdjac(theta, myfunc(&theta, X))
+</code>
+
+The function can use three different methods: simple forward-difference, bilateral difference or 4-nodes Richardson extrapolation. Respectively: 
+
+<@itl="J"><@sub="0"> = <@itl="(f(x+h) - f(x))/h"> 
+
+<@itl="J"><@sub="1"> = <@itl="(f(x+h) - f(x-h))/2h"> 
+
+<@itl="J"><@sub="2"> = <@itl="[8 (f(x+h) - f(x-h)) - (f(x+2h) - f(x-2h))] /12h"> 
+
+The three alternatives above provide, generally, a trade-off between accuracy and speed. You can choose among methods by using the <@xrf="set"> command and specify the value 0, 1 or 2 for the <@lit="fdjac_quality"> variable. 
+
+For more details and examples see the chapter on numerical methods in <@pdf="the Gretl User's Guide">. 
+
+See also <@ref="BFGSmax">, <@xrf="set">. 
+
+# fft linalg
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Discrete real Fourier transform. If the input matrix <@var="X"> has <@itl="n"> columns, the output has 2<@itl="n"> columns, where the real parts are stored in the odd columns and the complex parts in the even ones. 
+
+Should it be necessary to compute the Fourier transform on several vectors with the same number of elements, it is numerically more efficient to group them into a matrix rather than invoking <@lit="fft"> for each vector separately. See also <@ref="ffti">. 
+
+# ffti linalg
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Inverse discrete real Fourier transform. It is assumed that <@var="X"> contains <@itl="n"> complex column vectors, with the real part in the odd columns and the imaginary part in the even ones, so the total number of columns should be 2<@itl="n">. A matrix with <@itl="n"> columns is returned. 
+
+Should it be necessary to compute the inverse Fourier transform on several vectors with the same number of elements, it is numerically more efficient to group them into a matrix rather than invoking <@lit="ffti"> for each vector separately. See also <@ref="fft">. 
+
+# filter filters
+Output: 	series 
+Arguments:	<@var="x">  (series or matrix)
+		<@var="a">  (scalar or vector, optional)
+		<@var="b">  (scalar or vector, optional)
+		<@var="y0">  (scalar, optional)
+
+Computes an ARMA-like filtering of the argument <@var="x">. The transformation can be written as 
+
+<@itl="y"><@sub="t"> = <@itl="a"><@sub="0"> <@itl="x"><@sub="t"> + <@itl="a"><@sub="1"> <@itl="x"><@sub="t-1"> + ... <@itl="a"><@sub="q"> <@itl="x"><@sub="t-q"> + <@itl="b"><@sub="1"> <@itl="y"><@sub="t-1"> + ... <@itl="b"><@sub="p"> <@itl="y"><@sub="t-p"> 
+
+If argument <@var="x"> is a series, the result will be itself a series. Otherwise, if <@var="x"> is a matrix with <@itl="T"> rows and <@itl="k"> columns, the result will be a matrix of the same size, in which the filtering is performed column by column. 
+
+The two arguments <@var="a"> and <@var="b"> are optional. They may be scalars, vectors or the keyword <@lit="null">. 
+
+If <@var="a"> is a scalar, this is used as <@itl="a"><@sub="0"> and implies <@itl="q=0">; if it is a vector of <@itl="q+1"> elements, they contain the coefficients from <@itl="a"><@sub="0"> to <@itl="a"><@sub="q">. If <@var="a"> is <@lit="null"> or omitted, this is equivalent to setting <@itl="a"><@sub="0"><@itl="=1"> and <@itl="q=0">. 
+
+If <@var="b"> is a scalar, this is used as <@itl="b"><@sub="1"> and implies <@itl="p=1">; if it is a vector of <@itl="p"> elements, they contain the coefficients from <@itl="b"><@sub="1"> to <@itl="b"><@sub="p">. If <@var="b"> is <@lit="null"> or omitted, this is equivalent to setting <@itl="B(L)=1">. 
+
+The optional scalar argument <@var="y0"> is taken to represent all values of <@itl="y"> prior to the beginning of sample (used only when <@itl="p>0">). If omitted, it is understood to be 0. Pre-sample values of <@var="x"> are always assumed zero. 
+
+See also <@ref="bkfilt">, <@ref="bwfilt">, <@ref="fracdiff">, <@ref="hpfilt">, <@ref="movavg">, <@ref="varsimul">. 
+
+Example: 
+
+<code>          
+     nulldata 5
+     y = filter(index, 0.5, -0.9, 1)
+     print index y --byobs
+     x = seq(1,5)' ~ (1 | zeros(4,1))
+     w = filter(x, 0.5, -0.9, 1)
+     print x w
+</code>
+
+produces 
+
+<code>          
+                   index            y   
+           			      
+          1            1     -0.40000   
+          2            2      1.36000   
+          3            3      0.27600   
+          4            4      1.75160   
+          5            5      0.92356   
+          x (5 x 2)
+           
+            1   1 
+            2   0 
+            3   0 
+            4   0 
+            5   0 
+           
+          w (5 x 2)
+           
+              -0.40000     -0.40000 
+                1.3600      0.36000 
+               0.27600     -0.32400 
+                1.7516      0.29160 
+               0.92356     -0.26244
+</code>
+
+# firstobs data-utils
+Output: 	integer 
+Argument: 	<@var="y">  (series)
+
+Returns the 1-based index of the first non-missing observation for the series <@var="y">. Note that if some form of subsampling is in effect, the value returned may be smaller than the dollar variable <@ref="$t1">. See also <@ref="lastobs">. 
+
+# fixname strings
+Output: 	string 
+Argument: 	<@var="rawname">  (string)
+
+Intended for use in connection with the <@xrf="join"> command. Returns the result of converting <@var="rawname"> to a valid gretl identifier, which must start with a letter, contain nothing but (ASCII) letters, digits and the underscore character, and must not exceed 31 characters. The rules used in conversion are: 
+
+1. Skip any leading non-letters. 
+
+2. Until the 31-character limit is reached or the input is exhausted: transcribe "legal" characters; skip "illegal" characters apart from spaces; and replace one or more consecutive spaces with an underscore, unless the previous character transcribed is an underscore in which case space is skipped. 
+
+# floor math
+Output: 	same type as input 
+Argument: 	<@var="y">  (scalar, series or matrix)
+
+Floor function: returns the greatest integer less than or equal to <@var="x">. Note: <@ref="int"> and <@lit="floor"> differ in their effect for negative arguments: <@lit="int(-3.5)"> gives –3, while <@lit="floor(-3.5)"> gives –4. 
+
+# fracdiff filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="d">  (scalar)
+
+Returns the fractional difference of order <@var="d"> for the series <@var="y">. 
+
+Note that in theory fractional differentiation is an infinitely long filter. In practice, presample values of <@itl="y"><@sub="t"> are assumed to be zero. 
+
+# gammafun math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the gamma function of <@var="x">. 
+
+# getenv strings
+Output: 	string 
+Argument: 	<@var="s">  (string)
+
+If an environment variable by the name of <@var="s"> is defined, returns the string value of that variable, otherwise returns an empty string. See also <@ref="ngetenv">. 
+
+# getline strings
+Output: 	scalar 
+Arguments:	<@var="source">  (string)
+		<@var="target">  (string)
+
+This function is used to read successive lines from <@var="source">, which should be a named string variable. On each call a line from the source is written to <@var="target"> (which must also be a named string variable), with the newline character stripped off. The valued returned is 1 if there was anything to be read (including blank lines), 0 if the source has been exhausted. 
+
+Here is an example in which the content of a text file is broken into lines: 
+
+<code>          
+     string s = readfile("data.txt")
+     string line
+     scalar i = 1
+     loop while getline(s, line)
+       printf "line %d = '%s'\n", i++, line
+     endloop
+</code>
+
+In this example we can be sure that the source is exhausted when the loop terminates. If the source might not be exhausted you should follow your regular call(s) to <@lit="getline"> with a "clean up" call, in which <@var="target"> is replaced by <@lit="null"> (or omitted altogether) as in 
+
+<code>          
+     getline(s, line)
+     getline(s, null)
+</code>
+
+Note that although the reading position advances at each call to <@lit="getline">, <@var="source"> is not modified by this function, only <@var="target">. 
+
+# ghk stats
+Output: 	matrix 
+Arguments:	<@var="C">  (matrix)
+		<@var="A">  (matrix)
+		<@var="B">  (matrix)
+		<@var="U">  (matrix)
+
+Computes the GHK (Geweke, Hajivassiliou, Keane) approximation to the multivariate normal distribution function; see for example <@bib="Geweke (1991);geweke91">. The value returned is an <@itl="n">×1 vector of probabilities. 
+
+The argument <@var="C"> (<@itl="m">×<@itl="m">) should give the Cholesky factor (lower triangular) of the covariance matrix of the <@itl="m"> normal variates. The arguments <@var="A"> and <@var="B"> should both be <@itl="n">×<@itl="m">, giving respectively the lower and upper bounds applying to the variates at each of <@itl="n"> observations. Where variates are unbounded, this should be indicated using the built-in constant <@ref="$huge"> or its negative. 
+
+The matrix <@var="U"> should be <@itl="m">×<@itl="r">, with <@itl="r"> the number of pseudo-random draws from the uniform distribution; suitable functions for creating <@var="U"> are <@ref="muniform"> and <@ref="halton">. 
+
+In the following example, the series <@var="P"> and <@var="Q"> should be numerically very similar to one another, <@var="P"> being the "true" probability and <@var="Q"> its GHK approximation: 
+
+<code>          
+     nulldata 20
+     series inf1 = -2*uniform()
+     series sup1 = 2*uniform()
+     series inf2 = -2*uniform()
+     series sup2 = 2*uniform()
+     scalar rho = 0.25
+     matrix V = {1, rho; rho, 1}
+     series P = cdf(D, rho, inf1, inf2) - cdf(D, rho, sup1, inf2) \
+     - cdf(D, rho, inf1, sup2) + cdf(D, rho, sup1, sup2)
+     C = cholesky(V)
+     U = muniform(2, 100)
+     series Q = ghk(C, {inf1, inf2}, {sup1, sup2}, U)
+</code>
+
+# gini stats
+Output: 	scalar 
+Argument: 	<@var="y">  (series)
+
+Returns Gini's inequality index for the series <@var="y">. 
+
+# ginv linalg
+Output: 	matrix 
+Argument: 	<@var="A">  (matrix)
+
+Returns <@itl="A"><@sup="+">, the Moore–Penrose or generalized inverse of <@var="A">, computed via the singular value decomposition. 
+
+This matrix has the properties <@itl="A"> <@itl="A"><@sup="+"> <@itl="A"> = <@itl="A"> and <@itl="A"><@sup="+"> <@itl="A"> <@itl="A"><@sup="+"> = <@itl="A"><@sup="+"> . Moreover, the products <@itl="A"> <@itl="A"><@sup="+"> and <@itl="A"><@sup="+"> <@itl="A"> are symmetric by construction. 
+
+See also <@ref="inv">, <@ref="svd">. 
+
+# halton stats
+Output: 	matrix 
+Arguments:	<@var="m">  (integer)
+		<@var="r">  (integer)
+		<@var="offset">  (integer, optional)
+
+Returns an <@itl="m">×<@itl="r"> matrix containing <@itl="m"> Halton sequences of length <@itl="r">; <@itl="m"> is limited to a maximum of 40. The sequences are contructed using the first <@itl="m"> primes. By default the first 10 elements of each sequence are discarded, but this figure can be adjusted via the optional <@var="offset"> argument, which should be a non-negative integer. See <@bib="Halton and Smith (1964);halton64">. 
+
+# hdprod linalg
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="Y">  (matrix)
+
+Horizontal direct product. The two arguments must have the same number of rows, <@itl="r">. The return value is a matrix with <@itl="r"> rows, in which the <@itl="i">-th row is the Kronecker product of the corresponding rows of <@var="X"> and <@var="Y">. 
+
+As far as we know, there isn't an established name for this operation in matrix algebra. "Horizontal direct product" is the way this operation is called in the GAUSS programming language. 
+
+Example: the code 
+
+<code>          
+     A = {1,2,3; 4,5,6}
+     B = {0,1; -1,1}
+     C = hdprod(A, B)
+</code>
+
+produces the following matrix: 
+
+<code>          
+         0    1    0    2    0    3 
+        -4    4   -5    5   -6    6
+</code>
+
+# hpfilt filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="lambda">  (scalar, optional)
+
+Returns the cycle component from application of the Hodrick–Prescott filter to series <@var="y">. If the smoothing parameter, <@var="lambda">, is not supplied then a data-based default is used, namely 100 times the square of the periodicity (100 for annual data, 1600 for quarterly data, and so on). See also <@ref="bkfilt">, <@ref="bwfilt">. 
+
+# I matbuild
+Output: 	square matrix 
+Argument: 	<@var="n">  (integer)
+
+Returns an identity matrix with <@var="n"> rows and columns. 
+
+# imaxc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the row indices of the maxima of the columns of <@var="X">. 
+
+See also <@ref="imaxr">, <@ref="iminc">, <@ref="maxc">. 
+
+# imaxr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the column indices of the maxima of the rows of <@var="X">. 
+
+See also <@ref="imaxc">, <@ref="iminr">, <@ref="maxr">. 
+
+# imhof probdist
+Output: 	scalar 
+Arguments:	<@var="M">  (matrix)
+		<@var="x">  (scalar)
+
+Computes Prob(<@itl="u'Au"> < <@itl="x">) for a quadratic form in standard normal variates, <@itl="u">, using the procedure developed by <@bib="Imhof (1961);imhof61">. 
+
+If the first argument, <@var="M">, is a square matrix it is taken to specify <@itl="A">, otherwise if it's a column vector it is taken to be the precomputed eigenvalues of <@itl="A">, otherwise an error is flagged. 
+
+See also <@ref="pvalue">. 
+
+# iminc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the row indices of the minima of the columns of <@itl="X">. 
+
+See also <@ref="iminr">, <@ref="imaxc">, <@ref="minc">. 
+
+# iminr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the column indices of the mimima of the rows of <@itl="X">. 
+
+See also <@ref="iminc">, <@ref="imaxr">, <@ref="minr">. 
+
+# inbundle data-utils
+Output: 	integer 
+Arguments:	<@var="b">  (bundle)
+		<@var="key">  (string)
+
+Checks whether bundle <@var="b"> contains a data-item with name <@var="key">. The value returned is an integer code for the type of the item: 0 for no match, 1 for scalar, 2 for series, 3 for matrix, 4 for string and 5 for bundle. The function <@ref="typestr"> may be used to get the string corresponding to this code. 
+
+# infnorm linalg
+Output: 	scalar 
+Argument: 	<@var="X">  (matrix)
+
+Returns the infinity-norm of <@var="X">, that is, the maximum across the rows of <@var="X"> of the sum of absolute values of the row elements. 
+
+See also <@ref="onenorm">. 
+
+# inlist data-utils
+Output: 	integer 
+Arguments:	<@var="L">  (list)
+		<@var="y">  (series)
+
+Returns the (1-based) position of <@var="y"> in list <@var="L">, or 0 if <@var="y"> is not present in <@var="L">. The second argument may be given as the name of a series or alternatively as an integer ID number. 
+
+# int math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the integer part of <@var="x">, truncating the fractional part. Note: <@lit="int"> and <@ref="floor"> differ in their effect for negative arguments: <@lit="int(-3.5)"> gives –3, while <@lit="floor(-3.5)"> gives –4. See also <@ref="ceil">. 
+
+# inv linalg
+Output: 	matrix 
+Argument: 	<@var="A">  (square matrix)
+
+Returns the inverse of <@var="A">. If <@var="A"> is singular or not square, an error message is produced and nothing is returned. Note that gretl checks automatically the structure of <@var="A"> and uses the most efficient numerical procedure to perform the inversion. 
+
+The matrix types gretl checks for are: identity; diagonal; symmetric and positive definite; symmetric but not positive definite; and triangular. 
+
+See also <@ref="ginv">, <@ref="invpd">. 
+
+# invcdf probdist
+Output: 	same type as input 
+Arguments:	<@var="c">  (character)
+		<@var="…">  (see below)
+		<@var="p">  (scalar, series or matrix)
+
+Inverse cumulative distribution function calculator. Returns <@itl="x"> such that <@itl="P(X ≤ x) = p">, where the distribution <@itl="X"> is determined by the character <@var="c">; Between the arguments <@var="c"> and <@var="p">, zero or more additional scalar arguments are required to specify the parameters of the distribution, as follows. 
+
+<indent>
+• Standard normal (c = z, n, or N): no extra arguments 
+</indent>
+
+<indent>
+• Gamma (g or G): shape; scale 
+</indent>
+
+<indent>
+• Student's t (t): degrees of freedom 
+</indent>
+
+<indent>
+• Chi square (c, x, or X): degrees of freedom 
+</indent>
+
+<indent>
+• Snedecor's F (f or F): df (num.); df (den.) 
+</indent>
+
+<indent>
+• Binomial (b or B): probability; trials 
+</indent>
+
+<indent>
+• Poisson (p or P): mean 
+</indent>
+
+<indent>
+• Standardized GED (E): shape 
+</indent>
+
+See also <@ref="cdf">, <@ref="critical">, <@ref="pvalue">. 
+
+# invmills probdist
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the inverse Mills ratio at <@var="x">, that is the ratio between the standard normal density and the complement to the standard normal distribution function, both evaluated at <@var="x">. 
+
+This function uses a dedicated algorithm which yields greater accuracy compared to calculation using <@ref="dnorm"> and <@ref="cnorm">, but the difference between the two methods is appreciable only for very large negative values of <@var="x">. 
+
+See also <@ref="cdf">, <@ref="cnorm">, <@ref="dnorm">. 
+
+# invpd linalg
+Output: 	square matrix 
+Argument: 	<@var="A">  (positive definite matrix)
+
+Returns the inverse of the symmetric, positive definite matrix <@var="A">. This function is slightly faster than <@ref="inv"> for large matrices, since no check for symmetry is performed; for that reason it should be used with care. 
+
+# irf stats
+Output: 	matrix 
+Arguments:	<@var="target">  (integer)
+		<@var="shock">  (integer)
+		<@var="alpha">  (scalar between 0 and 1, optional)
+
+This function is available only when the last model estimated was a VAR or VECM. It returns a matrix containing the estimated response of the <@var="target"> variable to an impulse of one standard deviation in the <@var="shock"> variable. These variables are identified by their position in the VAR specification: for example, if <@var="target"> and <@var="shock"> are given as 1 and 3 respectively, the returned matrix gives the response of the first variable in the VAR for a shock to the third variable. 
+
+If the optional <@var="alpha"> argument is given, the returned matrix has three columns: the point estimate of the responses, followed by the lower and upper limits of a 1 – α confidence interval obtained via bootstrapping. (So <@var="alpha"> = 0.1 corresponds to 90 percent confidence.) If <@var="alpha"> is omitted or set to zero, only the point estimate is provided. 
+
+The number of periods (rows) over which the response is traced is determined automatically based on the frequency of the data, but this can be overridden via the <@xrf="set"> command, as in <@lit="set horizon 10">. 
+
+# irr math
+Output: 	scalar 
+Argument: 	<@var="x">  (series or vector)
+
+Returns the Internal Rate of Return for <@var="x">, considered as a sequence of payments (negative) and receipts (positive). See also <@ref="npv">. 
+
+# isconst data-utils
+Output: 	integer 
+Arguments:	<@var="y">  (series or vector)
+		<@var="panel-code">  (integer, optional)
+
+Without the optional second argument, returns 1 if <@var="y"> has a constant value over the current sample range (or over its entire length if <@var="y"> is a vector), otherwise 0. 
+
+The second argument is accepted only if the current dataset is a panel and <@var="y"> is a series. In that case a <@var="panel-code"> value of 0 calls for a check for time-invariance, while a value of 1 means check for cross-sectional invariance (that is, in each time period the value of <@var="y"> is the same for all groups). 
+
+If <@var="y"> is a series, missing values are ignored in checking for constancy. 
+
+# isnan data-utils
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar or matrix)
+
+Given a scalar argument, returns 1 if <@var="x"> is "Not a Number" (NaN), otherwise 0. Given a matrix argument, returns a matrix of the same dimensions with 1s in positions where the corresponding element of the input is NaN and 0s elsewhere. 
+
+# isnull data-utils
+Output: 	integer 
+Argument: 	<@var="name">  (string)
+
+Returns 0 if <@var="name"> is the identifier for a currently defined object, be it a scalar, a series, a matrix, list, string or bundle; otherwise returns 1. 
+
+# isoconv calendar
+Output: 	scalar 
+Arguments:	<@var="date">  (series)
+		<@var="&year">  (reference to series)
+		<@var="&month">  (reference to series)
+		<@var="&day">  (reference to series, optional)
+
+Given a series <@var="date"> holding dates in ISO 8601 "basic" format (<@lit="YYYYMMDD">), this function writes the year, month and (optionally) day components into the series named by the second and subsequent arguments. An example call, assuming the series <@lit="dates"> contains suitable 8-digit values: 
+
+<code>          
+     series y, m, d
+     isoconv(dates, &y, &m, &d)
+</code>
+
+The return value from this function is 0 on successful completion, non-zero on error. 
+
+# isodate calendar
+Output: 	see below 
+Arguments:	<@var="ed">  (scalar or series)
+		<@var="as-string">  (boolean, optional)
+
+The argument <@var="ed"> is interpreted as an epoch day (which equals 1 for the first of January in the year 1 AD). The default return value — of the same type as <@var="ed"> — is an 8-digit number, or a series of such numbers, on the pattern <@lit="YYYYMMDD"> (ISO 8601 "basic" format), giving the calendar date corresponding to the epoch day. 
+
+If <@var="ed"> is a scalar (only) and the optional second argument <@var="as-string"> is non-zero, the return value is not numeric but rather a string on the pattern <@lit="YYYY-MM-DD"> (ISO 8601 "extended" format). 
+
+For the inverse function, see <@ref="epochday">. 
+
+# iwishart stats
+Output: 	matrix 
+Arguments:	<@var="S">  (symmetric matrix)
+		<@var="v">  (integer)
+
+Given <@var="S"> (a positive definite <@itl="p">×<@itl="p"> scale matrix), returns a drawing from the Inverse Wishart distribution with <@var="v"> degrees of freedom. The returned matrix is also <@itl="p">×<@itl="p">. The algorithm of <@bib="Odell and Feiveson (1966);odell-feiveson66"> is used. 
+
+# kdensity stats
+Output: 	matrix 
+Arguments:	<@var="x">  (series)
+		<@var="scale">  (scalar, optional)
+		<@var="control">  (boolean, optional)
+
+Computes a kernel density estimate for the series <@var="x">. The returned matrix has two columns, the first holding a set of evenly spaced abscissae and the second the estimated density at each of these points. 
+
+The optional <@var="scale"> parameter can be used to adjust the degree of smoothing relative to the default of 1.0 (higher values produce a smoother result). The <@var="control"> parameter acts as a boolean: 0 (the default) means that the Gaussian kernel is used; a non-zero value switches to the Epanechnikov kernel. 
+
+A plot of the results may be obtained using the <@xrf="gnuplot"> command, as in 
+
+<code>          
+     matrix d = kdensity(x)
+     gnuplot 2 1 --matrix=d --with-lines --suppress-fitted
+</code>
+
+# kfilter filters
+Output: 	scalar 
+Arguments:	<@var="&E">  (reference to matrix, or <@lit="null">)
+		<@var="&V">  (reference to matrix, or <@lit="null">)
+		<@var="&S">  (reference to matrix, or <@lit="null">)
+		<@var="&P">  (reference to matrix, or <@lit="null">)
+		<@var="&G">  (reference to matrix, or <@lit="null">)
+
+Requires that a Kalman filter be set up. Performs a forward, filtering pass and returns 0 on successful completion or 1 if numerical problems are encountered. 
+
+The optional matrix arguments can be used to retrieve the following information: <@var="E"> gets the matrix of one-step ahead prediction errors and <@var="V"> gets the variance matrix for these errors; <@var="S"> gets the matrix of estimated values of the state vector and <@var="P"> the variance matrix of these estimates; <@var="G"> gets the Kalman gain. All of these matrices have <@itl="T"> rows, corresponding to <@itl="T"> observations. For the column dimensions and further details see <@pdf="the Gretl User's Guide">. 
+
+See also <@xrf="kalman">, <@ref="ksmooth">, <@ref="ksimul">. 
+
+# ksimul filters
+Output: 	matrix 
+Arguments:	<@var="v">  (matrix)
+		<@var="w">  (matrix)
+		<@var="&S">  (reference to matrix, or <@lit="null">)
+
+Requires that a Kalman filter be set up. Performs a simulation and returns a matrix holding simulated values of the observable variables. 
+
+The argument <@var="v"> supplies artificial disturbances for the state transition equation and <@var="w"> supplies disturbances for the observation equation, if applicable. The optional argument <@var="S"> may be used to retrieve the simulated state vector. For details see <@pdf="the Gretl User's Guide">. 
+
+See also <@xrf="kalman">, <@ref="kfilter">, <@ref="ksmooth">. 
+
+# ksmooth filters
+Output: 	matrix 
+Argument: 	<@var="&P">  (reference to matrix, or <@lit="null">)
+
+Requires that a Kalman filter be set up. Performs a backward, smoothing pass and returns a matrix holding smoothed estimates of the state vector. The optional argument <@var="P"> may be used to retrieve the MSE of the smoothed state. For details see <@pdf="the Gretl User's Guide">. 
+
+See also <@xrf="kalman">, <@ref="kfilter">, <@ref="ksimul">. 
+
+# kurtosis stats
+Output: 	scalar 
+Argument: 	<@var="x">  (series)
+
+Returns the excess kurtosis of the series <@var="x">, skipping any missing observations. 
+
+# lags transforms
+Output: 	list 
+Arguments:	<@var="p">  (integer)
+		<@var="y">  (series or list)
+		<@var="bylag">  (boolean, optional)
+
+Generates lags 1 to <@var="p"> of the series <@var="y">, or if <@var="y"> is a list, of all series in the list. If <@var="p"> = 0, the maximum lag defaults to the periodicity of the data; otherwise <@var="p"> must be positive. 
+
+The generated variables are automatically named according to the template <@var="varname"><@lit="_"><@var="i"> where <@var="varname"> is the name of the original series and <@var="i"> is the specific lag. The original portion of the name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+When <@var="y"> is a list and the lag order is greater than 1, the default ordering of the terms in the returned list is by variable: all lags of the first series in the input list followed by all lags of the second series, and so on. The optional third argument can be used to change this: if <@var="bylag"> is non-zero then the terms are ordered by lag: lag 1 of all the input series, then lag 2 of all the series, and so on. 
+
+# lastobs data-utils
+Output: 	integer 
+Argument: 	<@var="y">  (series)
+
+Returns the 1-based index of the last non-missing observation for the series <@var="y">. Note that if some form of subsampling is in effect, the value returned may be larger than the dollar variable <@ref="$t2">. See also <@ref="firstobs">. 
+
+# ldet linalg
+Output: 	scalar 
+Argument: 	<@var="A">  (square matrix)
+
+Returns the natural log of the determinant of <@itl="A">, computed via the LU factorization. See also <@ref="det">, <@ref="rcond">. 
+
+# ldiff transforms
+Output: 	same type as input 
+Argument: 	<@var="y">  (series or list)
+
+Computes log differences; starting values are set to <@lit="NA">. 
+
+When a list is returned, the individual variables are automatically named according to the template <@lit="ld_"><@var="varname"> where <@var="varname"> is the name of the original series. The name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+See also <@ref="diff">, <@ref="sdiff">. 
+
+# lincomb transforms
+Output: 	series 
+Arguments:	<@var="L">  (list)
+		<@var="b">  (vector)
+
+Computes a new series as a linear combination of the series in the list <@var="L">. The coefficients are given by the vector <@var="b">, which must have length equal to the number of series in <@var="L">. 
+
+See also <@ref="wmean">. 
+
+# ljungbox stats
+Output: 	scalar 
+Arguments:	<@var="y">  (series)
+		<@var="p">  (integer)
+
+Computes the Ljung–Box Q' statistic for the series <@var="y"> using lag order <@var="p">, over the currently defined sample range. The lag order must be greater than or equal to 1 and less than the number of available observations. 
+
+This statistic may be referred to the chi-square distribution with <@var="p"> degrees of freedom as a test of the null hypothesis that the series <@var="y"> is not serially correlated. See also <@ref="pvalue">. 
+
+# lngamma math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the log of the gamma function of <@var="x">. 
+
+# log math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series, matrix or list)
+
+Returns the natural logarithm of <@var="x">; produces <@lit="NA"> for non-positive values. Note: <@lit="ln"> is an acceptable alias for <@lit="log">. 
+
+When a list is returned, the individual variables are automatically named according to the template <@lit="l_"><@var="varname"> where <@var="varname"> is the name of the original series. The name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+# log10 math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the base-10 logarithm of <@var="x">; produces <@lit="NA"> for non-positive values. 
+
+# log2 math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the base-2 logarithm of <@var="x">; produces <@lit="NA"> for non-positive values. 
+
+# loess stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="x">  (series)
+		<@var="d">  (integer, optional)
+		<@var="q">  (scalar, optional)
+		<@var="robust">  (boolean, optional)
+
+Performs locally-weighted polynomial regression and returns a series holding predicted values of <@var="y"> for each non-missing value of <@var="x">. The method is as described by <@bib="William Cleveland (1979);cleveland79">. 
+
+The optional arguments <@var="d"> and <@var="q"> specify the order of the polynomial in <@var="x"> and the proportion of the data points to be used in local estimation, respectively. The default values are <@var="d"> = 1 and <@var="q"> = 0.5. The other acceptable values for <@var="d"> are 0 and 2. Setting <@var="d"> = 0 reduces the local regression to a form of moving average. The value of <@var="q"> must be greater than 0 and cannot exceed 1; larger values produce a smoother outcome. 
+
+If a non-zero value is given for the <@var="robust"> argument the local regressions are iterated twice, with the weights being modified based on the residuals from the previous iteration so as to give less influence to outliers. 
+
+See also <@ref="nadarwat">, and in addition see <@pdf="the Gretl User's Guide"> for details on nonparametric methods. 
+
+# logistic math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the logistic function of the argument <@var="x">, that is, <@itl="e"><@sup="x">/(1 + <@itl="e"><@sup="x">). If <@var="x"> is a matrix, the function is applied element by element. 
+
+# lower matbuild
+Output: 	square matrix 
+Argument: 	<@var="A">  (matrix)
+
+Returns an <@itl="n">×<@itl="n"> lower triangular matrix: the elements on and below the diagonal are equal to the corresponding elements of <@var="A">; the remaining elements are zero. 
+
+See also <@ref="upper">. 
+
+# lrvar filters
+Output: 	scalar 
+Arguments:	<@var="y">  (series or vector)
+		<@var="k">  (integer)
+
+Returns the long-run variance of <@var="y">, calculated using a Bartlett kernel with window size <@var="k">. If <@var="k"> is negative, <@lit="int(T^(1/3))"> is used. 
+
+# max stats
+Output: 	scalar or series 
+Argument: 	<@var="y">  (series or list)
+
+If the argument <@var="y"> is a series, returns the (scalar) maximum of the non-missing observations in the series. If the argument is a list, returns a series each of whose elements is the maximum of the values of the listed variables at the given observation. 
+
+See also <@ref="min">, <@ref="xmax">, <@ref="xmin">. 
+
+# maxc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns a row vector containing the maxima of the columns of <@var="X">. 
+
+See also <@ref="imaxc">, <@ref="maxr">, <@ref="minc">. 
+
+# maxr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns a column vector containing the maxima of the rows of <@var="X">. 
+
+See also <@ref="imaxc">, <@ref="maxc">, <@ref="minr">. 
+
+# mcorr stats
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Computes a correlation matrix treating each column of <@var="X"> as a variable. See also <@ref="corr">, <@ref="cov">, <@ref="mcov">. 
+
+# mcov stats
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Computes a covariance matrix treating each column of <@var="X"> as a variable. See also <@ref="corr">, <@ref="cov">, <@ref="mcorr">. 
+
+# mcovg stats
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="u">  (vector, optional)
+		<@var="w">  (vector, optional)
+		<@var="p">  (integer)
+
+Returns the matrix covariogram for a <@itl="T">×<@itl="k"> matrix <@var="X"> (typically containing regressors), an (optional) <@itl="T">-vector <@var="u"> (typically containing residuals), an (optional) (<@itl="p">+1)-vector of weights <@var="w">, and a lag order <@var="p">, which must be greater than or equal to 0. 
+
+The returned matrix is given by 
+
+sum_{j=-p}^p sum_j w_{|j|} (X_t' u_t u_{t-j} X_{t-j}) 
+
+If <@var="u"> is given as <@lit="null"> the <@itl="u"> terms are omitted, and if <@var="w"> is given as <@lit="null"> all the weights are taken to be 1.0. 
+
+# mean stats
+Output: 	scalar or series 
+Argument: 	<@var="x">  (series or list)
+
+If <@var="x"> is a series, returns the (scalar) sample mean, skipping any missing observations. 
+
+If <@var="x"> is a list, returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the mean of the values of the variables in the list at observation <@itl="t">, or <@lit="NA"> if there are any missing values at <@itl="t">. 
+
+# meanc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the means of the columns of <@var="X">. See also <@ref="meanr">, <@ref="sumc">, <@ref="sdc">. 
+
+# meanr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the means of the rows of <@var="X">. See also <@ref="meanc">, <@ref="sumr">. 
+
+# median stats
+Output: 	scalar 
+Argument: 	<@var="y">  (series)
+
+The median of the non-missing observations in series <@var="y">. See also <@ref="quantile">. 
+
+# mexp linalg
+Output: 	square matrix 
+Argument: 	<@var="A">  (square matrix)
+
+Computes the matrix exponential of <@var="A">, using algorithm 11.3.1 from <@bib="Golub and Van Loan (1996);golub96">. 
+
+# min stats
+Output: 	scalar or series 
+Argument: 	<@var="y">  (series or list)
+
+If the argument <@var="y"> is a series, returns the (scalar) minimum of the non-missing observations in the series. If the argument is a list, returns a series each of whose elements is the minimum of the values of the listed variables at the given observation. 
+
+See also <@ref="max">, <@ref="xmax">, <@ref="xmin">. 
+
+# minc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the minima of the columns of <@var="X">. 
+
+See also <@ref="iminc">, <@ref="maxc">, <@ref="minr">. 
+
+# minr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the minima of the rows of <@var="X">. 
+
+See also <@ref="iminr">, <@ref="maxr">, <@ref="minc">. 
+
+# missing data-utils
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or list)
+
+Returns a binary variable holding 1 if <@var="x"> is <@lit="NA">. If <@var="x"> is a series, the comparison is done element by element; if <@var="x"> is a list of series, the output is a series with 1 at observations for which at least one series in the list has a missing value, and 0 otherwise. 
+
+See also <@ref="misszero">, <@ref="ok">, <@ref="zeromiss">. 
+
+# misszero data-utils
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar or series)
+
+Converts <@lit="NA">s to zeros. If <@var="x"> is a series, the conversion is done element by element. See also <@ref="missing">, <@ref="ok">, <@ref="zeromiss">. 
+
+# mlag stats
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="p">  (scalar or vector)
+		<@var="m">  (scalar, optional)
+
+Shifts up or down the rows of <@var="X">. If <@var="p"> is a positive scalar, returns a matrix in which the columns of <@var="X"> are shifted down by <@var="p"> rows and the first <@var="p"> rows are filled with the value <@var="m">. If <@var="p"> is a negative number, <@var="X"> is shifted up and the last rows are filled with the value <@var="m">. If <@var="m"> is omitted, it is understood to be zero. 
+
+If <@var="p"> is a vector, the above operation is carried out for each element in <@var="p">, joining the resulting matrices horizontally. 
+
+# mnormal matbuild
+Output: 	matrix 
+Arguments:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Returns a matrix with <@var="r"> rows and <@var="c"> columns, filled with standard normal pseudo-random variates. See also <@ref="normal">, <@ref="muniform">. 
+
+# mols stats
+Output: 	matrix 
+Arguments:	<@var="Y">  (matrix)
+		<@var="X">  (matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+		<@var="&V">  (reference to matrix, or <@lit="null">)
+
+Returns a <@itl="k">×<@itl="n"> matrix of parameter estimates obtained by OLS regression of the <@itl="T">×<@itl="n"> matrix <@var="Y"> on the <@itl="T">×<@itl="k"> matrix <@var="X">. 
+
+If the third argument is not <@lit="null">, the <@itl="T">×<@itl="n"> matrix <@var="U"> will contain the residuals. If the final argument is given and is not <@lit="null"> then the <@itl="k">×<@itl="k"> matrix <@var="V"> will contain (a) the covariance matrix of the parameter estimates, if <@var="Y"> has just one column, or (b) <@itl="X'X"><@sup="-1"> if <@var="Y"> has multiple columns. 
+
+By default, estimates are obtained via Cholesky decomposition, with a fallback to QR decomposition if the columns of <@var="X"> are highly collinear. The use of SVD can be forced via the command <@lit="set svd on">. 
+
+See also <@ref="mpols">, <@ref="mrls">. 
+
+# monthlen calendar
+Output: 	integer 
+Arguments:	<@var="month">  (integer)
+		<@var="year">  (integer)
+		<@var="weeklen">  (integer)
+
+Returns the number of (relevant) days in the specified month in the specified year; <@var="weeklen">, which must equal 5, 6 or 7, gives the number of days in the week that should be counted (a value of 6 omits Sundays, and a value of 5 omits both Saturdays and Sundays). 
+
+# movavg filters
+Output: 	series 
+Arguments:	<@var="x">  (series)
+		<@var="p">  (scalar)
+		<@var="control">  (integer, optional)
+
+Depending on the value of the parameter <@var="p">, returns either a simple or an exponentially weighted moving average of the input series <@var="x">. 
+
+If <@var="p"> > 1, a simple <@var="p">-term moving average is computed, that is, the arithmetic mean of x(t) to x(t-p+1). If a non-zero value is supplied for the optional <@var="control"> parameter the MA is centered, otherwise it is "trailing". 
+
+If <@var="p"> is a positive fraction, an exponential moving average is computed: y(t) = p*x(t) + (1-p)*y(t-1). By default the output series, y, is initialized using the first valid value of <@var="x">, but the <@var="control"> parameter may be used to specify the number of initial observations that should be averaged to produce y(0). A zero value for <@var="control"> indicates that all the observations should be used. 
+
+# mpols stats
+Output: 	matrix 
+Arguments:	<@var="Y">  (matrix)
+		<@var="X">  (matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+
+Works exactly as <@ref="mols">, except that the calculations are done in multiple precision using the GMP library. 
+
+By default GMP uses 256 bits for each floating point number, but you can adjust this using the environment variable <@lit="GRETL_MP_BITS">, e.g. <@lit="GRETL_MP_BITS=1024">. 
+
+# mrandgen probdist
+Output: 	matrix 
+Arguments:	<@var="d">  (string)
+		<@var="p1">  (scalar)
+		<@var="p2">  (scalar, conditional)
+		<@var="p3">  (scalar, conditional)
+		<@var="rows">  (integer)
+		<@var="cols">  (integer)
+Examples: 	<@lit="matrix mx = mrandgen(u, 0, 100, 50, 1)">
+		<@lit="matrix mt14 = mrandgen(t, 14, 20, 20)">
+
+Works like <@ref="randgen"> except that the return value is a matrix rather than a series. The initial arguments to this function (the number of which depends on the selected distribution) are as described for <@lit="randgen">, but they must be followed by two integers to specify the number of rows and columns of the desired random matrix. 
+
+The first example above calls for a uniform random column vector of length 50, while the second example specifies a 20×20 random matrix with drawings from the <@itl="t"> distribution with 14 degrees of freedom. 
+
+See also <@ref="mnormal">, <@ref="muniform">. 
+
+# mread matbuild
+Output: 	matrix 
+Arguments:	<@var="fname">  (string)
+		<@var="import">  (boolean, optional)
+
+Reads a matrix from a text file. The string <@var="fname"> must contain the name of the file from which the matrix is to be read. If this name has the suffix "<@lit=".gz">" it is assumed that gzip compression has been applied in writing the file. 
+
+The file in question may start with any number of comment lines, defined as lines that start with the hash mark, <@lit="#">; such lines are ignored. Beyond that, the content must conform to the following rules: 
+
+<indent>
+• The first non-comment line must contain two integers, separated by a space or a tab, indicating the number of rows and columns, respectively. 
+</indent>
+
+<indent>
+• The columns must be separated by spaces or tab characters. 
+</indent>
+
+<indent>
+• The decimal separator must be the dot character, "<@lit=".">". 
+</indent>
+
+If a non-zero value is given for the optional <@var="import"> argument, the input file is looked for in the user's "dot" directory. This is intended for use with the matrix-exporting functions offered in the context of the <@xrf="foreign"> command. In this case the <@var="fname"> argument should be a plain filename, without any path component. 
+
+Should an error occur (such as the file being badly formatted or inaccessible), an empty matrix is returned. 
+
+See also <@ref="mwrite">. 
+
+# mreverse matshape
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Returns a matrix containing the rows of <@var="X"> in reverse order. If you wish to obtain a matrix in which the columns of <@var="X"> appear in reverse order you can do: 
+
+<code>          
+     matrix Y = mreverse(X')'
+</code>
+
+# mrls stats
+Output: 	matrix 
+Arguments:	<@var="Y">  (matrix)
+		<@var="X">  (matrix)
+		<@var="R">  (matrix)
+		<@var="q">  (column vector)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+		<@var="&V">  (reference to matrix, or <@lit="null">)
+
+Restricted least squares: returns a <@itl="k">×<@itl="n"> matrix of parameter estimates obtained by least-squares regression of the <@itl="T">×<@itl="n"> matrix <@var="Y"> on the <@itl="T">×<@itl="k"> matrix <@var="X"> subject to the linear restriction <@itl="RB"> = <@itl="q">, where <@itl="B"> denotes the stacked coefficient vector. <@var="R"> must have <@itl="k"> * <@itl="n"> columns; each row of this matrix represents a linear restriction. The number of rows in <@var="q"> must match the number of rows in <@var="R">. 
+
+If the fifth argument is not <@lit="null">, the <@itl="T">×<@itl="n"> matrix <@var="U"> will contain the residuals. If the final argument is given and is not <@lit="null"> then the <@itl="k">×<@itl="k"> matrix <@var="V"> will hold the restricted counterpart to the matrix <@itl="X'X"><@sup="-1">. The variance matrix of the estimates for equation <@itl="i"> can be constructed by multiplying the appropriate sub-matrix of <@var="V"> by an estimate of the error variance for that equation. 
+
+# mshape matshape
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Rearranges the elements of <@var="X"> into a matrix with <@var="r"> rows and <@var="c"> columns. Elements are read from <@var="X"> and written to the target in column-major order. If <@var="X"> contains fewer than <@itl="k"> = <@itl="rc"> elements, the elements are repeated cyclically; otherwise, if <@var="X"> has more elements, only the first <@itl="k"> are used. 
+
+See also <@ref="cols">, <@ref="rows">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# msortby matshape
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="j">  (integer)
+
+Returns a matrix in which the rows of <@var="X"> are reordered by increasing value of the elements in column <@var="j">. This is a stable sort: rows that share the same value in column <@var="j"> will not be interchanged. 
+
+# muniform matbuild
+Output: 	matrix 
+Arguments:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Returns a matrix with <@var="r"> rows and <@var="c"> columns, filled with uniform (0,1) pseudo-random variates. Note: the preferred method for generating a scalar uniform r.v. is to use the <@ref="randgen1"> function. 
+
+See also <@ref="mnormal">, <@ref="uniform">. 
+
+# mwrite data-utils
+Output: 	integer 
+Arguments:	<@var="X">  (matrix)
+		<@var="fname">  (string)
+		<@var="export">  (boolean, optional)
+
+Writes the matrix <@var="X"> to a plain text file named <@var="fname">. The file will contain on the first line two integers, separated by a tab character, with the number of rows and columns; on the next lines, the matrix elements in scientific notation, separated by tabs (one line per row). 
+
+If file <@var="fname"> already exists, it will be overwritten. The return value is 0 on successful completion; if an error occurs, such as the file being unwritable, the return value will be non-zero. 
+
+If a non-zero value is given for the <@var="export"> argument, the output file will be written into the user's "dot" directory, where it is accessible by default via the matrix-loading functions offered in the context of the <@xrf="foreign"> command. In this case a plain filename, without any path component, should be given for the second argument. 
+
+Matrices stored via the <@lit="mwrite"> command can be easily read by other programs; see <@pdf="the Gretl User's Guide"> for details. 
+
+An extension to the basic behavior of this function is available: if <@var="fname"> has the suffix "<@lit=".gz">" then the file is written with gzip compression. 
+
+See also <@ref="mread">. 
+
+# mxtab stats
+Output: 	matrix 
+Arguments:	<@var="x">  (series or vector)
+		<@var="y">  (series or vector)
+
+Returns a matrix holding the cross tabulation of the values contained in <@var="x"> (by row) and <@var="y"> (by column). The two arguments should be of the same type (both series or both column vectors), and because of the typical usage of this function, are assumed to contain integer values only. 
+
+See also <@ref="values">. 
+
+# nadarwat stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="x">  (series)
+		<@var="h">  (scalar)
+
+Returns the Nadaraya–Watson nonparametric estimator of the conditional mean of <@var="y"> given <@var="x">. It returns a series holding the nonparametric estimate of <@itl="E(y"><@sub="i"><@itl="|x"><@sub="i"><@itl=")"> for each nonmissing element of the series <@var="x">. 
+
+The kernel function <@itl="K"> is given by <@itl="K = exp(-x"><@sup="2"><@itl=" / 2h)"> for <@itl="|x| < T"> and zero otherwise. 
+
+The argument <@var="h">, known as the bandwidth, is a parameter (a positive real number) given by the user. This is usually a small number: larger values of <@var="h"> make <@itl="m(x)"> smoother; a popular choice is <@itl="n"><@sup="-0.2">. More details are given in <@pdf="the Gretl User's Guide">. 
+
+The scalar <@itl="T"> is used to prevent numerical problems when the kernel function is evaluated too far away from zero and is called the trim parameter. 
+
+The trim parameter can be adjusted via the <@lit="nadarwat_trim"> setting, as a multiple of <@var="h">. The default value is 4. 
+
+The user may provide a negative value for the bandwidth: this is interpreted as conventional syntax to obtain the leave-one-out estimator, that is a variant of the estimator that does not use the <@itl="i">-th observation for evaluating <@itl="m(x"><@sub="i"><@itl=")">. This makes the Nadaraya–Watson estimator more robust numerically and its usage is normally advised when the estimator is computed for inference purposes. Of course, the bandwidth actually used is the absolute value of <@var="h">. 
+
+# nelem data-utils
+Output: 	integer 
+Argument: 	<@var="L">  (list)
+
+Returns the number of members in the list <@var="L">. 
+
+# ngetenv strings
+Output: 	scalar 
+Argument: 	<@var="s">  (string)
+
+If an environment variable by the name of <@var="s"> is defined and has a numerical value, returns that value; otherwise returns NA. See also <@ref="getenv">. 
+
+# nobs stats
+Output: 	integer 
+Argument: 	<@var="y">  (series)
+
+Returns the number of non-missing observations for the variable <@var="y"> in the currently selected sample. 
+
+# normal probdist
+Output: 	series 
+Arguments:	<@var="μ">  (scalar)
+		<@var="σ">  (scalar)
+
+Generates a series of Gaussian pseudo-random variates with mean μ and standard deviation σ. If no arguments are supplied, standard normal variates <@itl="N">(0,1) are produced. The values are produced using the Ziggurat method <@bib="(Marsaglia and Tsang, 2000);marsaglia00">. 
+
+See also <@ref="randgen">, <@ref="mnormal">, <@ref="muniform">. 
+
+# npv math
+Output: 	scalar 
+Arguments:	<@var="x">  (series or vector)
+		<@var="r">  (scalar)
+
+Returns the Net Present Value of <@var="x">, considered as a sequence of payments (negative) and receipts (positive), evaluated at annual discount rate <@var="r">; <@var="r"> must be expressed as a number, not a percentage (5<@lit="%"> = 0.05). The first value is taken as dated "now" and is not discounted. To emulate an NPV function in which the first value is discounted, prepend zero to the input sequence. 
+
+Supported data frequencies are annual, quarterly, monthly, and undated (undated data are treated as if annual). 
+
+See also <@ref="irr">. 
+
+# NRmax numerical
+Output: 	scalar 
+Arguments:	<@var="b">  (vector)
+		<@var="f">  (function call)
+		<@var="g">  (function call, optional)
+		<@var="h">  (function call, optional)
+
+Numerical maximization via the Newton–Raphson method. The vector <@var="b"> should hold the initial values of a set of parameters, and the argument <@var="f"> should specify a call to a function that calculates the (scalar) criterion to be maximized, given the current parameter values and any other relevant data. If the object is in fact minimization, this function should return the negative of the criterion. On successful completion, <@lit="NRmax"> returns the maximized value of the criterion, and <@var="b"> holds the parameter values which produce the maximum. 
+
+The optional third and fourth arguments provide means of supplying analytical derivatives and an analytical (negative) Hessian, respectively. The functions referenced by <@var="g"> and <@var="h"> must take as their first argument a pre-defined matrix that is of the correct size to contain the gradient or Hessian, respectively, given in pointer form. They also must take the parameter vector as an argument (in pointer form or otherwise). Other arguments are optional. If either or both of the optional arguments are omitted, a numerical approximation is used. 
+
+For more details and examples see the chapter on numerical methods in <@pdf="the Gretl User's Guide">. See also <@ref="BFGSmax">, <@ref="fdjac">. 
+
+# nullspace linalg
+Output: 	matrix 
+Argument: 	<@var="A">  (matrix)
+
+Computes the right nullspace of <@var="A">, via the singular value decomposition: the result is a matrix <@itl="B"> such that the product <@itl="AB"> is a zero matrix, except when <@var="A"> has full column rank, in which case an empty matrix is returned. Otherwise, if <@var="A"> is <@itl="m">×<@itl="n">, <@itl="B"> will be <@itl="n"> by (<@itl="n"> – <@itl="r">), where <@itl="r"> is the rank of <@var="A">. 
+
+See also <@ref="rank">, <@ref="svd">. 
+
+# obs data-utils
+Output: 	series 
+
+Returns a series of consecutive integers, setting 1 at the start of the dataset. Note that the result is invariant to subsampling. This function is especially useful with time-series datasets. Note: you can write <@lit="t"> instead of <@lit="obs"> with the same effect. 
+
+See also <@ref="obsnum">. 
+
+# obslabel data-utils
+Output: 	string 
+Argument: 	<@var="t">  (integer)
+
+Returns the observation label for observation <@var="t">, where <@var="t"> is a 1-based index. The inverse function is provided by <@ref="obsnum">. 
+
+# obsnum data-utils
+Output: 	integer 
+Argument: 	<@var="s">  (string)
+
+Returns an integer corresponding to the observation specified by the string <@itl="s">. Note that the result is invariant to subsampling. This function is especially useful with time-series datasets. For example, the following code 
+
+<code>          
+     open denmark 
+     k = obsnum(1980:1)
+</code>
+
+yields <@lit="k = 25">, indicating that the first quarter of 1980 is the 25th observation in the <@lit="denmark"> dataset. 
+
+See also <@ref="obs">, <@ref="obslabel">. 
+
+# ok data-utils
+Output: 	see below 
+Argument: 	<@var="x">  (scalar, series, matrix or list)
+
+If <@var="x"> is a scalar, returns 1 if <@var="x"> is not <@lit="NA">, otherwise 0. If <@var="x"> is a series, returns a series with value 1 at observations with non-missing values and zeros elsewhere. If <@var="x"> is a list, the output is a series with 0 at observations for which at least one series in the list has a missing value, and 1 otherwise. 
+
+If <@var="x"> is a matrix the behavior is a little different, since matrices cannot contain <@lit="NA">s: the function returns a matrix of the same dimensions as <@var="x">, with 1s in positions corresponding to finite elements of <@var="x"> and 0s in positions where the elements are non-finite (either infinities or not-a-number, as per the IEEE 754 standard). 
+
+See also <@ref="missing">, <@ref="misszero">, <@ref="zeromiss">. But note that these functions are not applicable to matrices. 
+
+# onenorm linalg
+Output: 	scalar 
+Argument: 	<@var="X">  (matrix)
+
+Returns the 1-norm of the matrix <@var="X">, that is, the maximum across the columns of <@var="X"> of the sum of absolute values of the column elements. 
+
+See also <@ref="infnorm">, <@ref="rcond">. 
+
+# ones matbuild
+Output: 	matrix 
+Arguments:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Outputs a matrix with <@itl="r"> rows and <@itl="c"> columns, filled with ones. 
+
+See also <@ref="seq">, <@ref="zeros">. 
+
+# orthdev transforms
+Output: 	series 
+Argument: 	<@var="y">  (series)
+
+Only applicable if the currently open dataset has a panel structure. Computes the forward orthogonal deviations for variable <@var="y">. 
+
+This transformation is sometimes used instead of differencing to remove individual effects from panel data. For compatibility with first differences, the deviations are stored one step ahead of their true temporal location (that is, the value at observation <@itl="t"> is the deviation that, strictly speaking, belongs at <@itl="t"> – 1). That way one loses the first observation in each time series, not the last. 
+
+See also <@ref="diff">. 
+
+# pdf probdist
+Output: 	same type as input 
+Arguments:	<@var="c">  (character)
+		<@var="…">  (see below)
+		<@var="x">  (scalar, series or matrix)
+Examples: 	<@lit="f1 = pdf(N, -2.5)">
+		<@lit="f2 = pdf(X, 3, y)">
+		<@lit="f3 = pdf(W, shape, scale, y)">
+
+Probability density function calculator. Returns the density at <@var="x"> of the distribution identified by the code <@var="c">. See <@ref="cdf"> for details of the required (scalar) arguments. The distributions supported by the <@lit="pdf"> function are the normal, Student's <@itl="t">, chi-square, <@itl="F">, Gamma, Weibull, Generalized Error, Binomial and Poisson. Note that for the Binomial and the Poisson what's calculated is in fact the probability mass at the specified point. 
+
+For the normal distribution, see also <@ref="dnorm">. 
+
+# pergm stats
+Output: 	matrix 
+Arguments:	<@var="x">  (series or vector)
+		<@var="bandwidth">  (scalar, optional)
+
+If only the first argument is given, computes the sample periodogram for the given series or vector. If the second argument is given, computes an estimate of the spectrum of <@var="x"> using a Bartlett lag window of the given bandwidth, up to a maximum of half the number of observations (<@itl="T">/2). 
+
+Returns a matrix with two columns and <@itl="T">/2 rows: the first column holds the frequency, ω, from 2π/<@itl="T"> to π, and the second the corresponding spectral density. 
+
+# pmax stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the maxima of variable <@var="y"> for each cross-sectional unit (repeated for each time period). 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+See also <@ref="pmin">, <@ref="pmean">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">, <@ref="psum">. 
+
+# pmean stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the time-mean of variable <@var="y"> for each cross-sectional unit, the values being repeated for each period. Missing observations are skipped in calculating the means. 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+See also <@ref="pmax">, <@ref="pmin">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">, <@ref="psum">. 
+
+# pmin stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the minima of variable <@var="y"> for each cross-sectional unit (repeated for each time period). 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+See also <@ref="pmax">, <@ref="pmean">, <@ref="pnobs">, <@ref="psd">, <@ref="pshrink">, <@ref="psum">. 
+
+# pnobs stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the number of valid observations of variable <@var="y"> for each cross-sectional unit (repeated for each time period). 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+See also <@ref="pmax">, <@ref="pmin">, <@ref="pmean">, <@ref="psd">, <@ref="pshrink">, <@ref="psum">. 
+
+# polroots linalg
+Output: 	matrix 
+Argument: 	<@var="a">  (vector)
+
+Finds the roots of a polynomial. If the polynomial is of degree <@itl="p">, the vector <@var="a"> should contain <@itl="p"> + 1 coefficients in ascending order, i.e. starting with the constant and ending with the coefficient on <@itl="x"><@sup="p">. 
+
+If all the roots are real they are returned in a column vector of length <@itl="p">, otherwise a <@itl="p">×2 matrix is returned, the real parts in the first column and the imaginary parts in the second. 
+
+# polyfit filters
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="q">  (integer)
+
+Fits a polynomial trend of order <@var="q"> to the input series <@var="y"> using the method of orthogonal polynomials. The series returned holds the fitted values. 
+
+# princomp stats
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="p">  (integer)
+		<@var="covmat">  (boolean, optional)
+
+Let the matrix <@var="X"> be <@itl="T">×<@itl="k">, containing <@itl="T"> observations on <@itl="k"> variables. The argument <@var="p"> must be a positive integer less than or equal to <@itl="k">. This function returns a <@itl="T">×<@itl="p"> matrix, <@itl="P">, holding the first <@itl="p"> principal components of <@var="X">. 
+
+The optional third argument acts as a boolean switch: if it is non-zero the principal components are computed on the basis of the covariance matrix of the columns of <@var="X"> (the default is to use the correlation matrix). 
+
+The elements of <@itl="P"> are computed as the sum from <@itl="i"> to <@itl="k"> of <@itl="Z"><@sub="ti"> times <@itl="v"><@sub="ji">, where <@itl="Z"><@sub="ti"> is the standardized value of variable <@itl="i"> at observation <@itl="t"> and <@itl="v"><@sub="ji"> is the <@itl="j">th eigenvector of the correlation (or covariance) matrix of the <@itl="X"><@sub="i">s, with the eigenvectors ordered by decreasing value of the corresponding eigenvalues. 
+
+See also <@ref="eigensym">. 
+
+# prodc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the product of the elements of <@var="X">, by column. See also <@ref="prodr">, <@ref="meanc">, <@ref="sdc">, <@ref="sumc">. 
+
+# prodr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the product of the elements of <@var="X">, by row. See also <@ref="prodc">, <@ref="meanr">, <@ref="sumr">. 
+
+# psd stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the sample standard deviation of variable <@itl="y"> for each cross-sectional unit (with the values repeated for each time period). The denominator used is the sample size for each unit minus 1, unless the number of valid observations for the given unit is 1 (in which case 0 is returned) or 0 (in which case <@lit="NA"> is returned). 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+Note: this function makes it possible to check whether a given variable (say, <@lit="X">) is time-invariant via the condition <@lit="max(psd(X)) = 0">. 
+
+See also <@ref="pmax">, <@ref="pmin">, <@ref="pmean">, <@ref="pnobs">, <@ref="pshrink">, <@ref="psum">. 
+
+# psdroot linalg
+Output: 	square matrix 
+Argument: 	<@var="A">  (symmetric matrix)
+
+Performs a generalized variant of the Cholesky decomposition of the matrix <@var="A">, which must be positive semidefinite (but which may be singular). If the input matrix is not square an error is flagged, but symmetry is assumed and not tested; only the lower triangle of <@var="A"> is read. The result is a lower-triangular matrix <@itl="L"> which satisfies <@itl="A = LL'">. Indeterminate elements in the solution are set to zero. 
+
+For the case where <@var="A"> is positive definite, see <@ref="cholesky">. 
+
+# pshrink data-utils
+Output: 	matrix 
+Argument: 	<@var="y">  (series)
+
+Only applicable if the currently open dataset has a panel structure. Returns a column vector holding the first valid observation for the series <@var="y"> for each cross-sectional unit in the panel, over the current sample range. If a unit has no valid observations for the input series it is skipped. 
+
+This function provides a means of compacting the series returned by functions such as <@ref="pmax"> and <@ref="pmean">, in which a value pertaining to each cross-sectional unit is repeated for each time period. 
+
+# psum stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the sum over time of variable <@var="y"> for each cross-sectional unit, the values being repeated for each period. Missing observations are skipped in calculating the sums. 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+See also <@ref="pmax">, <@ref="pmean">, <@ref="pmin">, <@ref="pnobs">, <@ref="psd">, <@ref="pxsum">, <@ref="pshrink">. 
+
+# pvalue probdist
+Output: 	same type as input 
+Arguments:	<@var="c">  (character)
+		<@var="…">  (see below)
+		<@var="x">  (scalar, series or matrix)
+Examples: 	<@lit="p1 = pvalue(z, 2.2)">
+		<@lit="p2 = pvalue(X, 3, 5.67)">
+		<@lit="p2 = pvalue(F, 3, 30, 5.67)">
+
+<@itl="P">-value calculator. Returns <@itl="P(X > x)">, where the distribution <@itl="X"> is determined by the character <@var="c">. Between the arguments <@var="c"> and <@var="x">, zero or more additional arguments are required to specify the parameters of the distribution; see <@ref="cdf"> for details. The distributions supported by the <@lit="pval"> function are the standard normal, <@itl="t">, Chi square, <@itl="F">, gamma, binomial, Poisson, Weibull and Generalized Error. 
+
+See also <@ref="critical">, <@ref="invcdf">, <@ref="urcpval">, <@ref="imhof">. 
+
+# pxsum stats
+Output: 	series 
+Arguments:	<@var="y">  (series)
+		<@var="mask">  (series, optional)
+
+Only applicable if the currently open dataset has a panel structure. Returns a series holding the sum of the values of <@var="y"> for each cross-sectional unit in each period (the values being repeated for each unit). 
+
+If the optional second argument is provided then observations for which the value of <@var="mask"> is zero are ignored. 
+
+Note that this function works in a different dimension from the <@ref="pmean"> function. 
+
+# qform linalg
+Output: 	matrix 
+Arguments:	<@var="x">  (matrix)
+		<@var="A">  (symmetric matrix)
+
+Computes the quadratic form <@itl="Y = xAx'">. Using this function instead of ordinary matrix multiplication guarantees more speed and better accuracy. If <@var="x"> and <@var="A"> are not conformable, or <@var="A"> is not symmetric, an error is returned. 
+
+# qnorm probdist
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns quantiles for the standard normal distribution. If <@var="x"> is not between 0 and 1, <@lit="NA"> is returned. See also <@ref="cnorm">, <@ref="dnorm">. 
+
+# qrdecomp linalg
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="&R">  (reference to matrix, or <@lit="null">)
+
+Computes the QR decomposition of an <@itl="m">×<@itl="n"> matrix <@var="X">, that is <@itl="X = QR"> where <@itl="Q"> is an <@itl="m">×<@itl="n"> orthogonal matrix and <@itl="R"> is an <@itl="n">×<@itl="n"> upper triangular matrix. The matrix <@itl="Q"> is returned directly, while <@itl="R"> can be retrieved via the optional second argument. 
+
+See also <@ref="eigengen">, <@ref="eigensym">, <@ref="svd">. 
+
+# quadtable stats
+Output: 	matrix 
+Arguments:	<@var="n">  (integer)
+		<@var="type">  (integer, optional)
+		<@var="a">  (scalar, optional)
+		<@var="b">  (scalar, optional)
+
+Returns an <@itl="n">×2 matrix for use with Gaussian quadrature (numerical integration). The first column holds the nodes or abscissae, the second the weights. 
+
+The first argument specifies the number of points (rows) to compute. The second argument codes for the type of quadrature: use 1 for Gauss–Hermite (the default); 2 for Gauss–Legendre; or 3 for Gauss–Laguerre. The significance of the optional parameters <@var="a"> and <@var="b"> depends on the selected <@var="type">, as explained below. 
+
+Gaussian quadrature is a method of approximating numerically the definite integral of some function of interest. Let the function be represented as the product <@itl="f(x)W(x)">. The types of quadrature differ in the specification of the component <@itl="W(x)">: in the Hermite case this is exp(–<@itl="x"><@sup="2">); in the Laguerre case, exp(–<@itl="x">); and in the Legendre case simply <@itl="W(x)"> = 1. 
+
+For each specification of <@itl="W">, one can compute a set of nodes, <@itl="x"><@sub="i">, and weights, <@itl="w"><@sub="i">, such that the sum from <@itl="i">=1 to <@itl="n"> of <@itl="w"><@sub="i"><@itl="f">(<@itl="x"><@sub="i">) approximates the desired integral. The method of <@bib="Golub and Welsch (1969);golub69"> is used. 
+
+When the Gauss–Legendre type is selected, the optional arguments <@var="a"> and <@var="b"> can be used to control the lower and upper limits of integration, the default values being –1 and 1. (In Hermite quadrature the limits are fixed at minus and plus infinity, while in the Laguerre case they are fixed at 0 and infinity.) 
+
+In the Hermite case <@var="a"> and <@var="b"> play a different role: they can be used to replace the default form of <@itl="W">(<@itl="x">) with the (closely related) normal distribution with mean <@var="a"> and standard deviation <@var="b">. Supplying values of 0 and 1 for these parameters, for example, has the effect of making <@itl="W">(<@itl="x">) into the standard normal pdf, which is equivalent to multiplying the default nodes by the square root of two and dividing the weights by the square root of π. 
+
+# quantile stats
+Output: 	scalar or matrix 
+Arguments:	<@var="y">  (series or matrix)
+		<@var="p">  (scalar between 0 and 1)
+
+If <@var="y"> is a series, returns the <@var="p">-quantile for the series. For example, when <@itl="p"> = 0.5, the median is returned. 
+
+If <@var="y"> is a matrix, returns a row vector containing the <@var="p">-quantiles for the columns of <@var="y">; that is, each column is treated as a series. 
+
+In addition, for matrix <@var="y"> an alternate form of the second argument is supported: <@var="p"> may be given as a vector. In that case the return value is an <@itl="m">×<@itl="n"> matrix, where <@var="m"> is the number of elements in <@var="p"> and <@var="n"> is the number of columns in <@var="y">. 
+
+# randgen probdist
+Output: 	series 
+Arguments:	<@var="d">  (string)
+		<@var="p1">  (scalar or series)
+		<@var="p2">  (scalar or series, conditional)
+		<@var="p3">  (scalar, conditional)
+Examples: 	<@lit="series x = randgen(u, 0, 100)">
+		<@lit="series t14 = randgen(t, 14)">
+		<@lit="series y = randgen(B, 0.6, 30)">
+		<@lit="series g = randgen(G, 1, 1)">
+		<@lit="series P = randgen(P, mu)">
+
+All-purpose random number generator. The argument <@var="d"> is a string (in most cases just a single character) which specifies the distribution from which the pseudo-random numbers should be drawn. The arguments <@var="p1"> to <@var="p3"> specify the parameters of the selected distribution; the number of such parameters depends on the distribution. For distributions other than the beta-binomial, the parameters <@var="p1"> and (if applicable) <@var="p2"> may be given as either scalars or series: if they are given as scalars the output series is identically distributed, while if a series is given for <@var="p1"> or <@var="p2"> the distribution is conditional on the parameter value at each observation. In the case of the beta-binomial all the parameters must be scalars. 
+
+Specifics are given below: the string code for each distribution is shown in parentheses, followed by the interpretation of the argument <@var="p1"> and, where applicable, <@var="p2"> and <@var="p3">. 
+
+<indent>
+• Uniform (continuous) (u or U): minimum, maximum 
+</indent>
+
+<indent>
+• Uniform (discrete) (i): minimum, maximum 
+</indent>
+
+<indent>
+• Normal (z, n, or N): mean, standard deviation 
+</indent>
+
+<indent>
+• Student's t (t): degrees of freedom 
+</indent>
+
+<indent>
+• Chi square (c, x, or X): degrees of freedom 
+</indent>
+
+<indent>
+• Snedecor's F (f or F): df (num.), df (den.) 
+</indent>
+
+<indent>
+• Gamma (g or G): shape, scale 
+</indent>
+
+<indent>
+• Binomial (b or B): probability, number of trials 
+</indent>
+
+<indent>
+• Poisson (p or P): mean 
+</indent>
+
+<indent>
+• Weibull (w or W): shape, scale 
+</indent>
+
+<indent>
+• Generalized Error (E): shape 
+</indent>
+
+<indent>
+• Beta (beta): shape1, shape2 
+</indent>
+
+<indent>
+• Beta-Binomial (bb): trials, shape1, shape2 
+</indent>
+
+See also <@ref="normal">, <@ref="uniform">, <@ref="mrandgen">, <@ref="randgen1">. 
+
+# randgen1 probdist
+Output: 	scalar 
+Arguments:	<@var="d">  (character)
+		<@var="p1">  (scalar)
+		<@var="p2">  (scalar, conditional)
+Examples: 	<@lit="scalar x = randgen1(z, 0, 1)">
+		<@lit="scalar g = randgen1(g, 3, 2.5)">
+
+Works like <@ref="randgen"> except that the return value is a scalar rather than a series. 
+
+The first example above calls for a value from the standard normal distribution, while the second specifies a drawing from the Gamma distribution with shape 3 and scale 2.5. 
+
+See also <@ref="mrandgen">. 
+
+# randint probdist
+Output: 	integer 
+Arguments:	<@var="min">  (integer)
+		<@var="max">  (integer)
+
+Returns a pseudo-random integer in the closed interval [<@var="min">, <@var="max">]. See also <@ref="randgen">. 
+
+# rank linalg
+Output: 	integer 
+Argument: 	<@var="X">  (matrix)
+
+Returns the rank of <@var="X">, numerically computed via the singular value decomposition. See also <@ref="svd">. 
+
+# ranking stats
+Output: 	same type as input 
+Argument: 	<@var="y">  (series or vector)
+
+Returns a series or vector with the ranks of <@itl="y">. The rank for observation <@itl="i"> is the number of elements that are less than <@itl="y"><@sub="i"> plus one half the number of elements that are equal to <@itl="y"><@sub="i">. (Intuitively, you may think of chess points, where victory gives you one point and a draw gives you half a point.) One is added so the lowest rank is 1 instead of 0. 
+
+See also <@ref="sort">, <@ref="sortby">. 
+
+# rcond linalg
+Output: 	scalar 
+Argument: 	<@var="A">  (square matrix)
+
+Returns the reciprocal condition number for <@var="A"> with respect to the 1-norm. In many circumstances, this is a better measure of the sensitivity of <@var="A"> to numerical operations such as inversion than the determinant. 
+
+The value is computed as the reciprocal of the product, 1-norm of <@var="A"> times 1-norm of <@var="A">-inverse. 
+
+See also <@ref="det">, <@ref="ldet">, <@ref="onenorm">. 
+
+# readfile strings
+Output: 	string 
+Arguments:	<@var="fname">  (string)
+		<@var="codeset">  (string, optional)
+
+If a file by the name of <@var="fname"> exists and is readable, returns a string containing the content of this file, otherwise flags an error. 
+
+In the case where <@var="fname"> starts with the indentifier of a supported internet protocol (<@lit="http://">, <@lit="ftp://">, <@lit="https://">), libcurl is invoked to download the resource. 
+
+If the text to be read is not encoded in UTF-8, gretl will try recoding it from the current locale codeset if that is not UTF-8, or from ISO-8859-15 otherwise. If this simple default does not meet your needs you can use the optional second argument to specify a codeset. For example, if you want to read text in Microsoft codepage 1251 and that is not your locale codeset, you should give a second argument of <@lit=""cp1251"">. 
+
+Also see the <@ref="sscanf"> and <@ref="getline"> functions. 
+
+# regsub strings
+Output: 	string 
+Arguments:	<@var="s">  (string)
+		<@var="match">  (string)
+		<@var="repl">  (string)
+
+Returns a copy of <@var="s"> in which all occurrences of the pattern <@var="match"> are replaced using <@var="repl">. The arguments <@var="match"> and <@var="repl"> are interpreted as Perl-style regular expressions. 
+
+See also <@ref="strsub"> for simple substitution of literal strings. 
+
+# remove data-utils
+Output: 	integer 
+Argument: 	<@var="fname">  (string)
+
+If a file by the name of <@var="fname"> exists and is writable by the user, removes (deletes) the named file. Returns 0 on successful completion, non-zero if there is no such file or the file cannot be removed. 
+
+# replace data-utils
+Output: 	same type as input 
+Arguments:	<@var="x">  (series or matrix)
+		<@var="find">  (scalar or vector)
+		<@var="subst">  (scalar or vector)
+
+Replaces each element of <@var="x"> equal to the <@itl="i">-th element of <@var="find"> with the corresponding element of <@var="subst">. 
+
+If <@var="find"> is a scalar, <@var="subst"> must also be a scalar. If <@var="find"> and <@var="subst"> are both vectors, they must have the same number of elements. But if <@var="find"> is a vector and <@var="subst"> a scalar, then all matches will be replaced by <@var="subst">. 
+
+Example: 
+
+<code>          
+     a = {1,2,3;3,4,5}
+     find = {1,3,4}
+     subst = {-1,-8, 0}
+     b = replace(a, find, subst)
+     print a b
+</code>
+
+produces 
+
+<code>          
+          a (2 x 3)
+           
+            1   2   3 
+            3   4   5 
+           
+          b (2 x 3)
+           
+            -1    2   -8 
+            -8    0    5
+</code>
+
+# resample stats
+Output: 	same type as input 
+Arguments:	<@var="x">  (series or matrix)
+		<@var="b">  (integer, optional)
+
+Resamples from <@var="x"> with replacement. In the case of a series argument, each value of the returned series, <@itl="y"><@sub="t">, is drawn from among all the values of <@itl="x"><@sub="t"> with equal probability. When a matrix argument is given, each row of the returned matrix is drawn from the rows of <@var="x"> with equal probability. 
+
+The optional argument <@var="b"> represents the block length for resampling by moving blocks. If this argument is given it should be a positive integer greater than or equal to 2. The effect is that the output is composed by random selection with replacement from among all the possible contiguous sequences of length <@var="b"> in the input. (In the case of matrix input, this means contiguous rows.) If the length of the data is not an integer multiple of the block length, the last selected block is truncated to fit. 
+
+# round math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Rounds to the nearest integer. Note that when <@itl="x"> lies halfway between two integers, rounding is done "away from zero", so for example 2.5 rounds to 3, but <@lit="round(-3.5)"> gives –4. This is a common convention in spreadsheet programs, but other software may yield different results. See also <@ref="ceil">, <@ref="floor">, <@ref="int">. 
+
+# rownames matbuild
+Output: 	integer 
+Arguments:	<@var="M">  (matrix)
+		<@var="s">  (named list or string)
+
+Attaches names to the rows of the <@itl="m">×<@itl="n"> matrix <@var="M">. If <@var="s"> is a named list, the row names are copied from the names of the variables; the list must have <@itl="m"> members. If <@var="s"> is a string, it should contain <@itl="m"> space-separated sub-strings. The return value is 0 on successful completion, non-zero on error. See also <@ref="colnames">. 
+
+Example: 
+
+<code>          
+      matrix M = {1,2;2,1;4,1} 
+      rownames(M, "Row1 Row2 Row3")
+      print M
+</code>
+
+# rows matshape
+Output: 	integer 
+Argument: 	<@var="X">  (matrix)
+
+Returns the number of rows of the matrix <@var="X">. See also <@ref="cols">, <@ref="mshape">, <@ref="unvech">, <@ref="vec">, <@ref="vech">. 
+
+# sd stats
+Output: 	scalar or series 
+Argument: 	<@var="x">  (series or list)
+
+If <@var="x"> is a series, returns the (scalar) sample standard deviation, skipping any missing observations. 
+
+If <@var="x"> is a list, returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the sample standard deviation of the values of the variables in the list at observation <@itl="t">, or <@lit="NA"> if there are any missing values at <@itl="t">. 
+
+See also <@ref="var">. 
+
+# sdc stats
+Output: 	row vector 
+Arguments:	<@var="X">  (matrix)
+		<@var="df">  (scalar, optional)
+
+Returns the standard deviations of the columns of <@var="X">. If <@var="df"> is positive it is used as the divisor for the column variances, otherwise the divisor is the number of rows in <@var="X"> (that is, no degrees of freedom correction is applied). See also <@ref="meanc">, <@ref="sumc">. 
+
+# sdiff transforms
+Output: 	same type as input 
+Argument: 	<@var="y">  (series or list)
+
+Computes seasonal differences: <@itl="y(t) - y(t-k)">, where <@itl="k"> is the periodicity of the current dataset (see <@ref="$pd">). Starting values are set to <@lit="NA">. 
+
+When a list is returned, the individual variables are automatically named according to the template <@lit="sd_"><@var="varname"> where <@var="varname"> is the name of the original series. The name is truncated if necessary, and may be adjusted in case of non-uniqueness in the set of names thus constructed. 
+
+See also <@ref="diff">, <@ref="ldiff">. 
+
+# selifc matshape
+Output: 	matrix 
+Arguments:	<@var="A">  (matrix)
+		<@var="b">  (row vector)
+
+Selects from <@var="A"> only the columns for which the corresponding element of <@var="b"> is non-zero. <@var="b"> must be a row vector with the same number of columns as <@var="A">. 
+
+See also <@ref="selifr">. 
+
+# selifr matshape
+Output: 	matrix 
+Arguments:	<@var="A">  (matrix)
+		<@var="b">  (column vector)
+
+Selects from <@var="A"> only the rows for which the corresponding element of <@var="b"> is non-zero. <@var="b"> must be a column vector with the same number of rows as <@var="A">. 
+
+See also <@ref="selifc">, <@ref="trimr">. 
+
+# seq matbuild
+Output: 	row vector 
+Arguments:	<@var="a">  (integer)
+		<@var="b">  (integer)
+		<@var="k">  (integer, optional)
+
+Given only two arguments, returns a row vector filled with consecutive integers, with <@var="a"> as first element and <@var="b"> last. If <@var="a"> is greater than <@var="b"> the sequence will be decreasing. If either argument is not integral its fractional part is discarded. 
+
+If the third argument is given, returns a row vector containing a sequence of integers starting with <@var="a"> and incremented (or decremented, if <@var="a"> is greater than <@var="b">) by <@var="k"> at each step. The final value is the largest member of the sequence that is less than or equal to <@var="b"> (or mutatis mutandis for <@var="a"> greater than <@var="b">). The argument <@var="k"> must be positive; if it is not integral its fractional part is discarded. 
+
+See also <@ref="ones">, <@ref="zeros">. 
+
+# setnote data-utils
+Output: 	integer 
+Arguments:	<@var="b">  (bundle)
+		<@var="key">  (string)
+		<@var="note">  (string)
+
+Sets a descriptive note for the object identified by <@var="key"> in the bundle <@var="b">. This note will be shown when the <@lit="print"> command is used on the bundle. This function returns 0 on success or non-zero on failure (for example, if there is no object in <@var="b"> under the given <@var="key">). 
+
+# simann numerical
+Output: 	scalar 
+Arguments:	<@var="b">  (vector)
+		<@var="f">  (function call)
+		<@var="maxit">  (integer, optional)
+
+Implements simulated annealing, which may be helpful in improving the initialization for a numerical optimization problem. 
+
+The first argument holds the intial value of a parameter vector and the second argument specifies a function call which returns the (scalar) value of the maximand. The optional third argument specifies the maximum number of iterations (which defaults to 1024). On successful completion, <@lit="simann"> returns the final value of the maximand. 
+
+For more details and an example see the chapter on numerical methods in <@pdf="the Gretl User's Guide">. See also <@ref="BFGSmax">, <@ref="NRmax">. 
+
+# sin math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the sine of <@var="x">. See also <@ref="cos">, <@ref="tan">, <@ref="atan">. 
+
+# sinh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the hyperbolic sine of <@var="x">. 
+
+See also <@ref="asinh">, <@ref="cosh">, <@ref="tanh">. 
+
+# skewness stats
+Output: 	scalar 
+Argument: 	<@var="x">  (series)
+
+Returns the skewness value for the series <@var="x">, skipping any missing observations. 
+
+# sort matshape
+Output: 	same type as input 
+Argument: 	<@var="x">  (series or vector)
+
+Sorts <@var="x"> in ascending order, skipping observations with missing values when <@itl="x"> is a series. See also <@ref="dsort">, <@ref="values">. For matrices specifically, see <@ref="msortby">. 
+
+# sortby stats
+Output: 	series 
+Arguments:	<@var="y1">  (series)
+		<@var="y2">  (series)
+
+Returns a series containing the elements of <@var="y2"> sorted by increasing value of the first argument, <@var="y1">. See also <@ref="sort">, <@ref="ranking">. 
+
+# sqrt math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the positive square root of <@var="x">; produces <@lit="NA"> for negative values. 
+
+Note that if the argument is a matrix the operation is performed element by element and, since matrices cannot contain <@lit="NA">, negative values generate an error. For the "matrix square root" see <@ref="cholesky">. 
+
+# sscanf strings
+Output: 	integer 
+Arguments:	<@var="src">  (string)
+		<@var="format">  (string)
+		... (see below)
+
+Reads values from <@var="src"> under the control of <@var="format"> and assigns these values to one or more trailing arguments, indicated by the dots above. Returns the number of values assigned. This is a simplifed version of the <@lit="sscanf"> function in the C programming language. 
+
+<@var="src"> may be either a literal string, enclosed in double quotes, or the name of a predefined string variable. <@var="format"> is defined similarly to the format string in <@xrf="printf"> (more on this below). <@var="args"> should be a comma-separated list containing the names of pre-defined variables: these are the targets of conversion from <@var="src">. (For those used to C: one can prefix the names of numerical variables with <@lit="&"> but this is not required.) 
+
+Literal text in <@var="format"> is matched against <@var="src">. Conversion specifiers start with <@lit="%">, and recognized conversions include <@lit="%f">, <@lit="%g"> or <@lit="%lf"> for floating-point numbers; <@lit="%d"> for integers; <@lit="%s"> for strings; and <@lit="%m"> for matrices. You may insert a positive integer after the percent sign: this sets the maximum number of characters to read for the given conversion (or the maximum number of rows in the case of matrix conversion). Alternatively, you can insert a literal <@lit="*"> after the percent to suppress the conversion (thereby skipping any characters that would otherwise have been converted for the given type). For example, <@lit="%3d"> converts the next 3 characters in <@var="source"> to an integer, if possible; <@lit="%*g"> skips as many characters in <@var="source"> as could be converted to a single floating-point number. 
+
+Matrix conversion works thus: the scanner reads a line of input and counts the (space- or tab-separated) number of numeric fields. This defines the number of columns in the matrix. By default, reading then proceeds for as many lines (rows) as contain the same number of numeric columns, but the maximum number of rows to read can be limited as described above. 
+
+In addition to <@lit="%s"> conversion for strings, a simplified version of the C format <@lit="%"><@var="N"><@lit="["><@var="chars"><@lit="]"> is available. In this format <@var="N"> is the maximum number of characters to read and <@var="chars"> is a set of acceptable characters, enclosed in square brackets: reading stops if <@var="N"> is reached or if a character not in <@var="chars"> is encountered. The function of <@var="chars"> can be reversed by giving a circumflex, <@lit="^">, as the first character; in that case reading stops if a character in the given set is found. (Unlike C, the hyphen does not play a special role in the <@var="chars"> set.) 
+
+If the source string does not (fully) match the format, the number of conversions may fall short of the number of arguments given. This is not in itself an error so far as gretl is concerned. However, you may wish to check the number of conversions performed; this is given by the return value. 
+
+Some examples follow: 
+
+<code>          
+     scalar x
+     scalar y
+     sscanf("123456", "%3d%3d", x, y)
+     sprintf S, "1 2 3 4\n5 6 7 8"
+     S
+     matrix m
+     sscanf(S, "%m", m)
+     print m
+</code>
+
+# sst stats
+Output: 	scalar 
+Argument: 	<@var="y">  (series)
+
+Returns the sum of squared deviations from the mean for the non-missing observations in series <@var="y">. See also <@ref="var">. 
+
+# strlen strings
+Output: 	integer 
+Argument: 	<@var="s">  (string)
+
+Returns the number of characters in the string <@var="s">. Note that this does not necessarily equal the number of bytes if some characters are outside of the printable-ASCII range. 
+
+# strncmp strings
+Output: 	integer 
+Arguments:	<@var="s1">  (string)
+		<@var="s2">  (string)
+		<@var="n">  (integer, optional)
+
+Compares the two string arguments and returns an integer less than, equal to, or greater than zero if <@var="s1"> is found, respectively, to be less than, to match, or be greater than <@var="s2">, up to the first <@var="n"> characters. If <@var="n"> is omitted the comparison proceeds as far as possible. 
+
+Note that if you just want to compare two strings for equality, that can be done without using a function, as in <@lit="if (s1 == s2) ..."> 
+
+# strsplit strings
+Output: 	string 
+Arguments:	<@var="s">  (string)
+		<@var="i">  (integer)
+
+Returns space-separated element <@var="i"> from the string <@var="s">. The index <@var="i"> is 1-based, and it is an error if <@var="i"> is less than 1. In case <@var="s"> contains no spaces and <@var="i"> equals 1, a copy of the entire input string is returned; otherwise, in case <@var="i"> exceeds the number of space-separated elements an empty string is returned. 
+
+# strstr strings
+Output: 	string 
+Arguments:	<@var="s1">  (string)
+		<@var="s2">  (string)
+
+Searches <@var="s1"> for an occurrence of the string <@var="s2">. If a match is found, returns a copy of the portion of <@var="s1"> that starts with <@var="s2">, otherwise returns an empty string. 
+
+# strstrip strings
+Output: 	string 
+Argument: 	<@var="s">  (string)
+
+Returns a copy of the argument <@var="s"> from which leading and trailing white space have been removed. 
+
+# strsub strings
+Output: 	string 
+Arguments:	<@var="s">  (string)
+		<@var="find">  (string)
+		<@var="subst">  (string)
+
+Returns a copy of <@var="s"> in which all occurrences of <@var="find"> are replaced by <@var="subst">. See also <@ref="regsub"> for more complex string replacement via regular expressions. 
+
+# substr strings
+Output: 	string 
+Arguments:	<@var="s">  (string)
+		<@var="start">  (integer)
+		<@var="end">  (integer)
+
+Returns a substring of <@var="s">, from the character with (1-based) index <@var="start"> to that with index <@var="end">, inclusive. 
+
+# sum stats
+Output: 	scalar or series 
+Argument: 	<@var="x">  (series, matrix or list)
+
+If <@var="x"> is a series, returns the (scalar) sum of the non-missing observations in <@var="x">. See also <@ref="sumall">. 
+
+If <@var="x"> is a matrix, returns the sum of the elements of the matrix. 
+
+If <@var="x"> is a list, returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the sum of the values of the variables in the list at observation <@itl="t">, or <@lit="NA"> if there are any missing values at <@itl="t">. 
+
+# sumall stats
+Output: 	scalar 
+Argument: 	<@var="x">  (series)
+
+Returns the sum of the observations of <@var="x"> over the current sample range, or <@lit="NA"> if there are any missing values. 
+
+# sumc stats
+Output: 	row vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the sums of the columns of <@var="X">. See also <@ref="meanc">, <@ref="sumr">. 
+
+# sumr stats
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Returns the sums of the rows of <@var="X">. See also <@ref="meanr">, <@ref="sumc">. 
+
+# svd linalg
+Output: 	row vector 
+Arguments:	<@var="X">  (matrix)
+		<@var="&U">  (reference to matrix, or <@lit="null">)
+		<@var="&V">  (reference to matrix, or <@lit="null">)
+
+Performs the singular values decomposition of the matrix <@var="X">. 
+
+The singular values are returned in a row vector. The left and/or right singular vectors <@itl="U"> and <@itl="V"> may be obtained by supplying non-null values for arguments 2 and 3, respectively. For any matrix <@lit="A">, the code 
+
+<code>          
+     s = svd(A, &U, &V) 
+     B = (U .* s) * V
+</code>
+
+should yield <@lit="B"> identical to <@lit="A"> (apart from machine precision). 
+
+See also <@ref="eigengen">, <@ref="eigensym">, <@ref="qrdecomp">. 
+
+# tan math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the tangent of <@var="x">. 
+
+# tanh math
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar, series or matrix)
+
+Returns the hyperbolic tangent of <@var="x">. 
+
+See also <@ref="atanh">, <@ref="cosh">, <@ref="sinh">. 
+
+# toepsolv linalg
+Output: 	column vector 
+Arguments:	<@var="c">  (vector)
+		<@var="r">  (vector)
+		<@var="b">  (vector)
+
+Solves a Toeplitz system of linear equations, that is <@itl="Tx = b"> where <@itl="T"> is a square matrix whose element <@itl="T"><@sub="i,j"> equals <@itl="c"><@sub="i-j"> for <@itl="i>=j"> and <@itl="r"><@sub="j-i"> for <@itl="i<=j">. Note that the first elements of <@itl="c"> and <@itl="r"> must be equal, otherwise an error is returned. Upon successful completion, the function returns the vector <@itl="x">. 
+
+The algorithm used here takes advantage of the special structure of the matrix <@itl="T">, which makes it much more efficient than other unspecialized algorithms, especially for large problems. Warning: in certain cases, the function may spuriously issue a singularity error when in fact the matrix <@itl="T"> is nonsingular; this problem, however, cannot arise when <@itl="T"> is positive definite. 
+
+# tolower strings
+Output: 	string 
+Argument: 	<@var="s">  (string)
+
+Returns a copy of <@var="s"> in which any upper-case characters are converted to lower case. 
+
+# toupper strings
+Output: 	string 
+Argument: 	<@var="s">  (string)
+
+Returns a copy of <@var="s"> in which any lower-case characters are converted to upper case. 
+
+# tr linalg
+Output: 	scalar 
+Argument: 	<@var="A">  (square matrix)
+
+Returns the trace of the square matrix <@var="A">, that is, the sum of its diagonal elements. See also <@ref="diag">. 
+
+# transp linalg
+Output: 	matrix 
+Argument: 	<@var="X">  (matrix)
+
+Returns the transpose of <@var="X">. Note: this is rarely used; in order to get the transpose of a matrix, in most cases you can just use the prime operator: <@lit="X'">. 
+
+# trimr matshape
+Output: 	matrix 
+Arguments:	<@var="X">  (matrix)
+		<@var="ttop">  (integer)
+		<@var="tbot">  (integer)
+
+Returns a matrix that is a copy of <@var="X"> with <@var="ttop"> rows trimmed at the top and <@var="tbot"> rows trimmed at the bottom. The latter two arguments must be non-negative, and must sum to less than the total rows of <@var="X">. 
+
+See also <@ref="selifr">. 
+
+# typestr data-utils
+Output: 	string 
+Argument: 	<@var="typecode">  (integer)
+
+Returns the name of the gretl data-type corresponding to <@var="typecode">. This is intended for use in conjunction with the function <@ref="inbundle">. The value returned is one of "scalar", "series", "matrix", "string", "bundle" or "null". 
+
+# uniform probdist
+Output: 	series 
+Arguments:	<@var="a">  (scalar)
+		<@var="b">  (scalar)
+
+Generates a series of uniform pseudo-random variates in the interval (<@var="a">, <@var="b">), or, if no arguments are supplied, in the interval (0,1). The algorithm used by default is the SIMD-oriented Fast Mersenne Twister developed by <@bib="Saito and Matsumoto (2008);saito_matsumoto08">. 
+
+See also <@ref="randgen">, <@ref="normal">, <@ref="mnormal">, <@ref="muniform">. 
+
+# uniq stats
+Output: 	column vector 
+Argument: 	<@var="x">  (series or vector)
+
+Returns a vector containing the distinct elements of <@var="x">, not sorted but in their order of appearance. See <@ref="values"> for a variant that sorts the elements. 
+
+# unvech matbuild
+Output: 	square matrix 
+Argument: 	<@var="v">  (vector)
+
+Returns an <@itl="n">×<@itl="n"> symmetric matrix obtained by rearranging the elements of <@itl="v">. The number of elements in <@itl="v"> must be a triangular integer — i.e., a number <@itl="k"> such that an integer <@itl="n"> exists with the property <@itl="k = n(n+1)/2">. This is the inverse of the function <@ref="vech">. 
+
+See also <@ref="mshape">, <@ref="vech">. 
+
+# upper matbuild
+Output: 	square matrix 
+Argument: 	<@var="A">  (square matrix)
+
+Returns an <@itl="n">×<@itl="n"> upper triangular matrix: the elements on and above the diagonal are equal to the corresponding elements of <@var="A">; the remaining elements are zero. 
+
+See also <@ref="lower">. 
+
+# urcpval probdist
+Output: 	scalar 
+Arguments:	<@var="tau">  (scalar)
+		<@var="n">  (integer)
+		<@var="niv">  (integer)
+		<@var="itv">  (integer)
+
+<@itl="P">-values for the test statistic from the Dickey–Fuller unit-root test and the Engle–Granger cointegration test, as per <@bib="James MacKinnon (1996);mackinnon96">. 
+
+The arguments are as follows: <@var="tau"> denotes the test statistic; <@var="n"> is the number of observations (or 0 for an asymptotic result); <@var="niv"> is the number of potentially cointegrated variables when testing for cointegration (or 1 for a univariate unit-root test); and <@var="itv"> is a code for the model specification: 1 for no constant, 2 for constant included, 3 for constant and linear trend, 4 for constant and quadratic trend. 
+
+Note that if the test regression is "augmented" with lags of the dependent variable, then you should give an <@var="n"> value of 0 to get an asymptotic result. 
+
+See also <@ref="pvalue">. 
+
+# values stats
+Output: 	column vector 
+Argument: 	<@var="x">  (series or vector)
+
+Returns a vector containing the distinct elements of <@var="x"> sorted in ascending order. If you wish to truncate the values to integers before applying this function, use the expression <@lit="values(int(x))">. 
+
+See also <@ref="uniq">, <@ref="dsort">, <@ref="sort">. 
+
+# var stats
+Output: 	scalar or series 
+Argument: 	<@var="x">  (series or list)
+
+If <@var="x"> is a series, returns the (scalar) sample variance, skipping any missing observations. 
+
+If <@var="x"> is a list, returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the sample variance of the values of the variables in the list at observation <@itl="t">, or <@lit="NA"> if there are any missing values at <@itl="t">. 
+
+In each case the sum of squared deviations from the mean is divided by (<@itl="n"> – 1) for <@itl="n"> > 1. Otherwise the variance is given as zero if <@itl="n"> = 1, or as <@lit="NA"> if <@itl="n"> = 0. 
+
+See also <@ref="sd">. 
+
+# varname strings
+Output: 	string 
+Argument: 	<@var="v">  (integer or list)
+
+If given an integer argument, returns the name of the variable with ID number <@var="v">, or generates an error if there is no such variable. 
+
+If given a list argument, returns a string containing the names of the variables in the list, separated by commas. If the supplied list is empty, so is the returned string. 
+
+# varnum data-utils
+Output: 	integer 
+Argument: 	<@var="varname">  (string)
+
+Returns the ID number of the variable called <@var="varname">, or NA is there is no such variable. 
+
+# varsimul linalg
+Output: 	matrix 
+Arguments:	<@var="A">  (matrix)
+		<@var="U">  (matrix)
+		<@var="y0">  (matrix)
+
+Simulates a <@itl="p">-order <@itl="n">-variable VAR, that is <@itl="y(t) = A1 y(t-1) + ... + Ap y(t-p) + u(t)."> The coefficient matrix <@var="A"> is composed by horizontal stacking of the <@itl="A"><@sub="i"> matrices; it is <@itl="n">×<@itl="np">, with one row per equation. This corresponds to the first <@itl="n"> rows of the matrix <@lit="$compan"> provided by gretl's <@lit="var"> and <@lit="vecm"> commands. 
+
+The <@itl="u_t"> vectors are contained (as rows) in <@var="U"> (<@itl="T">×<@itl="n">). Initial values are in <@var="y0"> (<@itl="p">×<@itl="n">). 
+
+If the VAR contains deterministic terms and/or exogenous regressors, these can be handled by folding them into the <@var="U"> matrix: each row of <@var="U"> then becomes <@itl="u(t) = B' x(t) + e(t)."> 
+
+The output matrix has <@itl="T"> + <@itl="p"> rows and <@itl="n"> columns; it holds the initial <@itl="p"> values of the endogenous variables plus <@itl="T"> simulated values. 
+
+See also <@ref="$compan">, <@xrf="var">, <@xrf="vecm">. 
+
+# vec matbuild
+Output: 	column vector 
+Argument: 	<@var="X">  (matrix)
+
+Stacks the columns of <@var="X"> as a column vector. See also <@ref="mshape">, <@ref="unvech">, <@ref="vech">. 
+
+# vech matbuild
+Output: 	column vector 
+Argument: 	<@var="A">  (square matrix)
+
+Returns in a column vector the elements of <@var="A"> on and above the diagonal. Typically, this function is used on symmetric matrices; in this case, it can be undone by the function <@ref="unvech">. See also <@ref="vec">. 
+
+# weekday calendar
+Output: 	integer 
+Arguments:	<@var="year">  (integer)
+		<@var="month">  (integer)
+		<@var="day">  (integer)
+
+Returns the day of the week (Sunday = 0, Monday = 1, etc.) for the date specified by the three arguments, or <@lit="NA"> if the date is invalid. 
+
+# wmean stats
+Output: 	series 
+Arguments:	<@var="Y">  (list)
+		<@var="W">  (list)
+
+Returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the weighted mean of the values of the variables in list <@var="Y"> at observation <@itl="t">, the respective weights given by the values of the variables in list <@var="W"> at <@itl="t">. The weights can therefore be time-varying. The lists <@var="Y"> and <@var="W"> must be of the same length and the weights must be non-negative. 
+
+See also <@ref="wsd">, <@ref="wvar">. 
+
+# wsd stats
+Output: 	series 
+Arguments:	<@var="Y">  (list)
+		<@var="W">  (list)
+
+Returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the weighted sample standard deviation of the values of the variables in list <@var="Y"> at observation <@itl="t">, the respective weights given by the values of the variables in list <@var="W"> at <@itl="t">. The weights can therefore be time-varying. The lists <@var="Y"> and <@var="W"> must be of the same length and the weights must be non-negative. 
+
+See also <@ref="wmean">, <@ref="wvar">. 
+
+# wvar stats
+Output: 	series 
+Arguments:	<@var="X">  (list)
+		<@var="W">  (list)
+
+Returns a series <@itl="y"> such that <@itl="y"><@sub="t"> is the weighted sample variance of the values of the variables in list <@var="X"> at observation <@itl="t">, the respective weights given by the values of the variables in list <@var="W"> at <@itl="t">. The weights can therefore be time-varying. The lists <@var="Y"> and <@var="W"> must be of the same length and the weights must be non-negative. 
+
+See also <@ref="wmean">, <@ref="wsd">. 
+
+# xmax math
+Output: 	scalar 
+Arguments:	<@var="x">  (scalar)
+		<@var="y">  (scalar)
+
+Returns the greater of <@var="x"> and <@var="y">, or <@lit="NA"> if either value is missing. 
+
+See also <@ref="xmin">, <@ref="max">, <@ref="min">. 
+
+# xmin math
+Output: 	scalar 
+Arguments:	<@var="x">  (scalar)
+		<@var="y">  (scalar)
+
+Returns the lesser of <@var="x"> and <@var="y">, or <@lit="NA"> if either value is missing. 
+
+See also <@ref="xmax">, <@ref="max">, <@ref="min">. 
+
+# xpx transforms
+Output: 	list 
+Argument: 	<@var="L">  (list)
+
+Returns a list that references the squares and cross-products of the variables in list <@var="L">. Squares are named on the pattern <@lit="sq_"><@var="varname"> and cross-products on the pattern <@var="var1"><@lit="_"><@var="var2">. The input variable names are truncated if need be, and the output names may be adjusted in case of duplication of names in the returned list. 
+
+# zeromiss data-utils
+Output: 	same type as input 
+Argument: 	<@var="x">  (scalar or series)
+
+Converts zeros to <@lit="NA">s. If <@var="x"> is a series, the conversion is done element by element. See also <@ref="missing">, <@ref="misszero">, <@ref="ok">. 
+
+# zeros matbuild
+Output: 	matrix 
+Arguments:	<@var="r">  (integer)
+		<@var="c">  (integer)
+
+Outputs a zero matrix with <@itl="r"> rows and <@itl="c"> columns. See also <@ref="ones">, <@ref="seq">. 
+

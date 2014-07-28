@@ -1,0 +1,15 @@
+# Penn World Table data as used by Nerlove
+open penngrow.gdt
+
+# Fixed effects (for comparison)
+panel Y 0 Y(-1) X
+
+# Random effects (for comparison)
+panel Y 0 Y(-1) X --random-effects
+
+# take differences of all variables
+diff Y X
+# Anderson-Hsiao, using Y(-2) as instrument
+tsls d_Y d_Y(-1) d_X ; 0 d_X Y(-2)
+# Anderson-Hsiao, using d_Y(-2) as instrument
+tsls d_Y d_Y(-1) d_X ; 0 d_X d_Y(-2)

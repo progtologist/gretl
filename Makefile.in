@@ -1,0 +1,118 @@
+topsrc = @top_srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+CC = @CC@
+CFLAGS = @CFLAGS@
+MAKE = @MAKE@
+INSTALL = @INSTALL@
+LN = @LN_S@
+HOSTCC = @HOSTCC@
+build_gui = @build_gui@
+gtk_version = @gtk_version@
+build_po = @build_po@
+build_doc = @build_docs@
+use_xdg = @use_xdg@
+
+ifeq ($(CC),)
+  CC = gcc
+endif
+
+ifeq ($(HOSTCC),)
+  HOSTCC = $(CC)
+endif
+
+ifeq ($(build_gui),yes)
+  GUIDIR = gui2
+endif
+
+ifeq ($(build_po),yes)
+  PODIR = po
+endif
+
+ifeq ($(build_doc),yes)
+  DOCDIR = doc
+endif
+
+ifeq ($(use_xdg),yes)
+  XDGDIR = xdg
+endif
+
+INSTALL_PROGRAM = ${INSTALL} -m 755
+INSTALL_DATA = ${INSTALL} -m 644
+
+export
+
+tooldir = $(topsrc)/tools
+
+SUBDIRS = lib cli $(GUIDIR) plugin $(PODIR) share $(XDGDIR)
+ALLSUBDIRS = lib cli gui2 plugin po share tests xdg
+
+.PHONY : subdirs $(SUBDIRS) clean installdirs install install-strip \
+install-man tags dist distclean check buildstamp
+
+subdirs: $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+pdfdocs:
+	$(MAKE) -C $(DOCDIR)
+
+clean:
+	for d in $(ALLSUBDIRS) ; do $(MAKE) -C $$d clean; done
+	$(MAKE) -C utils/emacs clean
+	rm -f build.h builddate
+
+installdirs:
+	$(tooldir)/mkinstalldirs $(libdir) $(includedir) $(bindir)
+
+install: $(SUBDIRS) installdirs install-man
+	for d in $(SUBDIRS) ; do $(MAKE) -C $$d install; done
+	$(MAKE) -C share install
+
+install-strip: $(SUBDIRS) installdirs install-man	
+	for d in $(SUBDIRS) ; do $(MAKE) -C $$d install-strip; done
+	$(MAKE) -C share install-strip
+
+install-man:
+	$(tooldir)/install_man $(tooldir) $(DESTDIR)$(prefix) $(topsrc)/gretl.1 
+
+tags:
+	etags $(topsrc)/lib/src/*.[ch] $(topsrc)/cli/*.[ch] \
+	$(topsrc)/$(GUIDIR)/*.[ch] $(topsrc)/plugin/*.[ch] \
+	$(topsrc)/cephes/*.c $(topsrc)/plugin/zipunzip/*.[ch] \
+	$(topsrc)/plugin/rq/*.[ch]
+
+builddate: $(topsrc)/builddate.c
+	$(HOSTCC) -o $@ $<
+
+buildstamp: builddate
+	./builddate
+
+dist: 
+	$(tooldir)/makedist
+
+distclean: clean
+	$(MAKE) -C win32 clean
+	rm -f config.log config.cache config.status config.h gretl.pc
+	rm -f gretl_sh libtool Makefile
+	for d in $(ALLSUBDIRS) ; do $(MAKE) -C $$d distclean; done
+
+check:
+	$(MAKE) -C tests check
+
+osx-dist:
+	$(MAKE) -C osx postinst
+
+# dependency for parallel builds
+lib: buildstamp
+cli: lib
+share: lib
+$(GUIDIR): lib
+plugin: lib
+tests: lib
+
+

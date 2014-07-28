@@ -1,0 +1,27 @@
+# Replicate parts of Table 4 in Arellano and Bond,
+# "Some Tests of Specification for Panel Data: Monte Carlo 
+# Evidence and an Application to Employment Equations",
+# Review of Economic Studies, 58 (1991), pp. 277-297.
+
+open abdata.gdt
+
+# We first treat all the independent variables as
+# exogenous (Table 4, column b)
+
+list X = w w(-1) k ys ys(-1)
+
+# 1-step GMM estimation
+dpanel 2 ; n X const --time-dummies --asy --dpdstyle
+# 2-step estimation
+dpanel 2 ; n X const --time-dummies --asy --two-step --dpdstyle
+
+# Then we treat the wage and capital stock as predetermined,
+# not exogenous.  This gives an approximation to Table 4,
+# column c.  But note that some of the data used in that
+# model are not available.  In addition, we're using
+# finite-sample corrected standard errors.
+
+list Ivars = ys ys(-1)
+dpanel 2 ; n X const ; GMM(w,2,3) GMM(k,2,3) Ivars --time --dpd
+dpanel 2 ; n X const ; GMM(w,2,3) GMM(k,2,3) Ivars --time --two-step --dpd
+

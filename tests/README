@@ -1,0 +1,52 @@
+Here's a checker program that runs libgretl against the NIST reference
+datasets for linear regression, for details on which see
+
+http://itl.nist.gov/div898/strd/general/main.html
+
+The checker validates libgretl and (if available) the gretl multiple
+precision plugin.
+
+And there's a sub-dir named nist-nls with a rig for checking gretl's
+nonlinear regression code against the NIST reference datasets.
+
+NIST Results with libgretl
+==========================
+
+If all is well there should be no failures on the 11 NIST tests.
+
+The checker program reads the "certified values" and data out of each
+NIST file, runs a regression using libgretl, and compares the libgretl
+estimates with the certified values, starting at a precision of 9
+significant figures.  If there is any disagreement, the comparison is
+repeated using 8 significant figures, and so on.  If the figures do
+not agree at a precision of at least 6 figures, the test is deemed to
+have been failed and an error message is printed.
+
+You can get more details on gretl's performance on the tests by
+running the 'nistcheck' program in verbose mode (-v flag) or very
+verbose mode (-vv).  
+
+NIST Results with multiple precision plugin
+===========================================
+
+If the Gnu Multiple Precision library (GMP) was detected when gretl
+was configured, and gretl's GMP plugin was built, then each NIST test
+will be repeated using the plugin.  All tests should give results
+that agree with the NIST certified values to at least 12 significant
+figures.
+
+Note that the test data sets Wampler1 and Wampler2 give, by
+construction, an exact polynomial fit.  This is difficult to
+reproduce.  If you run the checker program in verbose mode you will
+see that instead of standard errors of precisely zero, values around
+10^{-39} are reported.  You can, however, drive these to zero by
+raising the precision used in the calculations.  The default for
+gretl's multiple precision plugin is to assign 256 bits for the
+representation of each floating point number, which is enough for most
+purposes.  You can increase this value by setting the environment
+variable GRETL_MP_BITS, for example:
+
+GRETL_MP_BITS=4096 ./nistcheck -v
+
+Allin Cottrell
+last updated April 2011

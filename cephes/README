@@ -1,0 +1,14 @@
+The sources in here are 
+Copyright 1984 - 1992 by Stephen L. Moshier
+
+The primary documentation for the library functions
+is the book by Moshier, Methods and Programs for Mathematical
+Functions, Prentice-Hall, 1989.
+
+See http://www.netlib.org/cephes/
+
+Some slight modifications made by Allin Cottrell for use with
+gretl, but no changes to the substance of the code.  A few
+symbols have been renamed with the prefix cephes_ to avoid
+colliding with symbols exported by other libraries.
+

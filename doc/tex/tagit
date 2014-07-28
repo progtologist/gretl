@@ -1,0 +1,8 @@
+for f in *.tex ; do
+  if ! echo $f | grep guide ; then
+    if ! grep TeX-master $f >/dev/null ; then
+       echo "$f: no master"
+       # cat tag >> $f
+    fi
+  fi
+done

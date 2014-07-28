@@ -1,0 +1,55 @@
+%define name gretl
+%define ver @VERSION@
+%define rel 1
+%define prefix /usr
+
+Summary: econometrics package
+Name: %{name}
+Version: %{ver}
+Release: %{rel}
+License: GPL
+Group: X11/Scientific Applications
+Source: http://sourceforge.net/projects/gretl/files/gretl/%{ver}/%{name}-%{ver}.tar.bz2
+Buildroot: %{_tmppath}/%{name}-%{ver}-%{rel}-root
+Packager: Allin Cottrell <cottrell@wfu.edu>
+URL: http://gretl.sourceforge.net/
+Vendor: Allin Cottrell <cottrell@wfu.edu>
+Docdir: %{prefix}/share/doc
+Requires: gtk+ >= 2.14.0
+
+%description
+
+gretl is a free econometrics package, comprising comprises a shared library,
+a command-line client and a gui client that uses GTK.
+
+%prep
+%setup -q
+
+%build
+%configure
+make
+
+%install
+rm -fr %{buildroot}
+%makeinstall
+ 
+%post
+/sbin/ldconfig
+ 
+%clean
+rm -fr %{buildroot}
+ 
+%files
+%doc COPYING README INSTALL 
+%{prefix}/lib/lib*
+%{prefix}/lib/gretl*/*
+%{prefix}/bin/gretlcli
+%{prefix}/bin/gretl_x11
+%{prefix}/bin/gretl
+%{prefix}/share/gretl/*
+%{prefix}/share/locale/*
+%{prefix}/share/man/*
+%{prefix}/share/applications/*
+%{prefix}/share/icons/*
+%{prefix}/share/mime/*
+%{prefix}/share/gtksourceview-*/*

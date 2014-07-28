@@ -1,0 +1,3 @@
+# PS7.2, for Example 7.1
+open data7-2
+ols WAGE const GENDER EXPER

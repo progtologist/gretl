@@ -1,0 +1,259 @@
+\documentclass{article}
+\usepackage{smallhds}
+\usepackage{url}
+\usepackage[body={6.0in,8.5in},top=1in,left=1.25in,nohead]{geometry}
+
+\begin{document}
+
+\title{Notes on the Gretl manual}
+\author{Allin Cottrell\thanks{email: \texttt{cottrell@wfu.edu}}}
+\date{Last updated January, 2008}
+
+\maketitle
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+\section{Introduction}
+
+This note describes the structure of the \textsf{gretl} manual and
+gives information that may be useful to translators.
+
+The \textsf{gretl} manual is divided into two main components, the
+\textit{Gretl Command Reference} and the \textit{Gretl User's Guide}.
+Translators may decide to work on one or both of these components.
+
+The \textit{Command Reference} gives a complete listing of
+\textsf{gretl} commands, with a short account of the function of each
+command and any arguments and options.  The \textit{User's Guide} is
+more discursive: it elaborates on the options available in the GUI
+program, expands on the use of some of the more complex commands, and
+provides various technical appendices.
+
+Both the \textit{Command Reference} and the \textit{User's Guide} are
+produced in PDF format.  In addition, the source material for the
+\textit{Command Reference} is used to create the ``online'' help that
+is available within \textsf{gretl}.  The source files for the
+\textit{Command Reference} are (mostly) in XML format and the source
+files for the \textit{User's Guide} are in \LaTeX.
+
+\section{Getting the manual files}
+\label{getit}
+
+The way to get current copies of the manual files is via CVS; see
+either 
+%
+\begin{center}
+\url{http://gretl.cvs.sourceforge.net/gretl/gretl/}
+\end{center}
+%
+or 
+%
+\begin{center}
+\url{http://sourceforge.net/cvs/?group_id=36234}
+\end{center}
+
+If you would like to have translator access to \textsf{gretl} CVS,
+pleas let me know; that can easily be arranged. 
+
+\section{Files for translation}
+
+\subsection{Command reference files}
+
+Table~\ref{cmd-files} gives a listing of the source files for the
+English version of the \textit{Gretl Command Reference}.  The paths
+are relative to the \texttt{doc} directory of the \textsf{gretl}
+source tree in CVS.  On the right we show the corresponding paths for
+translated versions of these files, using Italian as an example.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ll}
+\url{tex/gretl-ref.tex}  & \url{tex_it/gretl-ref-it.tex} \\
+\url{tex/cmdref.tex}     & \url{tex_it/cmdref.tex} \\
+\url{tex/funcref.tex}    & \url{tex_it/funcref.tex} \\
+\url{tex/optarg.tex}     & \url{tex_it/optarg.tex} \\[4pt]
+\url{commands/gretl_commands.xml} & \url{commands/gretl_commands_it.xml} \\
+\url{commands/genr_funcs.xml} & \url{commands/genr_funcs_it.xml}
+\end{tabular}
+\end{center}
+\caption{Command reference source files}
+\label{cmd-files}
+\end{table}
+
+The two files in the \texttt{commands} directory are in XML format;
+all the others are in \TeX.  Translators do not need to have knowledge
+of either of these formats, just the common sense not to try to
+translate terms that are (fairly obviously) part of the mark-up
+apparatus.
+
+\subsection{User's guide files}
+
+Table~\ref{guide-files} lists the current \TeX\ source files for the
+\textit{Gretl User's Guide}, again showing the English files on the
+left and the Italian equivalent on the right.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{1}{c}{\textit{English}} & 
+\multicolumn{1}{c}{\textit{Italian}} \\[6pt]
+\multicolumn{2}{l}{``driver'' file} \\
+\url{tex/gretl-guide.tex} & \url{tex_it/gretl-guide-it.tex} \\[6pt]
+\multicolumn{2}{l}{chapter files} \\
+\url{tex/appendices.tex} & \url{tex_it/appendices.tex} \\
+\url{tex/cheatsheet.tex} & \url{tex_it/cheatsheet.tex} \\
+\url{tex/cli.tex} & \url{tex_it/cli.tex} \\
+\url{tex/criteria.tex} & \url{tex_it/criteria.tex} \\
+\url{tex/datafiles.tex} & \url{tex_it/datafiles.tex} \\
+\url{tex/discrete.tex} & \url{tex_it/discrete.tex} \\
+\url{tex/functions.tex} & \url{tex_it/functions.tex} \\
+\url{tex/genr.tex} & \url{tex_it/genr.tex} \\
+\url{tex/gmm.tex} & \url{tex_it/gmm.tex} \\
+\url{tex/graphs.tex} & \url{tex_it/graphs.tex} \\
+\url{tex/gretltex.tex} & \url{tex_it/gretltex.tex} \\
+\url{tex/introduction.tex} & \url{tex_it/introduction.tex} \\
+\url{tex/looping.tex} & \url{tex_it/looping.tex} \\
+\url{tex/matrices.tex} & \url{tex_it/matrices.tex} \\
+\url{tex/mle.tex} & \url{tex_it/mle.tex} \\
+\url{tex/modes.tex} & \url{tex_it/modes.tex} \\
+\url{tex/nls.tex} & \url{tex_it/nls.tex} \\
+\url{tex/panel.tex} & \url{tex_it/panel.tex} \\
+\url{tex/persistent.tex} & \url{tex_it/persistent.tex} \\
+\url{tex/probit.tex} & \url{tex_it/probit.tex} \\
+\url{tex/robust_vcv.tex} & \url{tex_it/robust_vcv.tex} \\
+\url{tex/sampling.tex} & \url{tex_it/sampling.tex} \\
+\url{tex/starting.tex} & \url{tex_it/starting.tex} \\
+\url{tex/timeseries.tex} & \url{tex_it/timeseries.tex} \\
+\url{tex/trouble.tex} & \url{tex_it/trouble.tex} \\
+\url{tex/vecm.tex} & \url{tex_it/vecm.tex} \\ [6pt]
+\multicolumn{2}{l}{bibliography file} \\
+\url{tex/biblio.tex} & \url{tex_it/biblio.tex} \\
+\end{tabular}
+\end{center}
+\caption{User's guide \TeX\ source files}
+\label{guide-files}
+\end{table}
+
+A small amount of translation is called for in the ``driver'' files
+(titles and license, primarily).  The main work of translation is in
+the ``chapter files.''  The bibliography (\texttt{biblio.tex}) may not
+need translation at all.
+
+\section{Screenshot graphics}
+
+The \textit{User's Guide} contains various ``screenshots'' of
+\textsf{gretl} windows.  If these are to be shown in the language of
+the translation, the appropriate graphic files (in \textsf{PNG}
+format) should be placed in a top-level sub-directory of the
+\textsf{gretl} documentation tree named \texttt{figures\_xx} (e.g.\ 
+\texttt{figures\_it} or \texttt{figures\_es}).  The Italian and
+Spanish translations already have such files in place.
+
+You may wish to alter the scaling of graphics in the translated
+manuals.  As you'll see if you look at the \TeX\ sources, I have
+scaled almost all the ``screenshot'' graphics to 50 percent of
+``natural'' size.  If you think the result is too small, feel free to
+adjust the scaling.
+
+
+\section{Automatically generated files}
+
+In the course of building the gretl manual, various files are
+generated automatically.  I point this out here to try to avoid
+misunderstanding: I don't want anyone to spend time translating a
+file that will be automatically over-written whenever the manual is
+built!  The main files in this category are
+
+\begin{center}
+\begin{tabular}{l}
+\url{tex_xx/refbody.tex}\\
+\url{tex_xx/cmdtopics.tex}\\
+\url{tex_xx/funcbody.tex}\\
+\end{tabular}
+\end{center}
+
+\noindent
+where \texttt{xx} is a placeholder for a two-letter language code
+such as \texttt{es} or \texttt{it}.  
+
+These files are generated via XSL transformations, using the files
+\url{commands/gretl_commands_xx.xml} and
+\url{commands/genr_funcs_xx.xml}, as well as the \textsf{gretl} C
+sources, as a basis.
+
+
+\section{Handling of script/code fragments}
+
+At various points in the manuals there are snippets or fragments of
+\textsf{gretl} script, enclosed in some sort of verbatim environment.
+One point to note about these snippets is that they should be given an
+overall indent of zero in the \TeX\ source files; that is, they should
+be placed against the left margin (though it's OK to give some of the
+material a \textit{relative} indent---for example, code within
+\texttt{loop} and \texttt{end loop}).  The overall indent of such
+material is controlled by a style file.
+
+\section{Current status of translations}
+
+At present there are two translations of the \textsf{gretl} manual,
+into Italian and Spanish.  The Italian translation is up to date with
+the English version---which is not yet fully up to date with
+\textsf{gretl} itself.
+
+The Spanish version is now a little dated and lacks several of the
+chapters in the current English and Italian versions.  
+
+\section{Making the PDF files}
+
+To see what your translation looks like, you may wish to build the PDF
+files for the \textit{Command Reference} and/or the \textit{User's
+  Guide}.
+
+Probably the best way to do this is to go into the \texttt{tex\_xx}
+sub-directory corresponding to your language and do the following
+(I'll illustrate with Italian here).  To build the \textit{User's
+  Guide},
+
+\begin{verbatim}
+make gretl-guide-it.pdf
+\end{verbatim}
+
+This should be reasonably straightforward.  You will need a working
+\TeX\ installation including \textsf{pdflatex}.  But you'll hit a
+problem if you don't have the \textsf{Lucida} fonts---in that case you
+can edit the driver file (e.g.\ \texttt{gretl-guide-it.tex}) and
+comment out the line
+%
+\begin{verbatim}
+\usepackage{lucidabr}
+\end{verbatim}
+%
+Then you should get the PDF file using the \TeX\ Computer Modern
+fonts.
+
+As for the \textit{Command Reference}, this is a little more
+complicated since some XSL transformations of the sources are needed.
+You'll probably need to have a checkout of the \textsf{gretl} CVS
+sources, configured using the flag \verb|--enable-build-doc|.  In that
+case you can go into your \texttt{tex\_xx} directory (e.g.\
+\texttt{tex\_it}) and do:
+%
+\begin{verbatim}
+make gretl-ref-xx.pdf
+\end{verbatim}
+%
+Please let me know if you have problems building the PDF.
+
+\section{Reference builds of the manual files}
+
+For reference, I have made available PDF files built from the current
+sources in English (US letter paper and A4), Italian and Spanish.
+Please see
+
+\begin{center}
+\url{http://ricardo.ecn.wfu.edu/pub/gretl/manual/} 
+\end{center}
+
+\end{document}
+

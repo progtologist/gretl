@@ -1,0 +1,30 @@
+# Replication of "Model 1" from L. Klein, "Economic 
+# Fluctuations in the United States, 1921-1941", 
+# New York: John Wiley and Sons, 1950.
+
+open klein.gdt
+
+genr W = Wp + Wg
+genr A = t + (1918 - 1931)
+genr K1 = K(-1)
+
+# set the model up as a system
+"Klein Model 1" <- system
+ equation C 0 P P(-1) W 
+ equation I 0 P P(-1) K1
+ equation Wp 0 X X(-1) A
+ identity P = X - T - Wp
+ identity W = Wp + Wg
+ identity X = C + I + G
+ identity K = K1 + I
+ endog C I Wp P W X K
+end system
+
+# and estimate it in various ways
+estimate "Klein Model 1" method=ols
+estimate "Klein Model 1" method=tsls
+estimate "Klein Model 1" method=3sls
+estimate "Klein Model 1" method=fiml --verbose
+estimate "Klein Model 1" method=liml
+
+

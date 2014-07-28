@@ -1,0 +1,680 @@
+\chapter{Named lists and strings}
+\label{chap-persist}
+
+
+\section{Named lists}
+\label{named-lists}
+
+Many gretl commands take one or more lists of series as
+arguments.  To make this easier to handle in the context of command
+scripts, and in particular within user-defined functions, gretl
+offers the possibility of \textit{named lists}.  
+
+\subsection{Creating and modifying named lists}
+
+A named list is created using the keyword \texttt{list}, followed by
+the name of the list, an equals sign, and an expression that forms a
+list.  The most basic sort of expression that works in this context
+is a space-separated list of variables, given either by name or
+by ID number.  For example,
+%
+\begin{code}
+list xlist = 1 2 3 4
+list reglist = income price 
+\end{code}
+
+Note that the variables in question must be of the series type: you
+cannot include scalars in a named list.
+
+Two abbreviations are available in defining lists:
+\begin{itemize}
+\item You can use the wildcard character, ``\texttt{*}'', to create a
+  list of variables by name. For example, \texttt{dum*} can be used to
+  indicate all variables whose names begin with \texttt{dum}.
+\item You can use two dots to indicate a range of variables. For
+  example \texttt{income..price} indicates the set of variables whose
+  ID numbers are greater than or equal to that of \texttt{income}
+  and less than or equal to that of \texttt{price}.
+\end{itemize}
+
+In addition there are two special forms:
+\begin{itemize}
+\item If you use the keyword \texttt{null} on the right-hand side,
+  you get an empty list.
+\item If you use the keyword \texttt{dataset} on the right, you get
+  a list containing all the series in the current dataset (except
+  the pre-defined \texttt{const}).
+\end{itemize}
+
+The name of the list must start with a letter, and must be composed
+entirely of letters, numbers or the underscore character.  The maximum
+length of the name is 31 characters; list names cannot contain
+spaces.  
+
+Once a named list has been created, it will be ``remembered'' for the
+duration of the gretl session (unless you delete it), and can be
+used in the context of any gretl command where a list of
+variables is expected.  One simple example is the specification of a
+list of regressors:
+%
+\begin{code}
+list xlist = x1 x2 x3 x4
+ols y 0 xlist
+\end{code}
+
+To get rid of a list, you use the following syntax:
+\begin{code}
+  list xlist delete
+\end{code}
+Be careful: \texttt{delete xlist} will delete the variables contained
+in the list, so it implies data loss (which may not be what you want).
+On the other hand, \texttt{list xlist delete} will simply ``undefine''
+the \texttt{xlist} identifier and the variables themselves will not be
+affected.
+
+Similarly, to print the names of the variables in a list you have to
+invert the usual print command, as in
+\begin{code}
+  list xlist print
+\end{code}
+If you just say \texttt{print xlist} the list will be expanded and
+the values of all the member variables will be printed.
+
+Lists can be modified in various ways.  To \textit{redefine} an existing
+list altogether, use the same syntax as for creating a list.  For
+example
+%
+\begin{code}
+list xlist = 1 2 3
+xlist = 4 5 6
+\end{code}
+
+After the second assignment, \texttt{xlist} contains just variables 4,
+5 and 6.
+
+To \textit{append} or \textit{prepend} variables to an existing list,
+we can make use of the fact that a named list stands in for a
+``longhand'' list.  For example, we can do
+%
+\begin{code}
+list xlist = xlist 5 6 7
+xlist = 9 10 xlist 11 12
+\end{code}
+%
+Another option for appending a term (or a list) to an existing list is
+to use \texttt{+=}, as in
+%
+\begin{code}
+xlist += cpi
+\end{code}
+%
+To drop a variable from a list, use \texttt{-=}:
+%
+\begin{code}
+xlist -= cpi
+\end{code}
+%
+
+In most contexts where lists are used in gretl, it is expected
+that they do not contain any duplicated elements.  If you form a new
+list by simple concatenation, as in \texttt{list L3 = L1 L2}
+(where \texttt{L1} and \texttt{L2} are existing lists), it's possible
+that the result may contain duplicates.  To guard against this you can
+form a new list as the union of two existing ones:
+%
+\begin{code}
+list L3 = L1 || L2
+\end{code}
+%
+The result is a list that contains all the members of \texttt{L1},
+plus any members of \texttt{L2} that are not already in \texttt{L1}.
+
+In the same vein, you can construct a new list as the intersection of
+two existing ones:
+%
+\begin{code}
+list L3 = L1 && L2
+\end{code}
+%
+Here \texttt{L3} contains all the elements that are present in both
+\texttt{L1} and \texttt{L2}.
+
+You can also subtract one list from another:
+%
+\begin{code}
+list L3 = L1 - L2
+\end{code}
+%
+The result contains all the elements of \texttt{L1} that are not 
+present in \texttt{L2}.
+
+
+\subsection{Lists and matrices}
+
+Another way of forming a list is by assignment from a matrix.  The
+matrix in question must be interpretable as a vector containing ID
+numbers of (series) variables.  It may be either a row or a column
+vector, and each of its elements must have an integer part that is
+no greater than the number of variables in the data set.  For example:
+%
+\begin{code}
+matrix m = {1,2,3,4}
+list L = m
+\end{code}
+%
+The above is OK provided the data set contains at least 4 variables.
+
+\subsection{Querying a list}
+
+You can determine the number of variables or elements in a list
+using the function \texttt{nelem()}.
+%
+\begin{code}
+list xlist = 1 2 3
+nl = nelem(xlist)
+\end{code}
+
+The (scalar) variable \texttt{nl} will be assigned a value of 3 since
+\texttt{xlist} contains 3 members.
+
+You can determine whether a given series is a member of a specified
+list using the function \texttt{inlist()}, as in
+%
+\begin{code}
+scalar k = inlist(L, y)
+\end{code}
+%
+where \texttt{L} is a list and \texttt{y} a series. The series may
+be specified by name or ID number. The return value is the (1-based)
+position of the series in the list, or zero if the series is not
+present in the list. 
+
+\subsection{Generating lists of transformed variables}
+\label{sec:transform-lists}
+
+Given a named list of variables, you are able to generate lists of
+transformations of these variables using the functions \texttt{log},
+\texttt{lags}, \texttt{diff}, \texttt{ldiff}, \texttt{sdiff} or
+\texttt{dummify}.  For example
+%
+\begin{code}
+list xlist = x1 x2 x3
+list lxlist = log(xlist)
+list difflist = diff(xlist)
+\end{code}
+
+When generating a list of \textit{lags} in this way, you specify the
+maximum lag order inside the parentheses, before the list name and
+separated by a comma.  For example
+%
+\begin{code}
+list xlist = x1 x2 x3
+list laglist = lags(2, xlist)
+\end{code}
+%
+or
+%
+\begin{code}
+scalar order = 4
+list laglist = lags(order, xlist)
+\end{code}
+
+These commands will populate \texttt{laglist} with the specified
+number of lags of the variables in \texttt{xlist}.  You can give the
+name of a single series in place of a list as the second argument to
+\texttt{lags}: this is equivalent to giving a list with just one
+member.
+
+The \texttt{dummify} function creates a set of dummy variables coding
+for all but one of the distinct values taken on by the original
+variable, which should be discrete.  (The smallest value is taken as
+the omitted catgory.)  Like lags, this function returns a list even if
+the input is a single series.
+
+Another useful operation you can perform with lists is creating
+\emph{interaction} variables. Suppose you have a discrete variable
+$x_i$, taking values from $1$ to $n$ and a variable $z_i$, which could
+be continuous or discrete. In many cases, you want to ``split'' $z_i$
+into a set of $n$ variables via the rule
+\[
+z^{(j)}_i =\left\{ 
+    \begin{array}{ll}
+      z_i & \mathrm{when} \quad x_i = j \\
+      0 & \mathrm{otherwise;}
+    \end{array}
+    \right. 
+\] 
+in practice, you create dummies for the $x_i$ variable first and then
+you multiply them all by $z_i$; these are commonly called the
+\emph{interactions} between $x_i$ and $z_i$. In gretl you can do 
+\begin{code}
+  list H = D ^ Z
+\end{code}
+where \texttt{D} is a list of discrete series (or a single discrete
+series), \texttt{Z} is a list (or a single series)\footnote{Warning:
+  this construct does \emph{not} work if neither \texttt{D} nor
+  \texttt{Z} are of the the list type.}; all the interactions will be
+created and listed together under the name \texttt{H}.
+
+An example is provided in script \ref{ex:interact_list}
+
+\begin{script}[ht]
+  \caption{Usage of interaction lists}
+  \label{ex:interact_list}
+Input:
+\begin{scodebit}
+open mroz87.gdt --quiet
+
+# the coding below makes it so that
+# KIDS = 0 -> no kids
+# KIDS = 1 -> young kids only
+# KIDS = 2 -> young or older kids
+
+series KIDS = (KL6 > 0) + ((KL6 > 0) || (K618 > 0))
+
+list D = CIT KIDS # interaction discrete variables 
+list X = WE WA    # variables to "split"
+list INTER = D ^ X
+
+smpl 1 6
+
+print D X INTER -o
+\end{scodebit}
+Output (selected portions):
+\begin{scodebit}
+           CIT         KIDS           WE           WA     WE_CIT_0
+
+1            0            2           12           32           12
+2            1            1           12           30            0
+3            0            2           12           35           12
+4            0            1           12           34           12
+5            1            2           14           31            0
+6            1            0           12           54            0
+
+      WE_CIT_1     WA_CIT_0     WA_CIT_1    WE_KIDS_0    WE_KIDS_1
+
+1            0           32            0            0            0
+2           12            0           30            0           12
+3            0           35            0            0            0
+4            0           34            0            0           12
+5           14            0           31            0            0
+6           12            0           54           12            0
+
+     WE_KIDS_2    WA_KIDS_0    WA_KIDS_1    WA_KIDS_2
+
+1           12            0            0           32
+2            0            0           30            0
+3           12            0            0           35
+4            0            0           34            0
+5           14            0            0           31
+6            0           54            0            0
+
+\end{scodebit}
+\end{script}
+
+
+
+\subsection{Generating series from lists}
+
+Once a list is defined, gretl offers several functions that
+apply to the list and return a series. In most cases, these functions
+also apply to single series and behave as natural extensions when
+applied to a list, but this is not always the case.
+
+For recognizing and handling missing values, gretl offers
+several functions (see the \GCR{} for details). In this context, it is
+worth remarking that the \texttt{ok()} function can be used with a
+list argument.  For example,
+%
+\begin{code}
+list xlist = x1 x2 x3
+series xok = ok(xlist)
+\end{code}
+%
+After these commands, the series \texttt{xok} will have value 1 for
+observations where none of \texttt{x1}, \texttt{x2}, or
+\texttt{x3} has a missing value, and value 0 for any observations
+where this condition is not met.
+
+The functions \texttt{max}, \texttt{min}, \texttt{mean}, \texttt{sd},
+\texttt{sum} and \texttt{var} behave horizontally rather than
+vertically when their argument is a list. For instance, the following
+commands
+\begin{code}
+  list Xlist = x1 x2 x3
+  series m = mean(Xlist)
+\end{code}
+produce a series \texttt{m} whose $i$-th element is the average of
+$x_{1,i}, x_{2,i}$ and $x_{3,i}$; missing values, if any, are implicitly discarded.
+
+\begin{table}
+  \centering
+  \begin{tabular}{lllllllll}
+\hline
+	& YpcFR & YpcGE	& YpcIT	& NFR		& NGE		& NIT        \\ 
+\hline
+\\ [-8pt]
+1997	& 114.9 & 124.6	& 119.3	& 59830.635	& 82034.771	& 56890.372  \\ 
+1998	& 115.3 & 122.7	& 120.0	& 60046.709	& 82047.195	& 56906.744  \\ 
+1999	& 115.0	& 122.4	& 117.8	& 60348.255	& 82100.243	& 56916.317  \\ 
+2000	& 115.6 & 118.8	& 117.2	& 60750.876	& 82211.508	& 56942.108  \\ 
+2001	& 116.0	& 116.9	& 118.1	& 61181.560	& 82349.925	& 56977.217  \\ 
+2002	& 116.3 & 115.5	& 112.2	& 61615.562	& 82488.495	& 57157.406  \\ 
+2003	& 112.1 & 116.9	& 111.0	& 62041.798	& 82534.176	& 57604.658  \\ 
+2004	& 110.3 & 116.6	& 106.9	& 62444.707	& 82516.260	& 58175.310  \\ 
+2005	& 112.4 & 115.1	& 105.1	& 62818.185	& 82469.422	& 58607.043  \\ 
+2006	& 111.9 & 114.2	& 103.3	& 63195.457	& 82376.451	& 58941.499  \\
+\hline
+  \end{tabular}
+  \caption{GDP per capita and population in 3 European countries (Source: Eurostat)}
+  \label{tab:EuroData}
+\end{table}
+In addition, gretl provides three functions for weighted
+operations: \texttt{wmean}, \texttt{wsd} and \texttt{wvar}. Consider
+as an illustration Table \ref{tab:EuroData}: the first three columns are GDP
+per capita for France, Germany and Italy; columns 4 to 6 contain the
+population for each country. If we want to compute an aggregate
+indicator of per capita GDP, all we have to do is
+\begin{code}
+list Ypc = YpcFR YpcGE YpcIT
+list N = NFR NGE NIT
+y = wmean(Ypc, N)
+\end{code}
+so for example
+\[
+y_{1996} = \frac{114.9 \times 59830.635 + 124.6 \times 82034.771 +
+  119.3 \times 56890.372} {59830.635 + 82034.771 + 56890.372} =
+120.163
+\]
+See the \GCR\ for more details.
+
+\section{Named strings}
+\label{sec:named-strings}
+
+For some purposes it may be useful to save a string (that is, a
+sequence of characters) as a named variable that can be reused.
+
+Some examples of the definition of a string variable are shown
+below.
+%
+\begin{code}
+string s1 = "some stuff I want to save"
+string s2 = getenv("HOME")
+string s3 = s1 + 11
+\end{code}
+%
+The first field after the type-name \texttt{string} is the name under
+which the string should be saved, then comes an equals sign, then
+comes a specification of the string to be saved. This can be the
+keyword \texttt{null}, to produce an empty string, or may take any of
+the following forms:
+
+\begin{itemize}
+\item a string literal (enclosed in double quotes); or
+\item the name of an existing string variable; or
+\item a function that returns a string (see below); or
+\item any of the above followed by \texttt{+} and an integer offset.
+\end{itemize}
+
+The role of the integer offset is to use a substring of the preceding
+element, starting at the given character offset.  An empty string is
+returned if the offset is greater than the length of the string in
+question.
+
+To add to the end of an existing string you can use the operator
+\texttt{+=}, as in
+%
+\begin{code}
+string s1 = "some stuff I want to "
+string s1 += "save"
+\end{code}
+or you can use the \verb|~| operator to join two or more strings, as
+in
+\begin{code}
+string s1 = "sweet"
+string s2 = "Home, " ~ s1 ~ " home."
+\end{code}
+
+Note that when you define a string variable using a string literal, no
+characters are treated as ``special'' (other than the double quotes
+that delimit the string).  Specifically, the backslash is not used as
+an escape character.  So, for example,
+%
+\begin{code}
+string s = "\"
+\end{code}
+%
+is a valid assignment, producing a string that contains a single
+backslash character.  If you wish to use backslash-escapes to denote
+newlines, tabs, embedded double-quotes and so on, use \texttt{sprintf}
+instead.
+
+The \texttt{sprintf} command can also be used to define a string
+variable. This command works in exactly the same way as the
+\texttt{printf} command except that the ``format'' string must be
+preceded by an identifier: either the name of an existing string
+variable or a new name to which the string should be assigned.
+For example,
+%
+\begin{code}
+scalar x = 8
+sprintf foo "var%d", x
+\end{code}
+
+\subsection{String variables and string substitution}
+
+String variables can be used in two ways in scripting: the name of the
+variable can be typed ``as is'', or it may be preceded by the ``at''
+sign, \verb|@|. In the first variant the named string is treated as a
+variable in its own right, while the second calls for ``string
+substitution''. The context determines which of these variants is
+appropriate. 
+
+In the following contexts the names of string variables should be
+given in plain form (without the ``at'' sign):
+
+\begin{itemize}
+\item When such a variable appears among the arguments to the
+  commands \texttt{printf} or \texttt{sprintf}.
+\item When such a variable is given as the argument to a function.
+\item On the right-hand side of a \texttt{string} assignment.
+\end{itemize}
+
+Here is an illustration of the use of a named string argument with
+\texttt{printf}:
+%
+\begin{code}
+? string vstr = "variance"
+Generated string vstr
+? printf "vstr: %12s\n", vstr
+vstr:     variance
+\end{code}
+
+String substitution can be used in contexts where a string variable is
+not acceptable as such. If gretl encounters the symbol \verb|@|
+followed directly by the name of a string variable, this notation is
+treated as a ``macro'': the value of the variable is sustituted
+literally into the command line before the regular parsing of the
+command is carried out.
+
+One common use of string substitution is when you want to construct
+and use the name of a series programatically. For example, suppose you
+want to create 10 random normal series named \texttt{norm1} to
+\texttt{norm10}. This can be accomplished as follows.
+%
+\begin{code}
+string sname = null
+loop i=1..10
+  sprintf sname "norm%d", i
+  series @sname = normal()
+endloop
+\end{code}
+%
+Note that plain \texttt{sname} could not be used in the second line
+within the loop: the effect would be to attempt to overwrite the
+string variable named \texttt{sname} with a series of the same
+name. What we want is for the current \textit{value} of
+\texttt{sname} to be dumped directly into the command that defines a
+series, and the ``\verb|@|'' notation achieves that.
+
+Another typical use of string substitution is when you want the
+options used with a particular command to vary depending on
+some condition. For example,
+%
+\begin{code}
+function void use_optstr (series y, list xlist, int verbose)
+   string optstr = verbose ? "" : "--simple-print"
+   ols y xlist @optstr 
+end function
+
+open data4-1
+list X = const sqft
+use_optstr(price, X, 1)
+use_optstr(price, X, 0)
+\end{code} 
+
+When printing the value of a string variable using the \texttt{print}
+command, the plain variable name should generally be used, as in
+%
+\begin{code}
+string s = "Just testing"
+print s
+\end{code}
+%
+The following variant is equivalent, though clumsy.
+%
+\begin{code}
+string s = "Just testing"
+print "@s"
+\end{code}
+%
+But note that this next variant does something quite different.
+%
+\begin{code}
+string s = "Just testing"
+print @s
+\end{code}
+%
+After string substitution, the print command reads
+%
+\begin{code}
+print Just testing
+\end{code}
+%
+which attempts to print the values of two variables, \texttt{Just} and
+\texttt{testing}.
+
+
+\subsection{Built-in strings}
+
+Apart from any strings that the user may define, some string variables
+are defined by gretl itself.  These may be useful for people
+writing functions that include shell commands.  The built-in strings
+are as shown in Table~\ref{tab:pred-strings}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+  \texttt{gretldir} & the gretl installation directory \\
+  \texttt{workdir} & user's current gretl working directory \\
+  \texttt{dotdir} & the directory gretl uses for temporary files \\
+  \texttt{gnuplot} & path to, or name of, the \app{gnuplot} executable \\
+  \texttt{tramo}& path to, or name of, the \app{tramo} executable \\
+  \texttt{x12a} & path to, or name of, the \app{x-12-arima} executable \\
+  \texttt{tramodir} & \app{tramo} data directory \\
+  \texttt{x12adir} & \app{x-12-arima} data directory \\
+\end{tabular}
+\caption{Built-in string variables}
+\label{tab:pred-strings}
+\end{table}
+
+\subsection{Reading strings from the environment}
+
+In addition, it is possible to read into gretl's named strings,
+values that are defined in the external environment.  To do this you
+use the function \texttt{getenv}, which takes the name of an environment
+variable as its argument.  For example:
+%
+\begin{code}
+? string user = getenv("USER")
+Generated string user
+? string home = getenv("HOME")
+Generated string home
+? print "@user's home directory is @home"
+cottrell's home directory is /home/cottrell
+\end{code}
+%
+To check whether you got a non-empty value from a given call to
+\texttt{getenv}, you can use the function \texttt{strlen}, which
+retrieves the length of the string, as in
+%
+\begin{code}
+? string temp = getenv("TEMP")
+Generated string temp
+? scalar x = strlen(temp)
+Generated scalar x = 0
+\end{code}
+
+\subsection{Capturing strings via the shell}
+
+If shell commands are enabled in gretl, you can capture the
+output from such commands using the syntax 
+
+\texttt{string} \textsl{stringname} = \texttt{\$(}\textsl{shellcommand}\texttt{)}
+
+That is, you enclose a shell command in parentheses, preceded by
+a dollar sign.
+
+\subsection{Reading from a file into a string}
+
+You can read the content of a file into a string variable using
+the syntax
+
+\texttt{string} \textsl{stringname} = \texttt{readfile(}\textsl{filename}\texttt{)}
+
+The \textsl{filename} field may be given as a string variable.  For
+example
+%
+\begin{code}
+? sprintf fname "%s/QNC.rts", x12adir
+Generated string fname
+? string foo = readfile(fname)
+Generated string foo
+\end{code}
+%
+The above could also be accomplished using the ``macro'' variant
+of a string variable, provided it is placed in quotation marks: 
+%
+\begin{code}
+string foo = readfile("@x12adir/QNC.rts")
+\end{code}
+
+\subsection{The \texttt{strstr} function}
+
+Invocation of this function takes the form
+
+\texttt{string} \textsl{stringname} = 
+\texttt{strstr(}\textsl{s1}\texttt{,} \textsl{s2}\texttt{)}
+
+The effect is to search \textsl{s1} for the first occurrence of
+\textsl{s2}.  If no such occurrence is found, an empty string is
+returned; otherwise the portion of \textsl{s1} starting with
+\textsl{s2} is returned.  For example:
+%
+\begin{code}
+? string hw = "hello world"
+Generated string hw
+? string w = strstr(hw, "o")
+Generated string w
+? print w
+o world
+\end{code}
+%
+
+
+    
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "gretl-guide"
+%%% End: 
+

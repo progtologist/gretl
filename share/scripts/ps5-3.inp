@@ -1,0 +1,7 @@
+# PS5.3, for the per capita housing model
+open data4-3
+genr pchouse = housing/pop
+genr pcgnp = gnp/pop
+corr pcgnp unemp intrate 
+ols pchouse 0 pcgnp unemp intrate 
+omit unemp
