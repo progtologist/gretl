@@ -1,5 +1,7 @@
 # Gretl CMake
 
+[![Build Status](https://travis-ci.org/progtologist/gretl.svg?branch=master)](https://travis-ci.org/progtologist/gretl)
+
 Initial attempt to change the default build system of Gretl from GNU Autotools to CMake.
 
 All headers and source files moved to include and src folders appropriately.
