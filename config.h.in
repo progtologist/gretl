@@ -1,3 +1,4 @@
+/* config.h.  Generated from config.h.in by cmake.  */
 /* Configuration header file.
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 
@@ -21,152 +22,155 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define CONFIG_H
 
 /* for NLS use */
-#define PACKAGE gretl
+#cmakedefine PACKAGE "${PROJECT_NAME}"
 
 /* Native language support? */
-#undef ENABLE_NLS
+#cmakedefine ENABLE_NLS 1
 
 /* Location of shared gretl files */
-#define GRETL_PREFIX "/usr/local"
+#cmakedefine GRETL_PREFIX "${GRETL_PREFIX}"
 
 /* Building a relocatable package (Windows, OS X)? */
-#undef PKGBUILD
+#cmakedefine PKGBUILD 1
 
 /* Using libcurl for http? */
-#undef USE_CURL
+#cmakedefine USE_CURL 1
 
 /* Extra floating-point GMP routines? */
-#undef HAVE_MPFR
+#cmakedefine HAVE_MPFR 1
 
 /* Are we using openmp? */
-#undef OPENMP_BUILD
+#cmakedefine OPENMP_BUILD 1
 
 /* Are we supporting MPI? */
-#undef HAVE_MPI
+#cmakedefine HAVE_MPI 1
 
 /* X-12-ARIMA support? */
-#undef HAVE_X12A
+#cmakedefine HAVE_X12A 1
 
 /* TRAMO/SEATS support? */
-#undef HAVE_TRAMO
+#cmakedefine HAVE_TRAMO 1
 
 /* Define if you want GNU readline support */
-#undef HAVE_READLINE
+#cmakedefine HAVE_READLINE 1
 
 /* Define for GNU readline version >= 4.2 */
-#undef NEW_READLINE
+#cmakedefine NEW_READLINE 1
 
 /* Define if zlib is available */
-#undef HAVE_ZLIB
+#cmakedefine HAVE_ZLIB 1
 
 /* Define if using libgsf (>= 1.14.31) for zip/unzip */
-#undef USE_GSF
+#cmakedefine USE_GSF 1
 
 /* Is LaTeX available? */
-#undef HAVE_LATEX
+#cmakedefine HAVE_LATEX 1
 
 /* using gtk+ 3 */
-#undef USE_GTK3
+#cmakedefine USE_GTK3 1
 
 /* Using gtksourceview-2.0? */
-#undef USE_GTKSOURCEVIEW_2
+#cmakedefine USE_GTKSOURCEVIEW_2 1
 
 /* Using gtksourceview-3.0? */
-#undef USE_GTKSOURCEVIEW_3
+#cmakedefine USE_GTKSOURCEVIEW_3 1
 
 /* Does unistd.h have getdomainname? */
-#undef GETDOMAINNAME
+#cmakedefine GETDOMAINNAME 1
 
 /* Do we have stdint.h */
-#undef HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
 
 /* Do we have unistd.h */
-#undef HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
 
 /* Do we have dirent.h */
-#undef HAVE_DIRENT_H
+#cmakedefine HAVE_DIRENT_H 1
 
 /* Do we have fnmatch.h */
-#undef HAVE_FNMATCH_H
+#cmakedefine HAVE_FNMATCH_H 1
 
 /* Do we have sys/wait.h */
-#undef HAVE_SYS_WAIT_H
+#cmakedefine HAVE_SYS_WAIT_H 1
 
 /* Do we have sys/times.h */
-#undef HAVE_SYS_TIMES_H
+#cmakedefine HAVE_SYS_TIMES_H 1
 
 /* Do we have byteswap.h */
-#undef HAVE_BYTESWAP_H
+#cmakedefine HAVE_BYTESWAP_H 1
 
 /* Do we have libproc.h */
-#undef HAVE_LIBPROC_H
+#cmakedefine HAVE_LIBPROC_H 1
 
 /* Do we have sys/proc_info.h */
-#undef HAVE_SYS_PROC_INFO_H
+#cmakedefine HAVE_SYS_PROC_INFO_H 1
 
 /* Do we have mmap */
-#undef HAVE_MMAP
+#cmakedefine HAVE_MMAP 1
 
 /* Do we have vasprintf */
-#undef HAVE_VASPRINTF
+#cmakedefine HAVE_VASPRINTF 1
 
 /* Do we have posix_memalign */
-#undef HAVE_POSIX_MEMALIGN
+#cmakedefine HAVE_POSIX_MEMALIGN 1
 
 /* Do we have the stuff needed for SMTP? */
-#undef HAVE_SYS_SOCKET_H
-#undef HAVE_NETDB_H
-#undef ENABLE_MAILER
-#undef HAVE_SOCKADDR_IN
-#undef HAVE_IN_ADDR
+#cmakedefine HAVE_SYS_SOCKET_H 1
+#cmakedefine HAVE_NETDB_H 1
+#cmakedefine ENABLE_MAILER 1
+#cmakedefine HAVE_SOCKADDR_IN 1
+#cmakedefine HAVE_IN_ADDR 1
 
 /* Define if the 'long double' type works.  */
-#undef HAVE_LONG_DOUBLE
+#cmakedefine HAVE_LONG_DOUBLE 1
 
 /* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
+#cmakedefine RETSIGTYPE ${RETSIGTYPE}
 
 /* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
+#cmakedefine STDC_HEADERS 1
 
 /* Define if your processor stores words with the most significant
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
-#undef WORDS_BIGENDIAN
+#cmakedefine WORDS_BIGENDIAN 1
 
 /* The number of bytes in a int.  */
-#undef SIZEOF_INT
+#cmakedefine SIZEOF_INT ${SIZEOF_INT}
 
 /* Define if you have the <string.h> header file.  */
-#undef HAVE_STRING_H
+#cmakedefine HAVE_STRING_H 1
 
 /* Define to use SSE2 instrinsics. */
-#undef USE_SSE2
+#cmakedefine USE_SSE2 1
 
 /* Define to use AVX instrinsics. */
-#undef USE_AVX
+#cmakedefine USE_AVX 1
 
 /* Do we have immintrin.h? */
-#undef HAVE_IMMINTRIN_H
+#cmakedefine HAVE_IMMINTRIN_H 1
 
 /* Enable audio graphs */
-#undef HAVE_AUDIO
+#cmakedefine HAVE_AUDIO 1
 
 /* Use flite for speech synthesis */
-#undef HAVE_FLITE
+#cmakedefine HAVE_FLITE 1
 
 /* Have Jacobi SVD in Lapack 3.2 or higher */
-#undef HAVE_LAPACK_3_2
+#cmakedefine HAVE_LAPACK_3_2 1
 
 /* Use the GNU R shared library */
-#undef USE_RLIB
+#cmakedefine USE_RLIB 1
 
 /* Location of R shared library */
-#undef RLIBPATH
+#cmakedefine RLIBPATH "${R_LIBRARY_BASE}"
 
 /* Building for Mac OS X? */
-#undef OS_OSX
+#cmakedefine OS_OSX 1
 
 /* On Mac, using quartz GTK? */
-#undef MAC_NATIVE
+#cmakedefine MAC_NATIVE 1
+
+/* Does GtkSpinner exist */
+#cmakedefine HAVE_GTK_SPINNER 1
 
 #endif /* CONFIG_H */

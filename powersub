@@ -1,7 +1,0 @@
-for f in `find . -name "*.c"` ; do
-  if grep get_user_var_list_for_type $f > /dev/null ; then
-    echo $f
-    cat $f | sed s/get_user_var_list_for_type/user_var_list_for_type/ > $f.tmp && \
-     mv $f.tmp $f
-  fi
-done
