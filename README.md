@@ -1,4 +1,4 @@
-# Gretl CMake
+# Gretl
 
 [![Build Status](https://travis-ci.org/progtologist/gretl.svg?branch=master)](https://travis-ci.org/progtologist/gretl)
 
