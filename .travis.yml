@@ -7,7 +7,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install cmake
 install:
-  - sudo apt-get install -y gnuplot libfftw3-dev liblapack-dev gfortran libxml2-dev libgtk2.0-dev zlib1g-dev libreadline-dev libgtksourceview2.0-dev libgmp-dev curl libcurl4-openssl-gnutls-dev libmpfr-dev flite1-dev libflite1 libopenmpi-dev mpi-default-bin mpi-default-dev r-base-dev libgomp1 libzzip-dev unixodbc-dev 
+  - sudo apt-get install -y gnuplot libfftw3-dev liblapack-dev gfortran libxml2-dev libgtk2.0-dev zlib1g-dev libreadline-dev libgtksourceview2.0-dev libgmp-dev curl libcurl4-openssl-dev libmpfr-dev flite1-dev libflite1 libopenmpi-dev mpi-default-bin mpi-default-dev r-base-dev libgomp1 libzzip-dev unixodbc-dev 
 before_script: 
   - mkdir build
   - cd build
