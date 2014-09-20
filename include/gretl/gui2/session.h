@@ -25,6 +25,11 @@
 #include <gretl/lib/objstack.h>
 #include <gretl/gui2/gretltypes.h>
 
+struct SESSION_GRAPH_;
+struct SESSION_MODEL_;
+typedef struct SESSION_GRAPH_ SESSION_GRAPH;
+typedef struct SESSION_MODEL_ SESSION_MODEL;
+
 enum {
     SCHEDULE_FOR_DELETION,
     REALLY_DELETE_ALL,
@@ -65,6 +70,11 @@ int have_session_objects (void);
 
 int widget_is_iconview (GtkWidget *w);
 
+SESSION_MODEL *session_model_new (void *ptr, const char *name,
+           GretlObjType type);
+
+int session_append_text (const char *tname, char *buf);
+
 const char *get_session_dirname (void);
 
 int real_add_text_to_session (PRN *prn, const char *tname);
@@ -77,6 +87,14 @@ int cli_add_graph_to_session (const char *fname, const char *gname,
 			      GretlObjType type);
 
 char *session_graph_make_path (char *path, const char *fname);
+
+char *session_file_make_path (char *path, const char *fname);
+
+int session_append_model (SESSION_MODEL *mod);
+
+SESSION_GRAPH *session_append_graph (const char *grname,
+              const char *fname,
+              GretlObjType type);
 
 const char *last_session_graph_name (void);
 

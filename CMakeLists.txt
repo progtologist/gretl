@@ -248,6 +248,9 @@ if(MPI_C_FOUND)
 	endif()
 endif(MPI_C_FOUND)
 
+add_executable(gretl_x11 ${PROJECT_SOURCE_DIR}/src/gui2/gretl.c)
+target_link_libraries(gretl_x11 gui2 gretl)
+
 #############
 ## Testing ##
 #############

@@ -149,7 +149,7 @@ static void free_session_model (SESSION_MODEL *mod)
     free(mod);
 }
 
-static SESSION_MODEL *session_model_new (void *ptr, const char *name, 
+SESSION_MODEL *session_model_new (void *ptr, const char *name,
 					 GretlObjType type)
 {
     SESSION_MODEL *mod = mymalloc(sizeof *mod);
@@ -167,7 +167,7 @@ static SESSION_MODEL *session_model_new (void *ptr, const char *name,
     return mod;
 }
 
-static int session_append_text (const char *tname, char *buf)
+int session_append_text (const char *tname, char *buf)
 {
     SESSION_TEXT *text;
     SESSION_TEXT **texts;
@@ -199,7 +199,7 @@ static int session_append_text (const char *tname, char *buf)
     return 0;
 }
 
-static int session_append_model (SESSION_MODEL *mod)
+int session_append_model (SESSION_MODEL *mod)
 {
     SESSION_MODEL **models;
     int nm = session.nmodels;
@@ -222,7 +222,7 @@ static int session_append_model (SESSION_MODEL *mod)
     return 0;
 }
 
-static SESSION_GRAPH *session_append_graph (const char *grname,
+SESSION_GRAPH *session_append_graph (const char *grname,
 					    const char *fname,
 					    GretlObjType type)
 {
@@ -305,7 +305,7 @@ char *session_graph_make_path (char *path, const char *fname)
 
 /* first arg should be a MAXLEN string */
 
-static char *session_file_make_path (char *path, const char *fname)
+char *session_file_make_path (char *path, const char *fname)
 {
 #if SESSION_DEBUG
     fprintf(stderr, "session_file_make_path: fname = '%s'\n", fname);
