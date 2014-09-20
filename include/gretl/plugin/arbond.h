@@ -145,6 +145,7 @@ struct ddset_ {
 };
 
 void dpanel_residuals (ddset *dpd);
+
 int dpd_process_list (ddset *dpd, const int *list,
                  const int *ylags);
 

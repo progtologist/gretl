@@ -21,6 +21,8 @@
 
 #include <gretl/plugin/audio.h>
 
+const char *track_hdr = "MTrk";
+
 static int write_note_event (note_event *event, midi_spec *spec)
 {
     int len;

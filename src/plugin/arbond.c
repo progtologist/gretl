@@ -2645,6 +2645,3 @@ arbond_estimate (const int *list, const char *ispec,
 
     return mod;
 }
-
-#include "dpanel.c"
-

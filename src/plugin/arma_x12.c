@@ -107,7 +107,7 @@ static int tramo_x12a_spawn (const char *workdir, const char *fmt, ...)
 #endif /* !WIN32 */
 
 #define X12A_CODE
-#include "arma_common.c"
+#include <gretl/plugin/arma_common.h>
 #undef X12A_CODE
 
 static int add_unique_output_file (MODEL *pmod, const char *path)

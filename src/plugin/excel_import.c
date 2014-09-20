@@ -83,7 +83,7 @@ enum {
 } varname_errors;
 
 #define EXCEL_IMPORTER
-#include "import_common.c"
+#include <gretl/plugin/import_common.h>
 
 const char *adjust_rc = N_("Perhaps you need to adjust the "
 			   "starting column or row?");

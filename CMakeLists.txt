@@ -210,23 +210,23 @@ file(GLOB_RECURSE EXTRA_C ${PROJECT_SOURCE_DIR}/src/extra/*.c)
 ## Building ##
 ##############
 
-add_library(rng ${RNG_H} ${RNG_C})
+add_library(rng SHARED ${RNG_H} ${RNG_C})
 
-add_library(plugin ${PLUGIN_H} ${PLUGIN_C})
+add_library(plugin SHARED ${PLUGIN_H} ${PLUGIN_C})
 
-add_library(minpack ${MINPACK_H} ${MINPACK_C})
+add_library(minpack SHARED ${MINPACK_H} ${MINPACK_C})
 
-add_library(cephes ${CEPHES_H} ${CEPHES_C})
+add_library(cephes SHARED ${CEPHES_H} ${CEPHES_C})
 
-add_library(dcmt ${DCMT_H} ${DCMT_C})
+add_library(dcmt SHARED ${DCMT_H} ${DCMT_C})
 
 list(REMOVE_DUPLICATES GRETL_LIBS)
-add_library(gretl ${GRETL_LIB_H} ${GRETL_LIB_C})
+add_library(gretl SHARED ${GRETL_LIB_H} ${GRETL_LIB_C})
 target_link_libraries(gretl rng dcmt cephes minpack ${GRETL_LIBS})
 
-add_library(gui2 ${GUI2_H} ${GUI2_C})
+add_library(gui2 SHARED ${GUI2_H} ${GUI2_C})
 
-add_library(complete ${PROJECT_SOURCE_DIR}/src/cli/complete.c)
+add_library(complete SHARED ${PROJECT_SOURCE_DIR}/src/executables/complete.c)
 
 foreach(ITEM ${EXTRA_C})
 	get_filename_component(filename ${ITEM} NAME_WE)
@@ -234,11 +234,11 @@ foreach(ITEM ${EXTRA_C})
 	target_link_libraries(${filename} gretl)
 endforeach()
 
-add_executable(gretlcli ${PROJECT_SOURCE_DIR}/src/cli/gretlcli.c)
+add_executable(gretlcli ${PROJECT_SOURCE_DIR}/src/executables/gretlcli.c)
 target_link_libraries(gretlcli gretl complete)
 
 if(MPI_C_FOUND)
-	add_executable(gretlcli-mpi ${PROJECT_SOURCE_DIR}/src/cli/gretlcli-mpi.c)
+        add_executable(gretlcli-mpi ${PROJECT_SOURCE_DIR}/src/executables/gretlcli-mpi.c)
 	target_link_libraries(gretlcli-mpi gretl)
 	if(MPI_C_COMPILE_FLAGS)
   		set_target_properties(gretlcli-mpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
@@ -248,8 +248,14 @@ if(MPI_C_FOUND)
 	endif()
 endif(MPI_C_FOUND)
 
-add_executable(gretl_x11 ${PROJECT_SOURCE_DIR}/src/gui2/gretl.c)
+add_executable(gretl_x11 ${PROJECT_SOURCE_DIR}/src/executables/gretl.c)
 target_link_libraries(gretl_x11 gui2 gretl)
+
+add_executable(mklang ${PROJECT_SOURCE_DIR}/src/executables/mklang.c)
+target_link_libraries(mklang gui2 gretl)
+
+add_executable(mknews ${PROJECT_SOURCE_DIR}/src/executables/mknews.c)
+target_link_libraries(mknews gui2 gretl)
 
 #############
 ## Testing ##

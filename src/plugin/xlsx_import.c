@@ -35,7 +35,7 @@
 
 #define XLSX_IMPORTER
 
-#include "import_common.c"
+#include <gretl/plugin/import_common.h>
 
 #define XDEBUG 0
 #define DATE_DEBUG 0

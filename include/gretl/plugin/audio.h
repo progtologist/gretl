@@ -53,7 +53,7 @@
  #define DO_SPEECH
 #endif
 
-const char *track_hdr = "MTrk";
+const char *track_hdr;
 
 enum dataset_comments {
     TS_COMMENT = 0,
