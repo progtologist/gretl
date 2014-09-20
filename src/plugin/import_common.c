@@ -18,6 +18,7 @@
  */
 
 #include <gretl/plugin/import_common.h>
+#include <gretl/lib/csvdata.h>
 #include <gretl/lib/gretl_zip.h>
 
 int check_imported_varname (char *vname, int row, int col,

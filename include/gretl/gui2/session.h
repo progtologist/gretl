@@ -24,11 +24,7 @@
 
 #include <gretl/lib/objstack.h>
 #include <gretl/gui2/gretltypes.h>
-
-struct SESSION_GRAPH_;
-struct SESSION_MODEL_;
-typedef struct SESSION_GRAPH_ SESSION_GRAPH;
-typedef struct SESSION_MODEL_ SESSION_MODEL;
+#include <gretl/gui2/session_typedefs.h>
 
 enum {
     SCHEDULE_FOR_DELETION,

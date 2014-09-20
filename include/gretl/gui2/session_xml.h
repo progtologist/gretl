@@ -27,6 +27,7 @@
 #include <gretl/gui2/winstack.h>
 #include <gretl/gui2/fncall.h>
 #include <gretl/gui2/lib_private.h>
+#include <gretl/gui2/session_typedefs.h>
 
 #include <gretl/lib/var.h>
 #include <gretl/lib/varprint.h>
@@ -42,11 +43,6 @@
 #include <gretl/lib/boxplots.h>
 #include <gretl/lib/libset.h>
 
-typedef struct SESSION_ SESSION;
-typedef struct SESSION_TEXT_ SESSION_TEXT;
-typedef struct SESSION_MODEL_ SESSION_MODEL;
-typedef struct SESSION_GRAPH_ SESSION_GRAPH;
-typedef struct gui_obj_ gui_obj;
 
 enum {
     SESSION_CHANGED    = 1 << 0,

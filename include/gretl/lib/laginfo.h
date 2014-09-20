@@ -73,6 +73,8 @@ const int *get_lag_list_by_varnum (int v, const Laginfo *linfo);
 int
 add_lag_to_laglist (int srcv, int lag, int spos, Laginfo *linfo);
 
+int list_lag_info_add (int srcv, int lag, int lagv, int lpos, CMD *cmd);
+
 int
 print_lags_by_varnum (int v, const Laginfo *linfo,
               const DATASET *dset,

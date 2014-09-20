@@ -43,8 +43,10 @@ include(TestSignalType)
 include(TestBigEndian)
 test_big_endian(WORDS_BIGENDIAN)
 
-include(OptimizeForArchitecture)
-OptimizeForArchitecture()
+If(NOT("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+	include(OptimizeForArchitecture)
+	OptimizeForArchitecture()
+endif()
 
 if(NOT(GTK2_MINOR_VERSION LESS 20))
 	set(HAVE_GTK_SPINNER ON)
