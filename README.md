@@ -10,8 +10,7 @@ CMake scripts are under the cmake/Modules folder.
 The rest of the files have been placed under etc (and are not yet considered).
 The doc folder contains current documentation, eventually it will contain doxygen files.
 The test folder will contain unit test (gtest).
-
-**The gui version is not yet complete, only the cli version is functioning.**
+The share folder contains the xml UI files.
 
 ## How to use:
 
@@ -22,9 +21,9 @@ In a terminal type:
 git clone git@github.com:progtologist/gretl.git
 mkdir -p gretl/build
 cd gretl/build
-cmake ..
+cmake -DHOME_BUILD=1 ..
 make
-./simple_client
+./gretl_x11
 ```
 
 ### Under other platforms
