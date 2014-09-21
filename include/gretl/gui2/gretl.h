@@ -135,7 +135,7 @@ extern windata_t *mdata;
 extern GtkTargetEntry gretl_drag_targets[];
 extern PangoFontDescription *fixed_font;
 
-#include "gretl_enums.h"
+#include <gretl/gui2/gretl_enums.h>
 
 /* functions follow */
 

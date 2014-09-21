@@ -259,8 +259,8 @@ if(MPI_C_FOUND)
 	endif()
 endif(MPI_C_FOUND)
 
-add_executable(gretl_x11 ${PROJECT_SOURCE_DIR}/src/executables/gretl.c)
-target_link_libraries(gretl_x11 gui2 gretl)
+add_executable(gretl_gui ${PROJECT_SOURCE_DIR}/src/executables/gretl_gui.c)
+target_link_libraries(gretl_gui gui2 gretl)
 
 add_executable(mklang ${PROJECT_SOURCE_DIR}/src/executables/mklang.c)
 target_link_libraries(mklang gui2 gretl)
