@@ -1929,11 +1929,13 @@ static void set_gretl_libpath (const char *path)
 	size_t len = p - path;
 
 	*paths.libpath = '\0';
-	strncat(paths.libpath, path, len);
-	strcat(paths.libpath, "/lib/");
-	strcat(paths.libpath, PLUGIN_SFX);
+  strncat(paths.libpath, path, len);
+  strcat(paths.libpath, "/build/lib/");
+//	strcat(paths.libpath, "/lib/");
+//  strcat(paths.libpath, PLUGIN_SFX);
     } else {
-	sprintf(paths.libpath, "%s/lib/%s", path, PLUGIN_SFX);
+    sprintf(paths.libpath, "%s/build/lib/", path);
+//  sprintf(paths.libpath, "%s/lib/%s", path, PLUGIN_SFX);
     }
 # endif /* !LIBDIR */
 #endif /* !WIN32 */

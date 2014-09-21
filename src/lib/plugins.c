@@ -285,8 +285,8 @@ static const char *get_plugin_name_for_function (const char *func)
 	    break;
 	}
     }
-
-    return plugins[idx].pname;
+  return "libplugin";
+//    return plugins[idx].pname;
 }
 
 /**

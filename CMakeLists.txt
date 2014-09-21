@@ -220,37 +220,50 @@ file(GLOB_RECURSE EXTRA_C ${PROJECT_SOURCE_DIR}/src/extra/*.c)
 ##############
 ## Building ##
 ##############
+list(REMOVE_DUPLICATES GRETL_LIBS)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 add_library(rng SHARED ${RNG_H} ${RNG_C})
+add_library(rng_static STATIC ${RNG_H} ${RNG_C})
 
 add_library(plugin SHARED ${PLUGIN_H} ${PLUGIN_C})
+target_link_libraries(plugin ${GRETL_LIBS})
+add_library(plugin_static STATIC ${PLUGIN_H} ${PLUGIN_C})
+target_link_libraries(plugin_static ${GRETL_LIBS})
 
 add_library(minpack SHARED ${MINPACK_H} ${MINPACK_C})
+add_library(minpack_static STATIC ${MINPACK_H} ${MINPACK_C})
 
 add_library(cephes SHARED ${CEPHES_H} ${CEPHES_C})
+add_library(cephes_static STATIC ${CEPHES_H} ${CEPHES_C})
 
 add_library(dcmt SHARED ${DCMT_H} ${DCMT_C})
+add_library(dcmt_static STATIC ${DCMT_H} ${DCMT_C})
 
-list(REMOVE_DUPLICATES GRETL_LIBS)
 add_library(gretl SHARED ${GRETL_LIB_H} ${GRETL_LIB_C})
 target_link_libraries(gretl rng dcmt cephes minpack ${GRETL_LIBS})
+add_library(gretl_static STATIC ${GRETL_LIB_H} ${GRETL_LIB_C})
+target_link_libraries(gretl_static rng_static dcmt_static cephes_static minpack_static ${GRETL_LIBS})
 
 add_library(gui2 SHARED ${GUI2_H} ${GUI2_C})
+add_library(gui2_static STATIC ${GUI2_H} ${GUI2_C})
 
 add_library(complete SHARED ${PROJECT_SOURCE_DIR}/src/executables/complete.c)
+add_library(complete_static STATIC ${PROJECT_SOURCE_DIR}/src/executables/complete.c)
 
 foreach(ITEM ${EXTRA_C})
 	get_filename_component(filename ${ITEM} NAME_WE)
 	add_executable(${filename} ${ITEM})
-	target_link_libraries(${filename} gretl)
+	target_link_libraries(${filename} gretl_static)
 endforeach()
 
 add_executable(gretlcli ${PROJECT_SOURCE_DIR}/src/executables/gretlcli.c)
-target_link_libraries(gretlcli gretl complete)
+target_link_libraries(gretlcli gretl_static complete_static plugin_static)
 
 if(MPI_C_FOUND)
-        add_executable(gretlcli-mpi ${PROJECT_SOURCE_DIR}/src/executables/gretlcli-mpi.c)
-	target_link_libraries(gretlcli-mpi gretl)
+    add_executable(gretlcli-mpi ${PROJECT_SOURCE_DIR}/src/executables/gretlcli-mpi.c)
+	target_link_libraries(gretlcli-mpi gretl_static plugin_static)
 	if(MPI_C_COMPILE_FLAGS)
   		set_target_properties(gretlcli-mpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
 	endif()
@@ -260,13 +273,13 @@ if(MPI_C_FOUND)
 endif(MPI_C_FOUND)
 
 add_executable(gretl_gui ${PROJECT_SOURCE_DIR}/src/executables/gretl_gui.c)
-target_link_libraries(gretl_gui gui2 gretl)
+target_link_libraries(gretl_gui gui2_static gretl_static plugin_static)
 
 add_executable(mklang ${PROJECT_SOURCE_DIR}/src/executables/mklang.c)
-target_link_libraries(mklang gui2 gretl)
+target_link_libraries(mklang gui2_static gretl_static)
 
 add_executable(mknews ${PROJECT_SOURCE_DIR}/src/executables/mknews.c)
-target_link_libraries(mknews gui2 gretl)
+target_link_libraries(mknews gui2_static gretl_static)
 
 #############
 ## Testing ##

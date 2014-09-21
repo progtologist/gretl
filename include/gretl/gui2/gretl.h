@@ -156,6 +156,7 @@ int is_control_key (guint k);
 gboolean real_open_tryfile (void);
 gchar *user_friendly_menu_path (const char *mpath,
 				gboolean modelwin);
+void gui_nls_init (void);
 
 #ifdef MAC_INTEGRATION
 gint mac_hide_unhide (GdkEventKey *event);

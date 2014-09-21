@@ -94,15 +94,6 @@ static GtkUIManager *add_mac_menu (void);
 static void finish_mac_ui (GtkUIManager *mgr);
 #endif
 
-GtkTargetEntry gretl_drag_targets[] = {
-    { "text/uri-list",  0, GRETL_FILENAME },
-    { "db_series_ptr",  GTK_TARGET_SAME_APP, GRETL_DBSERIES_PTR },
-    { "model_ptr",      GTK_TARGET_SAME_APP, GRETL_MODEL_PTR },
-    { "remote_db_ptr",  GTK_TARGET_SAME_APP, GRETL_REMOTE_DB_PTR },
-    { "remote_pkg_ptr", GTK_TARGET_SAME_APP, GRETL_REMOTE_FNPKG_PTR },
-    { "graph_file",     GTK_TARGET_SAME_APP, GRETL_GRAPH_FILE }
-};
-
 static void
 mdata_handle_drag  (GtkWidget          *widget,
         GdkDragContext     *dc,
@@ -157,38 +148,6 @@ MODEL *model;             /* gretl models struct */
 
 int data_status, orig_vars;
 float gui_scale;
-
-/* defaults for some options */
-int winsize = FALSE;
-int main_x = -1;
-int main_y = -1;
-int mainwin_width = 520;
-int mainwin_height = 420;
-int ox_support = FALSE;
-
-#if defined(G_OS_WIN32)
-char calculator[MAXSTR] = "calc.exe";
-char latex[MAXSTR] = "pdflatex.exe";
-char viewdvi[MAXSTR] = "windvi.exe";
-char Rcommand[MAXSTR] = "RGui.exe";
-#elif defined(OS_OSX)
-char calculator[MAXSTR] = "/Applications/Calculator.app/Contents/MacOS/Calculator";
-char latex[MAXSTR] = "pdflatex";
-char viewdvi[MAXSTR] = "xdvi";
-# ifdef MAC_NATIVE
-char Rcommand[MAXSTR] = "/Applications/R.app/Contents/MacOS/R";
-# else
-char Rcommand[MAXSTR] = "/usr/X11R6/bin/xterm -e R";
-# endif
-#else
-char Browser[MAXSTR] = "mozilla";
-char calculator[MAXSTR] = "xcalc";
-char latex[MAXSTR] = "pdflatex";
-char viewdvi[MAXSTR] = "xdvi";
-char viewpdf[MAXSTR] = "acroread";
-char viewps[MAXSTR] = "gv";
-char Rcommand[MAXSTR] = "xterm -e R";
-#endif
 
 static void spreadsheet_edit (void)
 {
@@ -344,80 +303,6 @@ static void maybe_fix_dbname (char *dbname)
   }
   g_free(tmp);
     }
-}
-
-#if !defined(ENABLE_NLS)
-
-static void real_nls_init (void)
-{
-    return;
-}
-
-#elif defined(G_OS_WIN32)
-
-static void real_nls_init (void)
-{
-    char localedir[MAXSTR];
-
-    build_path(localedir, gretl_home(), "locale", NULL);
-    setlocale(LC_ALL, "");
-    set_gretl_charset();
-    bindtextdomain(PACKAGE, localedir);
-    textdomain(PACKAGE);
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-}
-
-#elif defined(OS_OSX)
-
-static void real_nls_init (void)
-{
-    char *gretlhome = getenv("GRETL_HOME");
-    char localedir[MAXSTR];
-    char *p;
-
-    if (gretlhome == NULL) {
-  return;
-    }
-
-    strcpy(localedir, gretlhome);
-    p = strstr(localedir, "share/gretl");
-    if (p != NULL) {
-  strcpy(p, "share/locale");
-    }
-
-    setlocale(LC_ALL, "");
-    set_gretl_charset();
-    bindtextdomain(PACKAGE, localedir);
-    textdomain(PACKAGE);
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-}
-
-#else /* regular *nix treatment of NLS */
-
-static void real_nls_init (void)
-{
-    setlocale(LC_ALL, "");
-    set_gretl_charset();
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-}
-
-#endif /* NLS init variants */
-
-void gui_nls_init (void)
-{
-    char *mylang = getenv("GRETL_LANG");
-
-    if (mylang != NULL) {
-  if (!g_ascii_strcasecmp(mylang, "english") ||
-      !g_ascii_strcasecmp(mylang, "C")) {
-      /* don't set up translation */
-      return;
-  }
-    }
-
-    real_nls_init();
 }
 
 #ifndef G_OS_WIN32
@@ -1360,7 +1245,7 @@ static void make_main_window (void)
 # define HELPKEY NULL
 #endif
 
-GtkActionEntry main_entries[] = {
+static GtkActionEntry main_entries[] = {
     /* File */
     { "File",         NULL, N_("_File"), NULL, NULL, NULL },
     { "OpenDataMenu", NULL, N_("_Open data"), NULL, NULL, NULL },

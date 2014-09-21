@@ -25,6 +25,7 @@
 #include <gretl/lib/version.h>
 #include <gretl/lib/gretl_xml.h>
 #include <gretl/plugin/importer.h>
+#include <gretl/plugin/import_common.h>
 #include <gretl/lib/csvdata.h>
 
 #undef IDEBUG

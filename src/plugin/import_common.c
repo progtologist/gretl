@@ -20,6 +20,7 @@
 #include <gretl/plugin/import_common.h>
 #include <gretl/lib/csvdata.h>
 #include <gretl/lib/gretl_zip.h>
+#include <errno.h>
 
 int check_imported_varname (char *vname, int row, int col,
                    PRN *prn)
@@ -59,8 +60,6 @@ int check_imported_varname (char *vname, int row, int col,
     return (err)? E_DATA : 0;
 }
 
-#ifndef EXCEL_IMPORTER /* FIXME? */
-
 void import_ts_check (DATASET *dset)
 {
     PRN *prn = gretl_print_new(GRETL_PRINT_STDERR, NULL);
@@ -89,10 +88,6 @@ void import_ts_check (DATASET *dset)
 
     gretl_print_destroy(prn);
 }
-
-#endif /* !EXCEL_IMPORTER */
-
-#if defined(ODS_IMPORTER) || defined(XLSX_IMPORTER)
 
 char *get_absolute_path (const char *fname)
 {
@@ -155,7 +150,7 @@ int gretl_make_tempdir (char *dname)
     return err;
 }
 
-# endif /* G_OS_WIN32 or not */
+#endif
 
 /* For ODS and XLSX: unzip the target file in the user's
    "dotdir". On successful completion @dname holds the
@@ -261,8 +256,6 @@ int import_prune_columns (DATASET *dset)
 
     return err;
 }
-
-#else /* !ODS, !XLSX */
 
 int worksheet_start_dataset (DATASET *newinfo)
 {
@@ -395,8 +388,6 @@ void wbook_record_params (wbook *book, int *list)
     }
 }
 
-#endif /* !ODS_IMPORTER */
-
 /* @list may contain sheet number, row and/or column offset;
    @sheetname may contain the name of a specific sheet; but
    both may be NULL
@@ -461,8 +452,7 @@ void colspin_changed (GtkEditable *ed, GtkWidget *w)
     }
 }
 
-#ifdef EXCEL_IMPORTER
-# ifndef WIN32
+#ifndef WIN32
 
 void infobox (const char *template, ...)
 {
@@ -485,7 +475,6 @@ void infobox (const char *template, ...)
 }
 
 # endif /* !WIN32 */
-
 
 void debug_callback (GtkWidget *w, wbook *book)
 {
@@ -510,8 +499,6 @@ void debug_callback (GtkWidget *w, wbook *book)
     done = 1;
     }
 }
-
-#endif /* EXCEL_IMPORTER */
 
 int book_get_min_offset (wbook *book, int k)
 {

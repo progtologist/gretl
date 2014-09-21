@@ -538,318 +538,6 @@ static int have_data (void)
     return dataset != NULL && dataset->v > 0;
 }
 
-int main (int argc, char **argv)
-{
-#ifdef G_OS_WIN32
-    char *callname = argv[0];
-#endif
-    int ftype = 0;
-    char auxname[MAXLEN];
-    char filearg[MAXLEN];
-    GError *opterr = NULL;
-
-#ifdef G_OS_WIN32
-    win32_set_gretldir(callname);
-#endif
-
-    gui_nls_init();
-
-    *tryfile = '\0';
-    *scriptfile = '\0';
-    *datafile = '\0';
-    *auxname = '\0';
-    *filearg = '\0';
-
-#if GUI_DEBUG
-    fprintf(stderr, "starting gretl %s, build date %s\n", GRETL_VERSION, 
-	    BUILD_DATE);
-#endif
-
-    gtk_init_with_args(&argc, &argv, _(param_msg), options, "gretl", &opterr);
-    if (opterr != NULL) {
-	g_print("%s\n", opterr->message);
-	exit(EXIT_FAILURE);
-    }
-
-#ifdef MAC_INTEGRATION
-    theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
-    install_mac_signals(theApp);
-    gtkosx_application_set_use_quartz_accelerators(theApp, FALSE);
-#endif
-
-#ifdef G_OS_WIN32
-    /* let's call this before doing libgretl_init */
-    gretl_win32_debug_init(optdebug);
-#endif
-
-    libgretl_init();
-    gretl_set_gui_mode();
-
-#ifdef G_OS_WIN32
-    gretl_win32_init(callname, optdebug);
-#else 
-    gretl_config_init();
-#endif
-
-    if (optver) {
-	gui_logo(NULL);
-	exit(EXIT_SUCCESS);
-    } else if (optdump) {
-	dump_rc();
-	exit(EXIT_SUCCESS);
-    } else if (optrun) {
-	get_runfile(optrun);
-    } else if (optdb != NULL) {
-	strncat(auxname, optdb, MAXLEN - 1);
-	maybe_fix_dbname(auxname);
-    } else if (optwebdb != NULL) {
-	strncat(auxname, optdb, MAXLEN - 1);
-    } else if (optpkg != NULL) {
-	strncat(auxname, optpkg, MAXLEN - 1);
-    }
-
-    if (opteng) {
-	force_language(LANG_C);
-	force_english_help();
-    } else if (optbasque) {
-	force_language(LANG_EU);
-    }
-
-#if GUI_DEBUG
-    fprintf(stderr, "finished option processing\n");
-#endif
-
-    /* set libgretl callbacks */
-    set_workdir_callback(gui_set_working_dir);
-    set_show_activity_func(gui_show_activity);
-    set_query_stop_func(gui_query_stop);
-
-    /* allocate data information struct */
-    dataset = datainfo_new();
-    if (dataset == NULL) {
-	noalloc();
-    }
-
-    /* allocate memory for models */
-    model = allocate_working_model();
-    if (model == NULL) {
-	noalloc();
-    }
-
-    library_command_init();
-
-    helpfile_init();
-    session_init();
-    init_fileptrs();
-
-    if (argc > 1 && *filearg == '\0') {
-	strncat(filearg, argv[1], MAXLEN - 1);
-    }
-
-#ifdef GRETL_OPEN_HANDLER
-    if (maybe_hand_off(filearg, auxname)) {
-	fflush(stderr);
-	exit(EXIT_SUCCESS);
-    }
-#endif
-
-#if GUI_DEBUG
-    fprintf(stderr, "finished miscellaneous init functions\n");
-#endif
-
-    if (argc > 1) {
-	/* Process what is presumably a filename argument
-	   given on the command line (by now any options will
-	   have been extracted from the argv array).
-	*/
-	PRN *prn; 
-	int err = 0;
-
-	prn = gretl_print_new(GRETL_PRINT_STDERR, &err);
-	if (err) {
-	    exit(EXIT_FAILURE);
-	}
-
-	*datafile = '\0';
-
-#ifdef G_OS_WIN32
-	if (filename_to_win32(datafile, filearg)) {
-	    exit(EXIT_FAILURE);
-	}
-#else
-	record_filearg(datafile, filearg);
-#endif
-
-	/* keep a copy of input filename */
-	strcpy(tryfile, datafile);
-
-	ftype = detect_filetype(datafile, OPT_P);
-
-	switch (ftype) {
-	case GRETL_XML_DATA:
-	case GRETL_BINARY_DATA:
-	    err = gretl_read_gdt(datafile, dataset, OPT_NONE, prn);
-	    break;
-	case GRETL_CSV:
-	    err = import_csv(datafile, dataset, OPT_NONE, prn);
-	    break;
-	case GRETL_XLS:
-	case GRETL_XLSX:    
-	case GRETL_GNUMERIC:
-	case GRETL_ODS:
-	case GRETL_DTA:
-	case GRETL_SAV:
-	case GRETL_SAS:
-	case GRETL_JMULTI:
-	case GRETL_OCTAVE:
-	case GRETL_WF1:
-	    err = get_imported_data(datafile, ftype, 0);
-	    break;
-	case GRETL_SCRIPT:
-	case GRETL_SESSION:
-	    get_runfile(datafile);
-	    *datafile = '\0';
-	    break;
-	case GRETL_NATIVE_DB:
-	case GRETL_RATS_DB:  
-	case GRETL_PCGIVE_DB:
-	    strcpy(auxname, datafile);
-	    *tryfile = '\0';
-	    *datafile = '\0';
-	    maybe_fix_dbname(auxname);
-	    optdb = auxname;
-	    break;
-	case GRETL_UNRECOGNIZED:
-	default:
-	    fprintf(stderr, "%s: unrecognized file type", tryfile);
-	    exit(EXIT_FAILURE);
-	    break;
-	}
-
-	if (err == E_CANCEL) {
-	    err = 0;
-	    ftype = 0;
-	    *tryfile = '\0';
-	    *datafile = '\0';
-	}
-
-	if (ftype != GRETL_SCRIPT && err) {
-	    errmsg(err, prn);
-	    exit(EXIT_FAILURE);
-	}
-
-	gretl_print_destroy(prn);
-    }
-
-#if GUI_DEBUG
-    fprintf(stderr, "about to build GUI...\n");
-#endif
-
-#if defined(G_OS_WIN32)
-    set_up_windows_look();
-#elif defined(MAC_NATIVE) && defined(PKGBUILD)
-    set_up_mac_look();
-#elif defined(MAC_THEMING)
-    set_up_mac_look();
-#endif
-
-    /* create the GUI */
-    gretl_stock_icons_init();
-#if GUI_DEBUG
-    fprintf(stderr, " done gretl_stock_icons_init\n");
-#endif
-    make_main_window();
-
-#if GUI_DEBUG
-    fprintf(stderr, "done make_main_window\n");
-#endif
-
-    if (have_data()) {
-	/* redundant? */
-	set_sample_label(dataset);
-    }
-
-    add_files_to_menus();
-
-#if GUI_DEBUG
-    fprintf(stderr, "done add_files_to_menus\n");
-#endif
-
-#ifdef GRETL_PID_FILE
-    write_pid_to_file();
-    atexit(delete_pid_from_file);
-#endif
-
-    session_menu_state(FALSE);
-    restore_sample_state(FALSE);
-    dataset_menubar_state(FALSE);
-
-#if GUI_DEBUG
-    fprintf(stderr, "done setting GUI state\n");
-#endif
-
-    if (have_data()) {
-	register_startup_data(tryfile);
-	maybe_display_string_table();
-	*tryfile = '\0';
-    }
-
-    /* opening a script or session from the command line? */
-    if (*tryfile != '\0') { 
-	if (gretl_is_pkzip_file(tryfile)) {
-	    ftype = GRETL_SESSION;
-	}
-	if (ftype == GRETL_SESSION) {
-	    do_open_session();
-	} else if ((ftype = script_type(tryfile))) {
-	    do_open_script(ftype);
-	} else {
-	    do_open_script(EDIT_SCRIPT);
-	}
-    }
-
-    /* try opening specified database or package */
-    if (optdb != NULL) {
-	open_named_db_index(auxname);
-    } else if (optwebdb != NULL) {
-	open_named_remote_db_index(auxname);
-    } else if (optpkg != NULL) {
-	edit_package_at_startup(auxname);
-    }
-
-#ifdef GRETL_OPEN_HANDLER
-    install_open_handler();
-#endif
-
-#if GUI_DEBUG
-    fprintf(stderr, "calling gtk_main()\n");
-#endif
-
-    /* Enter the event loop */
-    gtk_main();
-
-    /* clean up before exiting */
-    free_session(OPT_NONE);
-
-    destroy_working_model(model);
-
-    library_command_free();
-    libgretl_cleanup();
-
-    if (data_status) {
-	destroy_dataset(dataset);
-    }
-
-    destroy_file_collections();
-    free_command_stack();
-
-#ifdef MAC_INTEGRATION
-    g_object_unref(theApp);
-#endif
-
-    return EXIT_SUCCESS;
-}
-
 static void check_varmenu_state (GtkTreeSelection *select, gpointer p)
 {
     if (mdata->ui != NULL) {
@@ -1554,15 +1242,15 @@ static void make_main_window (void)
 # define HELPKEY NULL
 #endif
 
-GtkActionEntry main_entries[] = {
+static GtkActionEntry main_entries[] = {
     /* File */
-    { "File",         NULL, N_("_File"), NULL, NULL, NULL }, 
-    { "OpenDataMenu", NULL, N_("_Open data"), NULL, NULL, NULL }, 
+    { "File",         NULL, N_("_File"), NULL, NULL, NULL },
+    { "OpenDataMenu", NULL, N_("_Open data"), NULL, NULL, NULL },
     { "OpenData",     GTK_STOCK_OPEN, N_("_User file..."), NULL, NULL, G_CALLBACK(open_data) },
     { "DisplayDataFiles", GTK_STOCK_OPEN, N_("_Sample file..."), "", NULL, G_CALLBACK(show_files) },
-    { "AppendData", NULL, N_("_Append data..."), NULL, NULL, G_CALLBACK(open_data) }, 
+    { "AppendData", NULL, N_("_Append data..."), NULL, NULL, G_CALLBACK(open_data) },
     { "SaveData",  GTK_STOCK_SAVE, N_("_Save data"), NULL, NULL, G_CALLBACK(auto_store) },
-    { "SaveDataAs", GTK_STOCK_SAVE_AS, N_("Save data _as..."), NULL, NULL, G_CALLBACK(fsave_callback) }, 
+    { "SaveDataAs", GTK_STOCK_SAVE_AS, N_("Save data _as..."), NULL, NULL, G_CALLBACK(fsave_callback) },
     { "ExportData", NULL, N_("_Export data..."), NULL, NULL, G_CALLBACK(fsave_callback) },
     { "MailData", GRETL_STOCK_MAIL, N_("Send To..."), NULL, NULL, G_CALLBACK(email_data) },
     { "NewData", GTK_STOCK_NEW, N_("_New data set"), NULL, NULL, G_CALLBACK(newdata_callback) },
@@ -1582,9 +1270,9 @@ GtkActionEntry main_entries[] = {
 
     { "SessionFiles", NULL, N_("_Session files"), NULL, NULL, NULL },
     { "OpenSession", GTK_STOCK_OPEN, N_("_Open session..."), "", NULL, G_CALLBACK(open_session_callback) },
-    { "SaveSession", GTK_STOCK_SAVE, N_("_Save session"), "", NULL, 
+    { "SaveSession", GTK_STOCK_SAVE, N_("_Save session"), "", NULL,
       G_CALLBACK(save_session_callback) },
-    { "SaveSessionAs", GTK_STOCK_SAVE_AS, N_("Save session _as..."), NULL, NULL, 
+    { "SaveSessionAs", GTK_STOCK_SAVE_AS, N_("Save session _as..."), NULL, NULL,
       G_CALLBACK(save_session_callback) },
 
     { "Databases", NULL, N_("_Databases"), NULL, NULL, NULL },
@@ -1618,11 +1306,11 @@ GtkActionEntry main_entries[] = {
     { "NistVerbose", NULL, N_("_Verbose"), NULL, NULL, G_CALLBACK(do_nistcheck) },
     { "NistVVerbose", NULL, N_("V_ery verbose"), NULL, NULL, G_CALLBACK(do_nistcheck) },
     { "Preferences", NULL, N_("_Preferences"), NULL, NULL, NULL },
-    { "PrefsGeneral", GTK_STOCK_PREFERENCES, N_("_General..."), NULL, NULL, 
+    { "PrefsGeneral", GTK_STOCK_PREFERENCES, N_("_General..."), NULL, NULL,
       G_CALLBACK(options_dialog_callback) },
-    { "FixedFont", GTK_STOCK_SELECT_FONT, N_("_Fixed font..."), NULL, NULL, 
+    { "FixedFont", GTK_STOCK_SELECT_FONT, N_("_Fixed font..."), NULL, NULL,
       G_CALLBACK(font_selector) },
-    { "MenuFont", GTK_STOCK_SELECT_FONT, N_("_Menu font..."), NULL, NULL, 
+    { "MenuFont", GTK_STOCK_SELECT_FONT, N_("_Menu font..."), NULL, NULL,
       G_CALLBACK(font_selector) },
 
     /* Data */
@@ -1673,11 +1361,11 @@ GtkActionEntry main_entries[] = {
     { "logs", NULL, N_("_Logs of selected variables"), NULL, NULL, G_CALLBACK(logs_etc_callback) },
     { "square", NULL, N_("_Squares of selected variables"), NULL, NULL, G_CALLBACK(logs_etc_callback) },
     { "lags", NULL, N_("_Lags of selected variables"), NULL, NULL, G_CALLBACK(logs_etc_callback) },
-    { "diff", NULL, N_("_First differences of selected variables"), NULL, NULL, 
+    { "diff", NULL, N_("_First differences of selected variables"), NULL, NULL,
       G_CALLBACK(logs_etc_callback) },
-    { "ldiff", NULL, N_("_Log differences of selected variables"), NULL, NULL, 
+    { "ldiff", NULL, N_("_Log differences of selected variables"), NULL, NULL,
       G_CALLBACK(logs_etc_callback) },
-    { "sdiff", NULL, N_("_Seasonal differences of selected variables"), NULL, NULL, 
+    { "sdiff", NULL, N_("_Seasonal differences of selected variables"), NULL, NULL,
       G_CALLBACK(logs_etc_callback) },
     { "AddIndex", NULL, N_("_Index variable"), NULL, NULL, G_CALLBACK(add_index) },
     { "AddTime", NULL, N_("_Time trend"), NULL, NULL, G_CALLBACK(add_index) },
@@ -1687,7 +1375,7 @@ GtkActionEntry main_entries[] = {
     { "UnitDums", NULL, N_("_Unit dummies"), NULL, NULL, G_CALLBACK(add_dummies) },
     { "TimeDums", NULL, N_("_Time dummies"), NULL, NULL, G_CALLBACK(add_dummies) },
     { "RangeDum", NULL, N_("_Observation range dummy"), NULL, NULL, G_CALLBACK(range_dummy_dialog) },
-    { "dummify", NULL, N_("Dummies for selected _discrete variables"), NULL, NULL, 
+    { "dummify", NULL, N_("Dummies for selected _discrete variables"), NULL, NULL,
       G_CALLBACK(logs_etc_callback) },
     { "NewMatrix", NULL, N_("_Define matrix..."), NULL, NULL, G_CALLBACK(new_matrix_callback) },
 
@@ -1696,12 +1384,12 @@ GtkActionEntry main_entries[] = {
     { "SMPL", NULL, N_("_Set range..."), NULL, NULL, G_CALLBACK(sample_range_dialog) },
     { "FullRange", NULL, N_("_Restore full range"), NULL, NULL, G_CALLBACK(restore_sample_callback) },
     { "ShowSample", NULL, N_("_Show status"), NULL, NULL, G_CALLBACK(show_sample_callback) },
-    { "SMPLBOOL", NULL, N_("_Restrict, based on criterion..."), NULL, NULL, 
+    { "SMPLBOOL", NULL, N_("_Restrict, based on criterion..."), NULL, NULL,
       G_CALLBACK(sample_restrict_dialog) },
     { "SMPLRAND", NULL, N_("R_andom sub-sample..."), NULL, NULL, G_CALLBACK(sample_range_dialog) },
-    { "SampleWReplace", NULL, N_("_Resample with replacement..."), NULL, NULL, 
+    { "SampleWReplace", NULL, N_("_Resample with replacement..."), NULL, NULL,
       G_CALLBACK(gui_resample_data) },
-    { "DropMissing", NULL, N_("Drop all obs with _missing values"), NULL, NULL, 
+    { "DropMissing", NULL, N_("Drop all obs with _missing values"), NULL, NULL,
       G_CALLBACK(drop_all_missing) },
     { "CountMissing", NULL, N_("_Count missing values"), NULL, NULL, G_CALLBACK(count_missing) },
 
@@ -1734,29 +1422,29 @@ GtkActionEntry main_entries[] = {
     { "FilterBW", NULL, N_("_Butterworth"), NULL, NULL, G_CALLBACK(filter_callback) },
     { "FilterPoly", NULL, N_("_Polynomial trend"), NULL, NULL, G_CALLBACK(filter_callback) },
     { "FilterFD", NULL, N_("_Fractional difference"), NULL, NULL, G_CALLBACK(filter_callback) },
-    
+
 #ifdef HAVE_X12A
-    { "X12A", NULL, N_("_X-12-ARIMA analysis"), NULL, NULL, G_CALLBACK(do_tramo_x12a) },    
+    { "X12A", NULL, N_("_X-12-ARIMA analysis"), NULL, NULL, G_CALLBACK(do_tramo_x12a) },
 #endif
 #ifdef HAVE_TRAMO
-    { "Tramo", NULL, N_("_TRAMO analysis"), NULL, NULL, G_CALLBACK(do_tramo_x12a) },  
+    { "Tramo", NULL, N_("_TRAMO analysis"), NULL, NULL, G_CALLBACK(do_tramo_x12a) },
 #endif
-    { "Hurst", NULL, N_("_Hurst exponent"), NULL, NULL, G_CALLBACK(do_hurst) },     
-    { "EditAttrs", NULL, N_("_Edit attributes"), NULL, NULL, G_CALLBACK(varinfo_callback) },     
-    { "VSETMISS", NULL, N_("Set missing _value code..."), NULL, NULL, G_CALLBACK(gretl_callback) },     
-    { "GENR", NULL, N_("Define _new variable..."), NULL, NULL, G_CALLBACK(gretl_callback) }, 
+    { "Hurst", NULL, N_("_Hurst exponent"), NULL, NULL, G_CALLBACK(do_hurst) },
+    { "EditAttrs", NULL, N_("_Edit attributes"), NULL, NULL, G_CALLBACK(varinfo_callback) },
+    { "VSETMISS", NULL, N_("Set missing _value code..."), NULL, NULL, G_CALLBACK(gretl_callback) },
+    { "GENR", NULL, N_("Define _new variable..."), NULL, NULL, G_CALLBACK(gretl_callback) },
 
     /* Model */
     { "Model", NULL, N_("_Model"), NULL, NULL, NULL },
-    { "ols", NULL, N_("_Ordinary Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "ols", NULL, N_("_Ordinary Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "ivreg", NULL, N_("_Instrumental variables"), NULL, NULL, NULL },
-    { "tsls", NULL, N_("_Two-Stage Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "iv-liml", NULL, N_("_LIML..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "iv-gmm", NULL, N_("_GMM..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "tsls", NULL, N_("_Two-Stage Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "iv-liml", NULL, N_("_LIML..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "iv-gmm", NULL, N_("_GMM..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "LinearModels", NULL, N_("Other _linear models"), NULL, NULL, NULL },
-    { "wls", NULL, N_("_Weighted Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "wls", NULL, N_("_Weighted Least Squares..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "hsk", NULL, N_("H_eteroskedasticity corrected..."), NULL, NULL, G_CALLBACK(model_callback) },
-    { "mpols", NULL, N_("High _precision OLS..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "mpols", NULL, N_("High _precision OLS..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "anova", NULL, N_("ANOVA..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "TSModels", NULL, N_("_Time series"), NULL, NULL, NULL },
     { "ar1", NULL, N_("_AR(1)..."), NULL, NULL, G_CALLBACK(model_callback) },
@@ -1776,31 +1464,31 @@ GtkActionEntry main_entries[] = {
     { "dpanel", NULL, N_("_Dynamic panel model..."), NULL, NULL, G_CALLBACK(model_callback) },
 
     { "LimdepModels", NULL, N_("_Limited dependent variable"), NULL, NULL, NULL },
-    { "logit", NULL, N_("_Logit"), NULL, NULL, NULL }, 
-    { "blogit", NULL, N_("_Binary..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "ologit", NULL, N_("_Ordered..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "mlogit", NULL, N_("_Multinomial..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "probit", NULL, N_("_Probit"), NULL, NULL, NULL }, 
-    { "bprobit", NULL, N_("_Binary..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "oprobit", NULL, N_("_Ordered..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "logit", NULL, N_("_Logit"), NULL, NULL, NULL },
+    { "blogit", NULL, N_("_Binary..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "ologit", NULL, N_("_Ordered..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "mlogit", NULL, N_("_Multinomial..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "probit", NULL, N_("_Probit"), NULL, NULL, NULL },
+    { "bprobit", NULL, N_("_Binary..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "oprobit", NULL, N_("_Ordered..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "biprobit", NULL, N_("Bi_variate..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "reprobit", NULL, N_("_Random effects..."), NULL, NULL, G_CALLBACK(model_callback) },
-    { "tobit", NULL, N_("To_bit..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "heckit", NULL, N_("_Heckit..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "countmod", NULL, N_("_Count data..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "duration", NULL, N_("_Duration data..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "logistic", NULL, N_("Lo_gistic..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "intreg", NULL, N_("_Interval regression..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "tobit", NULL, N_("To_bit..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "heckit", NULL, N_("_Heckit..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "countmod", NULL, N_("_Count data..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "duration", NULL, N_("_Duration data..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "logistic", NULL, N_("Lo_gistic..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "intreg", NULL, N_("_Interval regression..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "RobustModels", NULL, N_("_Robust estimation"), NULL, NULL, NULL },
-    { "lad", NULL, N_("Least _Absolute Deviation..."), NULL, NULL, G_CALLBACK(model_callback) }, 
-    { "quantreg", NULL, N_("_Quantile regression..."), NULL, NULL, G_CALLBACK(model_callback) }, 
+    { "lad", NULL, N_("Least _Absolute Deviation..."), NULL, NULL, G_CALLBACK(model_callback) },
+    { "quantreg", NULL, N_("_Quantile regression..."), NULL, NULL, G_CALLBACK(model_callback) },
     { "spearman", NULL, N_("_Rank correlation..."), NULL, NULL, G_CALLBACK(selector_callback) },
-    { "loess", NULL, N_("_Loess..."), NULL, NULL, G_CALLBACK(selector_callback) }, 
+    { "loess", NULL, N_("_Loess..."), NULL, NULL, G_CALLBACK(selector_callback) },
     { "nadarwat", NULL, N_("_Nadaraya-Watson..."), NULL, NULL, G_CALLBACK(selector_callback) },
-    { "nls", NULL, N_("_Nonlinear Least Squares..."), NULL, NULL, G_CALLBACK(gretl_callback) }, 
-    { "mle", NULL, N_("_Maximum likelihood..."), NULL, NULL, G_CALLBACK(gretl_callback) }, 
-    { "gmm", NULL, N_("_GMM..."), NULL, NULL, G_CALLBACK(gretl_callback) }, 
-    { "system", NULL, N_("_Simultaneous equations..."), NULL, NULL, G_CALLBACK(gretl_callback) }, 
+    { "nls", NULL, N_("_Nonlinear Least Squares..."), NULL, NULL, G_CALLBACK(gretl_callback) },
+    { "mle", NULL, N_("_Maximum likelihood..."), NULL, NULL, G_CALLBACK(gretl_callback) },
+    { "gmm", NULL, N_("_GMM..."), NULL, NULL, G_CALLBACK(gretl_callback) },
+    { "system", NULL, N_("_Simultaneous equations..."), NULL, NULL, G_CALLBACK(gretl_callback) },
 
     /* Help */
     { "Help", NULL, N_("_Help"), NULL, NULL, NULL },

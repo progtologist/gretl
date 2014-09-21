@@ -37,27 +37,13 @@
 int check_imported_varname (char *vname, int row, int col,
                    PRN *prn);
 
-#ifndef EXCEL_IMPORTER /* FIXME? */
-
 void import_ts_check (DATASET *dset);
-
-#endif /* !EXCEL_IMPORTER */
-
-#if defined(ODS_IMPORTER) || defined(XLSX_IMPORTER)
 
 char *get_absolute_path (const char *fname);
 
 void remove_temp_dir (char *dname);
 
-#ifdef G_OS_WIN32
-
 int gretl_make_tempdir (char *dname);
-
-#else
-
-int gretl_make_tempdir (char *dname);
-
-# endif /* G_OS_WIN32 or not */
 
 /* For ODS and XLSX: unzip the target file in the user's
    "dotdir". On successful completion @dname holds the
@@ -71,7 +57,7 @@ int open_import_zipfile (const char *fname, char *dname,
 /* check for spurious empty columns at the right of the sheet */
 int import_prune_columns (DATASET *dset);
 
-#else /* !ODS, !XLSX */
+//#else /* !ODS, !XLSX */
 
 int worksheet_start_dataset (DATASET *newinfo);
 
@@ -88,8 +74,6 @@ int wbook_check_params (wbook *book);
 
 void wbook_record_params (wbook *book, int *list);
 
-#endif /* !ODS_IMPORTER */
-
 /* @list may contain sheet number, row and/or column offset;
    @sheetname may contain the name of a specific sheet; but
    both may be NULL
@@ -101,37 +85,11 @@ const char *column_label (int col);
 
 void colspin_changed (GtkEditable *ed, GtkWidget *w);
 
-#ifdef EXCEL_IMPORTER
- #ifndef WIN32
-
+#ifndef WIN32
 void infobox (const char *template, ...);
-
- #endif /* !WIN32 */
-
-static
-void debug_callback (GtkWidget *w, wbook *book);
-
-#endif /* EXCEL_IMPORTER */
+# endif /* !WIN32 */
 
 int book_get_min_offset (wbook *book, int k);
-
-static
-void wsheet_menu_select_row (GtkTreeSelection *selection, wbook *book);
-
-static
-void wsheet_menu_make_list (GtkTreeView *view, wbook *book);
-
-static
-void wsheet_menu_cancel (GtkWidget *w, wbook *book);
-
-static
-void wbook_set_col_offset (GtkWidget *w, wbook *book);
-
-static
-void wbook_set_row_offset (GtkWidget *w, wbook *book);
-
-static
-void add_sheets_list (GtkWidget *vbox, wbook *book);
 
 void make_wmenu_modal (GtkWidget *w, gpointer p);
 
