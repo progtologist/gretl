@@ -21,7 +21,7 @@ In a terminal type:
 git clone git@github.com:progtologist/gretl.git
 mkdir -p gretl/build
 cd gretl/build
-cmake ..
+cmake -DHOME_BUILD=1 ..
 make
 ./gretl_gui
 ```
