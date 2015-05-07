@@ -13,7 +13,7 @@ before_script:
   - cd build
 script: cmake .. && make
 after_script:
-  - ./simple_client
+  - ./simple_client && ./arma_example && ./nls_example
 
 notifications:
   email:
