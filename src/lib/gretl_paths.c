@@ -1921,7 +1921,7 @@ static void set_gretl_libpath (const char *path)
     /* respect the libdir set at compile time, e.g. /usr/lib or
        /usr/lib64 
     */
-    build_path(paths.libpath, LIBDIR, PLUGIN_SFX, NULL);
+    // build_path(paths.libpath, LIBDIR, PLUGIN_SFX, NULL);
 # else
     char *p = strstr(path, "/share");
     
@@ -2078,11 +2078,13 @@ const char *gretl_lib_path (void)
 # else
 	    strcat(paths.libpath, GRETL_PREFIX);
 	    slash_terminate(paths.libpath);
-      strcat(paths.libpath, "lib");
+        strcat(paths.libpath, "build");
+        slash_terminate(paths.libpath);
+        strcat(paths.libpath, "lib");
 # endif
 	    slash_terminate(paths.libpath);
-	    strcat(paths.libpath, PLUGIN_SFX);
-	    slash_terminate(paths.libpath);
+	    // strcat(paths.libpath, PLUGIN_SFX);
+	    // slash_terminate(paths.libpath);
 	}
 #endif /* LIBDIR or GRETL_PREFIX defined */
 
