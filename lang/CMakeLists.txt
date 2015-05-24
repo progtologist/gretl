@@ -9,5 +9,5 @@ foreach(language ${LANGUAGES})
 	file(MAKE_DIRECTORY "${mobuild}")
 	add_custom_command(OUTPUT "${mofile}" COMMAND "${Msgfmt_BIN}" -v "${pofile}" -o "${mofile}" MAIN_DEPENDENCY "${pofile}" COMMENT "Building ${language} locale" VERBATIM)
 	add_custom_target("locale_${language}" ALL DEPENDS "${mofile}")  # Make sure the mofiles are always built
-	install(FILES "${mofile}" DESTINATION "${LOCALE_DIR}/${language}/LC_MESSAGES")
+	install(FILES "${mofile}" DESTINATION "${LOCALEDIR}/${language}/LC_MESSAGES")
 endforeach(language)

@@ -11,10 +11,10 @@ install:
 before_script: 
   - mkdir build
   - cd build
-script: cmake -DHOME_BUILD=1 .. && make
-after_script:
+script: cmake .. -DCMAKE_INSTALL_PREFIX=../install .. && make && make install
+after_script:  
   - ./simple_client && ./arma_example && ./nls_example
-
+  - cd ../install && ./gretlcli --help
 notifications:
   email:
     recipients:

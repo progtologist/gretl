@@ -157,6 +157,14 @@ if(STANDARD_MATH_LIBRARY_FOUND)
 	set(GRETL_LIBS ${GRETL_LIBS} -l${STANDARD_MATH_LIBRARY})
 endif(STANDARD_MATH_LIBRARY_FOUND)
 
+if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+	# Installing system wide
+	set(GRETL_PREFIX "/usr/local")
+else()
+	# Installing in user space
+	set(GRETL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+endif()
+
 include(${CMAKE_SOURCE_DIR}/cmake/Modules/CheckHeaders.cmake)
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/config.h)
 
@@ -174,20 +182,27 @@ include_directories(
 	include
 )
 
-# Documentation
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
-    add_custom_target(
-        docs ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc/
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )
-endif(DOXYGEN_FOUND)
+# Create .lang file for syntax highlighting
+add_custom_command(OUTPUT gretl.lang
+                   POST_BUILD
+                   COMMAND mklang > gretl.lang
+                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                   COMMENT "Creating the language file"
+                   DEPENDS mklang
+                   VERBATIM)
+
+add_custom_target(CreateTheLangFile ALL
+                  DEPENDS gretl.lang
+)
+
+add_custom_target(CopyTheLangFile ALL
+                  COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME}/gnuplot.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+)
 
 ###########
 ## FILES ##
 ###########
+file(GLOB_RECURSE ALL_HEADERS ${PROJECT_SOURCE_DIR}/include/*.h)
 
 file(GLOB_RECURSE RNG_H ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/rng/*.h)
 file(GLOB_RECURSE RNG_C ${PROJECT_SOURCE_DIR}/src/rng/*.c)
@@ -216,6 +231,16 @@ file(GLOB_RECURSE EXTRA_C ${PROJECT_SOURCE_DIR}/src/extra/*.c)
 ## Documenting ##
 #################
 
+# Documentation
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
+    add_custom_target(
+        docs ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc/
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif(DOXYGEN_FOUND)
 
 ##############
 ## Building ##
@@ -273,6 +298,7 @@ if(MPI_C_FOUND)
 endif(MPI_C_FOUND)
 
 add_executable(gretl_gui ${PROJECT_SOURCE_DIR}/src/executables/gretl_gui.c)
+set_property(TARGET gretl_gui PROPERTY OUTPUT_NAME gretl)
 target_link_libraries(gretl_gui gui2_static gretl_static plugin_static)
 
 add_executable(mklang ${PROJECT_SOURCE_DIR}/src/executables/mklang.c)
@@ -284,3 +310,53 @@ target_link_libraries(mknews gui2_static gretl_static)
 #############
 ## Testing ##
 #############
+
+
+
+################
+## Installing ##
+################
+message(STATUS "${PROJECT_NAME} will be installed in ${CMAKE_INSTALL_PREFIX}")
+if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+	# Installing system wide
+	if(Gtksourceview2_FOUND)
+		set(GTK_SYNTAX "gtksourceview-2.0/language-specs/")
+	else(Gtksourceview2_FOUND)
+		if(Gtksourceview3_FOUND)
+			set(GTK_SYNTAX "gtksourceview-3.0/language-specs/")
+		endif(Gtksourceview3_FOUND)
+	endif(Gtksourceview2_FOUND)
+	install(FILES ${CMAKE_BINARY_DIR}/gretl.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+			DESTINATION share/${GTK_SYNTAX})
+else()
+	# Installing in user space
+	if(Gtksourceview2_FOUND)
+		set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-2.0/language-specs/")
+	else(Gtksourceview2_FOUND)
+		if(Gtksourceview3_FOUND)
+			set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-3.0/language-specs/")
+		endif(Gtksourceview3_FOUND)
+	endif(Gtksourceview2_FOUND)
+	install(FILES ${CMAKE_BINARY_DIR}/gretl.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+			DESTINATION ${GTK_SYNTAX})
+endif()
+
+install(TARGETS gretlcli gretl_gui gretlcli-mpi 
+		rng plugin minpack cephes dcmt gretl gui2 complete
+		rng_static plugin_static minpack_static cephes_static 
+		dcmt_static gretl_static gui2_static complete_static
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+  		DESTINATION include
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/
+		DESTINATION share
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/etc/
+		DESTINATION etc
+)

@@ -10,7 +10,7 @@ CMake scripts are under the cmake/Modules folder.
 The rest of the files have been placed under etc (and are not yet considered).
 The doc folder contains current documentation, eventually it will contain doxygen files.
 The test folder will contain unit test (gtest).
-The share folder contains the xml UI files.
+The share folder contains the xml UI files and common files of the project.
 
 ## How to compile:
 
@@ -42,13 +42,18 @@ sudo apt-get install -y cmake gnuplot libjson-glib-dev libfftw3-dev \
 
 ### Home Compilation
 
-In a terminal type:
+You can install the package anywhere you want by specifying the CMAKE_INSTALL_PREFIX variable. By default the installation folder is /usr/local
+
+If the package is installed in userspace (not system-wide), the syntax highlighting files for GtkSourceView are installed in ~/.local
+
+To install locally in a terminal type:
 ```Shell
 git clone git@github.com:progtologist/gretl.git
 mkdir -p gretl/build
 cd gretl/build
-cmake -DHOME_BUILD=1 ..
+cmake .. -DCMAKE_INSTALL_PREFIX=../install
 make
+make install
 ```
 
 ### Documentation Compilation
@@ -61,11 +66,11 @@ make docs
 
 ## How to run
 
-Just double click on the compiled file **gretl_gui**
+Just navigate to the installation folder and double click on the compiled file **gretl**
 
 To see if any error occurs you can run the executable via a terminal by typing (in the build directory)
 ```Shell
-./gretl_gui
+./gretl
 ```
 
 ## Tested
