@@ -232,15 +232,18 @@ file(GLOB_RECURSE EXTRA_C ${PROJECT_SOURCE_DIR}/src/extra/*.c)
 #################
 
 # Documentation
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
-    add_custom_target(
-        docs ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc/
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )
-endif(DOXYGEN_FOUND)
+option(BUILD_DOCS "Use Doxygen to create the HTML based API documentation" OFF)
+if(BUILD_DOCS)
+    find_package(Doxygen)
+    if(DOXYGEN_FOUND)
+        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
+        add_custom_target(
+            docs ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc/
+            COMMENT "Generating API documentation with Doxygen" VERBATIM
+        )
+    endif(DOXYGEN_FOUND)
+endif(BUILD_DOCS)
 
 ##############
 ## Building ##
@@ -310,8 +313,46 @@ target_link_libraries(mknews gui2_static gretl_static)
 #############
 ## Testing ##
 #############
+option(BUILD_TESTS "Use Gtest to create the test cases for the code" OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    find_package(GTest QUIET)
+    if(NOT GTEST_FOUND)
+        add_subdirectory(cmake/gtest)
+    endif(NOT GTEST_FOUND)
 
+    add_executable(nistcheck ${PROJECT_SOURCE_DIR}/test/nist/nistcheck.c)
+    set_target_properties(nistcheck PROPERTIES
+                          COMPILE_DEFINITIONS "STANDALONE")
+    target_link_libraries(nistcheck gui2_static gretl_static plugin_static ${GRETL_LIBS})
+    add_custom_command(TARGET nistcheck PRE_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist $<TARGET_FILE_DIR:nistcheck>)
 
+    add_test(NAME nistcheck
+             COMMAND nistcheck)
+
+#    add_executable(nist-nls-test ${PROJECT_SOURCE_DIR}/test/nist-nls/nist-nls-test.c)
+#    target_link_libraries(nist-nls-test gui2_static gretl_static plugin_static ${GRETL_LIBS})
+#    add_custom_command(TARGET nist-nls-test PRE_BUILD
+#                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls $<TARGET_FILE_DIR:nist-nls-test>)
+
+#    add_test(NAME nist-nls-test
+#             COMMAND run_tests.sh)
+
+    # Depends on TestU01
+    find_package(TestU01 QUIET)
+    if(NOT TestU01_FOUND)
+        add_subdirectory(cmake/testu01)
+    endif(NOT TestU01_FOUND)
+    include_directories(${TestU01_INCLUDE_DIR})
+
+    add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
+    add_dependencies(rng-test TestU01)
+    target_link_libraries(rng-test gui2_static gretl_static plugin_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
+
+    add_test(NAME rng-test
+             COMMAND rng-test)
+endif(BUILD_TESTS)
 
 ################
 ## Installing ##

@@ -16,7 +16,7 @@
 #include <utime.h>
 #include <dirent.h>
 
-#include "zlib.h"
+#include <zlib.h>
 
 #ifdef STANDALONE
 # include "updater.h"

@@ -10,8 +10,8 @@
 
 #include <getopt.h>
 
-#include <gretl/libgretl.h>
-#include <gretl/libset.h>
+#include <gretl/lib/libgretl.h>
+#include <gretl/lib/libset.h>
 
 #define MAXCOEFF   12
 #define MAX_DIGITS 15
@@ -267,7 +267,7 @@ static int print_derivs (char *line, PRN *prn)
 		printf("%s\n", line);
 	    }
 	    err = nl_parse_line(NLS, line, (const double **) Z, 
-				datainfo, prn);
+                datainfo, prn);
 	    if (err) {
 		errmsg(err, prn);
 		break;

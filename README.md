@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/progtologist/gretl.svg?branch=master)](https://travis-ci.org/progtologist/gretl)
 
+[![Coverage Status](https://coveralls.io/repos/progtologist/gretl/badge.svg)](https://coveralls.io/r/progtologist/gretl)
+
 Initial attempt to change the default build system of Gretl from GNU Autotools to CMake.
 
 All headers and source files moved to include and src folders appropriately.
@@ -61,7 +63,28 @@ make install
 To build doxygen documentation
 In the build directory type:
 ```Shell
+cmake .. -DBUILD_DOCS=ON -DCMAKE_INSTALL_PREFIX=../install
 make docs
+```
+
+### Tests Compilation
+
+To build doxygen documentation
+In the build directory type:
+```Shell
+cmake .. -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
+make test
+```
+
+### All Compilation
+
+To build everything
+In the build directory type:
+```Shell
+cmake .. -DBUILD_DOCS=ON -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
+make
+make docs
+make test
 ```
 
 ## How to run
@@ -92,3 +115,7 @@ Testing is needed to check compatibility issues
 **Windows**
 
 It probably does not compile yet.
+
+## Future work
+
+The nist-nls-test does not compile. Seems to be outdated with some older version of the gretl API. Also, the default autotools compilation created many small shared libraries where this implementation tries to unify them, creating some issues with some binaries. The nistcheck test needs more work. Also, some GoogleTests should eventually be added.
