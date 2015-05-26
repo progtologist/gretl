@@ -1,8 +1,7 @@
 # Gretl
 
 [![Build Status](https://travis-ci.org/progtologist/gretl.svg?branch=master)](https://travis-ci.org/progtologist/gretl)
-
-[![Coverage Status](https://coveralls.io/repos/progtologist/gretl/badge.svg)](https://coveralls.io/r/progtologist/gretl)
+[![Coverage Status](https://coveralls.io/repos/progtologist/gretl/badge.svg?branch=master)](https://coveralls.io/r/progtologist/gretl?branch=master)
 
 Initial attempt to change the default build system of Gretl from GNU Autotools to CMake.
 
@@ -10,8 +9,8 @@ All headers and source files moved to include and src folders appropriately.
 All localization files are moved to lang folder. 
 CMake scripts are under the cmake/Modules folder.
 The rest of the files have been placed under etc (and are not yet considered).
-The doc folder contains current documentation, eventually it will contain doxygen files.
-The test folder will contain unit test (gtest).
+The doc folder contains current documentation, with support for doxygen documentation.
+The test folder contains gretl default tests. It has support for the GoogleTest Framework.
 The share folder contains the xml UI files and common files of the project.
 
 ## How to compile:
@@ -76,9 +75,22 @@ cmake .. -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
 make test
 ```
 
+### To generate coverage
+
+To build coverage you must have lcov installed and compile with gcc only (clang is not supported)
+In the build directory type:
+```Shell
+cmake .. -DBUILD_TESTS=ON -DENABLE_COVERAGE -DCMAKE_INSTALL_PREFIX=../install
+make test
+lcov --directory ./ --base-directory ../include/gretl --capture --output-file coverage.info
+lcov --remove coverage.info '/usr*' -o coverage.info
+genhtml coverage.info --output-directory ./coverage
+xdg-open coverage/index.html
+```
+
 ### All Compilation
 
-To build everything
+To build everything (without debugging symbols)
 In the build directory type:
 ```Shell
 cmake .. -DBUILD_DOCS=ON -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
