@@ -1,7 +1,7 @@
 #include "unif01.h"
 #include "bbattery.h"
 
-#include <gretl/libgretl.h>
+#include <gretl/lib/libgretl.h>
 
 static double u01_from_normal (void)
 {

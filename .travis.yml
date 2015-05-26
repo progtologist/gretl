@@ -15,7 +15,7 @@ before_script:
 script: 
   - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install ..
   - make
-  - make tests
+  - make test
   - make install
 after_success:
   - lcov --directory test --base-directory ../include/gretl --capture --output-file coverage.info
