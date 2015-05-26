@@ -157,13 +157,7 @@ if(STANDARD_MATH_LIBRARY_FOUND)
 	set(GRETL_LIBS ${GRETL_LIBS} -l${STANDARD_MATH_LIBRARY})
 endif(STANDARD_MATH_LIBRARY_FOUND)
 
-if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "/usr")
-	# Installing system wide
-	set(GRETL_PREFIX "/usr/local")
-else()
-	# Installing in user space
-	set(GRETL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-endif()
+set(GRETL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/Modules/CheckHeaders.cmake)
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/config.h)
@@ -331,13 +325,13 @@ if(BUILD_TESTS)
     add_test(NAME nistcheck
              COMMAND nistcheck)
 
-#    add_executable(nist-nls-test ${PROJECT_SOURCE_DIR}/test/nist-nls/nist-nls-test.c)
-#    target_link_libraries(nist-nls-test gui2_static gretl_static plugin_static ${GRETL_LIBS})
-#    add_custom_command(TARGET nist-nls-test PRE_BUILD
-#                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls $<TARGET_FILE_DIR:nist-nls-test>)
+	# add_executable(nist-nls-test ${PROJECT_SOURCE_DIR}/test/nist-nls/nist-nls-test.c)
+    # target_link_libraries(nist-nls-test gui2_static gretl_static plugin_static ${GRETL_LIBS})
+	# add_custom_command(TARGET nist-nls-test PRE_BUILD
+	#                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls $<TARGET_FILE_DIR:nist-nls-test>)
 
-#    add_test(NAME nist-nls-test
-#             COMMAND run_tests.sh)
+	# add_test(NAME nist-nls-test
+	#	       COMMAND run_tests.sh)
 
     # Depends on TestU01
     find_package(TestU01 QUIET)
@@ -353,6 +347,26 @@ if(BUILD_TESTS)
     add_test(NAME rng-test
              COMMAND rng-test)
 endif(BUILD_TESTS)
+
+##############
+## Coverage ##
+##############
+
+option(ENABLE_COVERAGE "Enable code coverage generation" OFF)
+if(${ENABLE_COVERAGE} AND "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_BUILD_TYPE "Debug")
+    add_definitions(-fprofile-arcs -ftest-coverage)
+
+    # link gretl libraries to support coverage
+    target_link_libraries(gui2_static -fprofile-arcs -ftest-coverage)
+    target_link_libraries(gretl_static -fprofile-arcs -ftest-coverage)
+    target_link_libraries(plugin_static -fprofile-arcs -ftest-coverage)
+
+    target_link_libraries(nistcheck -fprofile-arcs -ftest-coverage)
+    # target_link_libraries(nist-nls-test -fprofile-arcs -ftest-coverage)
+    target_link_libraries(rng-test -fprofile-arcs -ftest-coverage)
+endif()
+
 
 ################
 ## Installing ##
