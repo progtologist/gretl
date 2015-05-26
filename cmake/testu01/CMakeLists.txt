@@ -4,7 +4,7 @@ include(ExternalProject)
 
 ExternalProject_Add ( 
     TestU01 
-    GIT_REPOSITORY git@github.com:JamesHirschorn/TestU01-CMake.git 
+    GIT_REPOSITORY https://github.com/JamesHirschorn/TestU01-CMake.git 
     PREFIX ${CMAKE_CURRENT_BINARY_DIR} 
     INSTALL_COMMAND ""
 )
