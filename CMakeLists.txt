@@ -333,19 +333,21 @@ if(BUILD_TESTS)
 	# add_test(NAME nist-nls-test
 	#	       COMMAND run_tests.sh)
 
-    # Depends on TestU01
-    find_package(TestU01 QUIET)
-    if(NOT TestU01_FOUND)
-        add_subdirectory(cmake/testu01)
-    endif(NOT TestU01_FOUND)
-    include_directories(${TestU01_INCLUDE_DIR})
+    # Depends on TestU01 and gcc
+    if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    	find_package(TestU01 QUIET)
+    	if(NOT TestU01_FOUND)
+        	add_subdirectory(cmake/testu01)
+    	endif(NOT TestU01_FOUND)
+    	include_directories(${TestU01_INCLUDE_DIR})
 
-    add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
-    add_dependencies(rng-test TestU01)
-    target_link_libraries(rng-test gui2_static gretl_static plugin_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
+    	add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
+    	add_dependencies(rng-test TestU01)
+    	target_link_libraries(rng-test gui2_static gretl_static plugin_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
 
-    add_test(NAME rng-test
-             COMMAND rng-test)
+    	add_test(NAME rng-test
+        	     COMMAND rng-test)
+    endif()
 endif(BUILD_TESTS)
 
 ##############
