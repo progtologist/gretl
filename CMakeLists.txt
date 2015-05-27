@@ -382,6 +382,10 @@ if(${ENABLE_COVERAGE} AND "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     target_link_libraries(nistcheck -fprofile-arcs -ftest-coverage)
     target_link_libraries(nist-nls-test -fprofile-arcs -ftest-coverage)
     target_link_libraries(rng-test -fprofile-arcs -ftest-coverage)
+    foreach(ITEM ${GOOGLE_TESTS})
+        get_filename_component(filename ${ITEM} NAME_WE)
+        target_link_libraries(${filename} -fprofile-arcs -ftest-coverage)
+    endforeach()
 endif()
 
 
