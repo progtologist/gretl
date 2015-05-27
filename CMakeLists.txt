@@ -352,6 +352,17 @@ if(BUILD_TESTS)
     	add_test(NAME rng-test
                  COMMAND rng-test)
     endif()
+
+    file(GLOB_RECURSE GOOGLE_TESTS ${PROJECT_SOURCE_DIR}/test/gtests/*.cpp)
+    include_directories(${GTEST_INCLUDE_DIR})
+    foreach(ITEM ${GOOGLE_TESTS})
+        get_filename_component(filename ${ITEM} NAME_WE)
+        add_executable(${filename} ${ITEM})
+        add_dependencies(${filename} googletest)
+        target_link_libraries(${filename} ${GTEST_LIBRARIES} gretl_static)
+        add_test(NAME ${filename}
+                 COMMAND ${filename})
+    endforeach()
 endif(BUILD_TESTS)
 
 ##############

@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/travis/progtologist/gretl.svg?style=plastic)](https://travis-ci.org/progtologist/gretl)
 [![Coverage Status](https://img.shields.io/coveralls/progtologist/gretl/master.svg?style=plastic)](https://coveralls.io/r/progtologist/gretl?branch=master)
 [![Open Issues](https://img.shields.io/github/issues/progtologist/gretl.svg?style=plastic)](https://github.com/progtologist/gretl/issues)
-[![Licence](https://img.shields.io/github/license/progtologist/gretl.svg)](https://github.com/progtologist/gretl/blob/master/LICENCE.md)
+[![Licence](https://img.shields.io/github/license/progtologist/gretl.svg?style=plastic)](https://github.com/progtologist/gretl/blob/master/LICENCE.md)
 
 Initial attempt to change the default build system of Gretl from GNU Autotools to CMake.
 
