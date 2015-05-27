@@ -81,8 +81,6 @@ void wbook_record_params (wbook *book, int *list);
 
 void wbook_init (wbook *book, const int *list, char *sheetname);
 
-const char *column_label (int col);
-
 void colspin_changed (GtkEditable *ed, GtkWidget *w);
 
 #ifndef WIN32

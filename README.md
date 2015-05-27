@@ -80,7 +80,7 @@ make test
 To build coverage you must have lcov installed and compile with gcc only (clang is not supported)
 In the build directory type:
 ```Shell
-cmake .. -DBUILD_TESTS=ON -DENABLE_COVERAGE -DCMAKE_INSTALL_PREFIX=../install
+cmake .. -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install
 make test
 lcov --directory ./ --base-directory ../include/gretl --capture --output-file coverage.info
 lcov --remove coverage.info '/usr*' -o coverage.info

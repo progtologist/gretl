@@ -421,7 +421,7 @@ void wbook_init (wbook *book, const int *list, char *sheetname)
     }
 }
 
-const char *column_label (int col)
+static const char *column_label (int col)
 {
     const char *abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char label[5];

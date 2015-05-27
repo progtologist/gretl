@@ -8,3 +8,4 @@ ERRS="errlog.$DSTR"
 
 grep ERROR $ERRS
 grep 'failed to conv' $OUT
+exit 0

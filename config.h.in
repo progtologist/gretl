@@ -79,10 +79,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #cmakedefine GETDOMAINNAME 1
 
 /* Do we have stdint.h */
-#cmakedefine HAVE_STDINT_H 1
+#ifndef HAVE_STDINT_H
+    #cmakedefine HAVE_STDINT_H 1
+#endif
 
 /* Do we have unistd.h */
-#cmakedefine HAVE_UNISTD_H 1
+#ifndef HAVE_UNISTD_H
+    #cmakedefine HAVE_UNISTD_H 1
+#endif
 
 /* Do we have dirent.h */
 #cmakedefine HAVE_DIRENT_H 1

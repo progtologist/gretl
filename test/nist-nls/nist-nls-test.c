@@ -35,8 +35,7 @@ struct test_model {
     struct test_coeff coeffs[MAXCOEFF];
 } tester;
 
-DATAINFO *datainfo;
-double **Z;
+DATASET *datainfo;
 
 int verbose;
 int use_derivs = 0;
@@ -266,7 +265,7 @@ static int print_derivs (char *line, PRN *prn)
 	    if (verbose) {
 		printf("%s\n", line);
 	    }
-	    err = nl_parse_line(NLS, line, (const double **) Z, 
+        err = nl_parse_line(NLS, line,
                 datainfo, prn);
 	    if (err) {
 		errmsg(err, prn);
@@ -295,7 +294,7 @@ static int print_params (char *line, PRN *prn)
 	}
     }
 
-    err = nl_parse_line(NLS, line, (const double **) Z, 
+    err = nl_parse_line(NLS, line,
 			datainfo, prn);
     if (err) {
 	errmsg(err, prn);
@@ -446,13 +445,13 @@ static int read_data (FILE *fp)
 
     while (fgets(line, sizeof line, fp) && !err) {
 	if (tester.nvars == 3 && sscanf(line, "%lf %lf %lf", &y, &x1, &x2) == 3) {
-	    Z[1][n] = y;
-	    Z[2][n] = x1;
-	    Z[3][n] = x2;
+        datainfo->Z[1][n] = y;
+        datainfo->Z[2][n] = x1;
+        datainfo->Z[3][n] = x2;
 	    n++;
 	} else if (tester.nvars == 2 && sscanf(line, "%lf %lf", &y, &x1) == 2) {
-	    Z[1][n] = y;
-	    Z[2][n] = x1;
+        datainfo->Z[1][n] = y;
+        datainfo->Z[2][n] = x1;
 	    n++;
 	}	    
     }
@@ -593,7 +592,7 @@ static int read_nist_nls_data (const char *fname)
 		err = 1;
 	    } else {
 		if (tester.nobs > 0) {
-		    datainfo = create_new_dataset(&Z, tester.nvars + 1, 
+            datainfo = create_new_dataset(tester.nvars + 1,
 						  tester.nobs, 0);
 		    if (datainfo == NULL) err = 1;
 		} else {
@@ -660,7 +659,7 @@ static int generate_params (char *line, int round, PRN *prn)
 	if (verbose) {
 	    printf("%s\n", line);
 	}
-	err = generate(line, &Z, datainfo, OPT_NONE, NULL);
+    err = generate(line, datainfo, OPT_NONE, NULL);
 	if (err) {
 	    fprintf(stderr, "%s: ERROR: genr failed in round %d\n '%s'\n", 
 		    tester.datname, round, line);
@@ -680,7 +679,7 @@ static void catch_log_depvar (void)
 	tester.model_spec[9] = '_';
 
 	for (t=0; t<tester.nobs; t++) {
-	    Z[1][t] = log(Z[1][t]);
+        datainfo->Z[1][t] = log(datainfo->Z[1][t]);
 	}
 
 	strcpy(datainfo->varname[1], "log_y_");
@@ -872,7 +871,7 @@ static int real_run_check (int round, PRN *prn)
 
     if (!err) {
 	catch_log_depvar();
-	err = nl_parse_line(NLS, tester.model_spec, (const double **) Z, 
+    err = nl_parse_line(NLS, tester.model_spec,
 			    datainfo, prn);
 	if (verbose) {
 	    printf("%s\n", tester.model_spec);
@@ -894,7 +893,7 @@ static int real_run_check (int round, PRN *prn)
     }
 
     if (!err) {
-	*pmod = nl_model(&Z, datainfo, OPT_NONE, prn);
+    *pmod = nl_model(datainfo, OPT_NONE, prn);
 
 	if (pmod->errcode) {
 	    err = pmod->errcode;
@@ -1167,9 +1166,9 @@ int main (int argc, char *argv[])
 	if (!err) {
 	    err = run_gretl_nls_check();
 	}
-	free_Z(Z, datainfo);
+    free_Z( datainfo);
 	free_datainfo(datainfo);
-	Z = NULL;
+    datainfo->Z = NULL;
 	datainfo = NULL;
     }
 

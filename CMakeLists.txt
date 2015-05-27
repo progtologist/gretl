@@ -318,35 +318,39 @@ if(BUILD_TESTS)
     add_executable(nistcheck ${PROJECT_SOURCE_DIR}/test/nist/nistcheck.c)
     set_target_properties(nistcheck PROPERTIES
                           COMPILE_DEFINITIONS "STANDALONE")
-    target_link_libraries(nistcheck gui2_static gretl_static plugin_static ${GRETL_LIBS})
+    target_link_libraries(nistcheck gui2_static gretl_static ${GRETL_LIBS})
     add_custom_command(TARGET nistcheck PRE_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist $<TARGET_FILE_DIR:nistcheck>)
 
     add_test(NAME nistcheck
              COMMAND nistcheck)
 
-	# add_executable(nist-nls-test ${PROJECT_SOURCE_DIR}/test/nist-nls/nist-nls-test.c)
-    # target_link_libraries(nist-nls-test gui2_static gretl_static plugin_static ${GRETL_LIBS})
-	# add_custom_command(TARGET nist-nls-test PRE_BUILD
-	#                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls $<TARGET_FILE_DIR:nist-nls-test>)
+    add_executable(nist-nls-test ${PROJECT_SOURCE_DIR}/test/nist-nls/nist-nls-test.c)
+    target_link_libraries(nist-nls-test gui2_static gretl_static ${GRETL_LIBS})
 
-	# add_test(NAME nist-nls-test
-	#	       COMMAND run_tests.sh)
+    add_custom_command(TARGET nist-nls-test PRE_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls ${PROJECT_BINARY_DIR}
+                       COMMAND ${PROJECT_BINARY_DIR}/get_data.sh
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       VERBATIM)
+
+    add_test(NAME nist-nls-test
+             COMMAND ${PROJECT_BINARY_DIR}/run_tests.sh)
 
     # Depends on TestU01 and gcc
     if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     	find_package(TestU01 QUIET)
     	if(NOT TestU01_FOUND)
-        	add_subdirectory(cmake/testu01)
+            add_subdirectory(cmake/testu01)
     	endif(NOT TestU01_FOUND)
     	include_directories(${TestU01_INCLUDE_DIR})
 
     	add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
     	add_dependencies(rng-test TestU01)
-    	target_link_libraries(rng-test gui2_static gretl_static plugin_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
+        target_link_libraries(rng-test gui2_static gretl_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
 
     	add_test(NAME rng-test
-        	     COMMAND rng-test)
+                 COMMAND rng-test)
     endif()
 endif(BUILD_TESTS)
 
