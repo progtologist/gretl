@@ -1,7 +1,9 @@
 # Gretl
 
-[![Build Status](https://travis-ci.org/progtologist/gretl.svg?branch=master)](https://travis-ci.org/progtologist/gretl)
-[![Coverage Status](https://coveralls.io/repos/progtologist/gretl/badge.svg?branch=master)](https://coveralls.io/r/progtologist/gretl?branch=master)
+[![Build Status](https://img.shields.io/travis/progtologist/gretl.svg?style=plastic)](https://travis-ci.org/progtologist/gretl)
+[![Coverage Status](https://img.shields.io/coveralls/progtologist/gretl/master.svg?style=plastic)](https://coveralls.io/r/progtologist/gretl?branch=master)
+[![Open Issues](https://img.shields.io/github/issues/progtologist/gretl.svg?style=plastic)](https://github.com/progtologist/gretl/issues)
+[![Licence](https://img.shields.io/github/license/progtologist/gretl.svg)](https://github.com/progtologist/gretl/blob/master/LICENCE.md)
 
 Initial attempt to change the default build system of Gretl from GNU Autotools to CMake.
 
@@ -9,7 +11,7 @@ All headers and source files moved to include and src folders appropriately.
 All localization files are moved to lang folder. 
 CMake scripts are under the cmake/Modules folder.
 The rest of the files have been placed under etc (and are not yet considered).
-The doc folder contains current documentation, with support for doxygen documentation.
+The doc folder contains current documentation, with support for doxygen.
 The test folder contains gretl default tests. It has support for the GoogleTest Framework.
 The share folder contains the xml UI files and common files of the project.
 
@@ -130,4 +132,4 @@ It probably does not compile yet.
 
 ## Future work
 
-The nist-nls-test does not compile. Seems to be outdated with some older version of the gretl API. Also, the default autotools compilation created many small shared libraries where this implementation tries to unify them, creating some issues with some binaries. The nistcheck test needs more work. Also, some GoogleTests should eventually be added.
+Should add more tests to improve coverage. Should check compatibility with other systems (Windows/OSX)
