@@ -1012,10 +1012,10 @@ static void *get_mplsq (void **handle)
     void *funp;
 
 # ifdef _WIN32
-    *handle = LoadLibrary("plugins\\mp_ols.dll");
+    *handle = LoadLibrary("plugins\\libplugin.dll");
     if (*handle == NULL) return NULL;
 # else 
-    *handle = dlopen("../plugin/.libs/mp_ols.so", RTLD_LAZY);
+    *handle = dlopen("lib/libplugin.so", RTLD_LAZY);
     if (*handle == NULL) {
 	fputs(dlerror(), stderr);
 	return NULL;
