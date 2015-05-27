@@ -366,11 +366,10 @@ if(${ENABLE_COVERAGE} AND "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     # link gretl libraries to support coverage
     target_link_libraries(gui2_static -fprofile-arcs -ftest-coverage)
     target_link_libraries(gretl_static -fprofile-arcs -ftest-coverage)
-    target_link_libraries(plugin_static -fprofile-arcs -ftest-coverage)
     target_link_libraries(plugin -fprofile-arcs -ftest-coverage)
 
     target_link_libraries(nistcheck -fprofile-arcs -ftest-coverage)
-    # target_link_libraries(nist-nls-test -fprofile-arcs -ftest-coverage)
+    target_link_libraries(nist-nls-test -fprofile-arcs -ftest-coverage)
     target_link_libraries(rng-test -fprofile-arcs -ftest-coverage)
 endif()
 
