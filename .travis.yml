@@ -1,31 +1,26 @@
-language: c
-cache: apt
+os:
+  - linux
+  - osx
+matrix:
+  allow_failures:
+    - os: osx
+language: 
+  - c
+cache: 
+  - apt
 compiler:
- - gcc
- - clang
-before_install:
-  - sudo add-apt-repository -y ppa:kalakris/cmake
-  - sudo apt-get update -qq
+  - gcc
+  - clang
+before_install: 
+  - . tools/ci/$TRAVIS_OS_NAME/before_install.sh
 install:
-  - sudo apt-get install -y cmake gnuplot libjson-glib-dev libfftw3-dev liblapack-dev gfortran libxml2-dev libgtk2.0-dev zlib1g-dev libreadline-dev libgtksourceview2.0-dev libgmp-dev curl libcurl4-openssl-dev libmpfr-dev flite1-dev libflite1 libopenmpi-dev mpi-default-bin mpi-default-dev r-base-dev libgomp1 libzzip-dev unixodbc-dev lcov
-  - gem install coveralls-lcov
+  - . tools/ci/$TRAVIS_OS_NAME/install.sh
 before_script: 
-  - mkdir build
-  - cd build
+  - . tools/ci/$TRAVIS_OS_NAME/before_script.sh
 script: 
-  - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install ..
-  - make -j4 -l4
-  - make test
-  - make install
+  - . tools/ci/$TRAVIS_OS_NAME/script.sh
 after_success:
-  - lcov --directory ./ --base-directory ../include/gretl --capture --output-file coverage.info
-  - lcov --remove coverage.info '/usr*' -o coverage.info
-  - cd ..
-  - coveralls-lcov build/coverage.info
-  - ./build/simple_client 
-  - ./build/arma_example 
-  - ./build/nls_example
-  - ./install/gretlcli --help
+  - . tools/ci/$TRAVIS_OS_NAME/after_success.sh
 notifications:
   email:
     recipients:
