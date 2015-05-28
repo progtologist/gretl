@@ -5,18 +5,18 @@ project(gretl)
 ## Avoid source tree pollution ##
 #################################
 
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 	message(FATAL_ERROR "In-source builds are not permitted. Make a separate folder for building:\nmkdir build; cd build; cmake ..\nBefore that, remove the files already created:\nrm -rf CMakeCache.txt CMakeFiles")
-endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+endif(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 
 ####################
 ## Create build.h ##
 ####################
 
 string(TIMESTAMP DATE "%Y-%m-%d")
-file(WRITE "${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/build.h" "\#define BUILD_DATE \"${DATE}\"")
+file(WRITE "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/build.h" "\#define BUILD_DATE \"${DATE}\"")
 
 ##################
 ## DEPENDENCIES ##
@@ -159,8 +159,8 @@ endif(STANDARD_MATH_LIBRARY_FOUND)
 
 set(GRETL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
-include(${CMAKE_SOURCE_DIR}/cmake/Modules/CheckHeaders.cmake)
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/config.h)
+include(${PROJECT_SOURCE_DIR}/cmake/Modules/CheckHeaders.cmake)
+configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/config.h)
 
 # Localization
 find_package(Gettext)
@@ -180,7 +180,7 @@ include_directories(
 add_custom_command(OUTPUT gretl.lang
                    POST_BUILD
                    COMMAND mklang > gretl.lang
-                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
                    COMMENT "Creating the language file"
                    DEPENDS mklang
                    VERBATIM)
@@ -190,7 +190,7 @@ add_custom_target(CreateTheLangFile ALL
 )
 
 add_custom_target(CopyTheLangFile ALL
-                  COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/share/${PROJECT_NAME}/gnuplot.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+                  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/share/${PROJECT_NAME}/gnuplot.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
 )
 
 ###########
@@ -230,10 +230,10 @@ option(BUILD_DOCS "Use Doxygen to create the HTML based API documentation" OFF)
 if(BUILD_DOCS)
     find_package(Doxygen)
     if(DOXYGEN_FOUND)
-        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
+        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${PROJECT_BINARY_DIR}/doc/Doxyfile @ONLY)
         add_custom_target(
-            docs ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc/
+            docs ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxyfile
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/
             COMMENT "Generating API documentation with Doxygen" VERBATIM
         )
     endif(DOXYGEN_FOUND)
@@ -310,17 +310,14 @@ target_link_libraries(mknews gui2_static gretl_static)
 option(BUILD_TESTS "Use Gtest to create the test cases for the code" OFF)
 if(BUILD_TESTS)
     enable_testing()
-    find_package(GTest QUIET)
-    if(NOT GTEST_FOUND)
-        add_subdirectory(cmake/gtest)
-    endif(NOT GTEST_FOUND)
+    add_subdirectory(cmake/gtest)
 
     add_executable(nistcheck ${PROJECT_SOURCE_DIR}/test/nist/nistcheck.c)
     set_target_properties(nistcheck PROPERTIES
                           COMPILE_DEFINITIONS "STANDALONE")
     target_link_libraries(nistcheck gui2_static gretl_static ${GRETL_LIBS})
     add_custom_command(TARGET nistcheck PRE_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist $<TARGET_FILE_DIR:nistcheck>)
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist ${PROJECT_BINARY_DIR})
 
     add_test(NAME nistcheck
              COMMAND nistcheck)
@@ -331,7 +328,7 @@ if(BUILD_TESTS)
     add_custom_command(TARGET nist-nls-test PRE_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/test/nist-nls ${PROJECT_BINARY_DIR}
                        COMMAND ${PROJECT_BINARY_DIR}/get_data.sh
-                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
                        VERBATIM)
 
     add_test(NAME nist-nls-test
@@ -354,7 +351,7 @@ if(BUILD_TESTS)
     endif()
 
     file(GLOB_RECURSE GOOGLE_TESTS ${PROJECT_SOURCE_DIR}/test/gtests/*.cpp)
-    include_directories(${GTEST_INCLUDE_DIR})
+    include_directories(${GTEST_INCLUDE_DIRS})
     foreach(ITEM ${GOOGLE_TESTS})
         get_filename_component(filename ${ITEM} NAME_WE)
         add_executable(${filename} ${ITEM})
@@ -362,6 +359,8 @@ if(BUILD_TESTS)
         target_link_libraries(${filename} ${GTEST_LIBRARIES} gretl_static)
         add_test(NAME ${filename}
                  COMMAND ${filename})
+        add_custom_command(TARGET ${filename} PRE_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/test/gtests/dataset.gdt ${PROJECT_BINARY_DIR}/dataset.gdt)
     endforeach()
 endif(BUILD_TESTS)
 
@@ -402,7 +401,7 @@ if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "
 			set(GTK_SYNTAX "gtksourceview-3.0/language-specs/")
 		endif(Gtksourceview3_FOUND)
 	endif(Gtksourceview2_FOUND)
-	install(FILES ${CMAKE_BINARY_DIR}/gretl.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+	install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
 			DESTINATION share/${GTK_SYNTAX})
 else()
 	# Installing in user space
@@ -413,7 +412,7 @@ else()
 			set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-3.0/language-specs/")
 		endif(Gtksourceview3_FOUND)
 	endif(Gtksourceview2_FOUND)
-	install(FILES ${CMAKE_BINARY_DIR}/gretl.lang ${CMAKE_BINARY_DIR}/gnuplot.lang
+	install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
 			DESTINATION ${GTK_SYNTAX})
 endif()
 
@@ -425,14 +424,14 @@ install(TARGETS gretlcli gretl_gui gretlcli-mpi
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
   		DESTINATION include
 )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/share/
 		DESTINATION share
 )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/etc/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/etc/
 		DESTINATION etc
 )

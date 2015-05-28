@@ -25,9 +25,11 @@
 #endif
 
 #ifdef HAVE_VASPRINTF
+#ifndef _GNU_SOURCE
  #define _GNU_SOURCE
  #include <stdio.h>
  #undef _GNU_SOURCE
+#endif
 #else
  #include <stdio.h>
 #endif

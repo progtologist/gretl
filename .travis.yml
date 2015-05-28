@@ -14,7 +14,7 @@ before_script:
   - cd build
 script: 
   - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install ..
-  - make -j4
+  - make -j4 -l4
   - make test
   - make install
 after_success:
