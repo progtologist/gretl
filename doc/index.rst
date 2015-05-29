@@ -1,0 +1,155 @@
+.. gretl documentation master file, created by
+   sphinx-quickstart on Fri May 29 16:11:39 2015.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+==========================================
+Welcome to gretl's documentation!
+==========================================
+
+gretl is a cross-platform software package for econometric analysis, written in the C programming language. It is free, open-source software. You may redistribute it and/or modify it under the terms of the GNU General Public License (`GPL <http://www.gnu.org/copyleft/gpl.html>`_) as published by the `Free Software Foundation <http://www.gnu.org/>`_.
+
+:index:`Quick Start`
+====================
+
+:index:`CMake Version`
+----------------------
+
+:index:`Ubuntu 12.04`
+^^^^^^^^^^^^^^^^^^^^^
+Gretl requires cmake version >=2.8.11 which is not available in the official ubuntu repositories. To install it you must add a ppa
+.. code-block:: bash
+    
+    sudo add-apt-repository -y ppa:kalakris/cmake 
+    sudo apt-get update -qq
+
+
+:index:`Ubuntu 14.04`
+^^^^^^^^^^^^^^^^^^^^^
+The latest LTS includes a newer version of cmake, so no ppa is needed. 
+
+:index:`Dependencies`
+---------------------
+To install all required and optional dependencies just type
+.. code-block:: bash
+
+    sudo apt-get install -y cmake gnuplot libjson-glib-dev libfftw3-dev \
+    liblapack-dev gfortran libxml2-dev libgtk2.0-dev zlib1g-dev libreadline-dev \
+    libgtksourceview2.0-dev libgmp-dev curl libcurl4-openssl-dev libmpfr-dev \
+    flite1-dev libflite1 libopenmpi-dev mpi-default-bin mpi-default-dev r-base-dev \
+    libgomp1 libzzip-dev unixodbc-dev
+
+:index:`Compilation`
+--------------------
+You can install the package anywhere you want by specifying the CMAKE_INSTALL_PREFIX variable. 
+.. note::
+    
+    By default the installation folder is /usr/local
+
+If the package is installed in userspace (not system-wide), the syntax highlighting files for GtkSourceView are installed in ~/.local
+
+To install locally in a terminal type:
+.. code-block:: bash
+
+    git clone git@github.com:progtologist/gretl.git
+    mkdir -p gretl/build
+    cd gretl/build
+    cmake .. -DCMAKE_INSTALL_PREFIX=../install
+    make
+    make install
+
+:index:`Documentation`
+----------------------
+To build doxygen documentation
+In the build directory type:
+.. code-block:: bash
+
+    cmake .. -DBUILD_DOCS=ON -DCMAKE_INSTALL_PREFIX=../install
+    make docs
+
+To build sphinx documentation
+In the build directory type:
+.. code-block:: bash
+
+    cmake .. -DBUILD_SPHINX=ON -DCMAKE_INSTALL_PREFIX=../install
+    make sphinx
+
+:index:`Run tests`
+------------------
+To build and run the tests
+In the build directory type:
+.. code-block:: bash
+
+    cmake .. -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
+    make test
+
+:index:`Generate coverage report`
+---------------------------------
+To build coverage you must have lcov installed and compile with gcc only (clang is not supported)
+In the build directory type:
+.. code-block:: bash
+    
+    cmake .. -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install
+    make test
+    lcov --directory ./ --base-directory ../include/gretl --capture --output-file coverage.info
+    lcov --remove coverage.info '/usr*' -o coverage.info
+    genhtml coverage.info --output-directory ./coverage
+    xdg-open coverage/index.html
+
+:index:`Compile everything`
+---------------------------
+To build everything (without debugging symbols)
+In the build directory type:
+.. code-block:: bash
+    
+    cmake .. -DBUILD_DOCS=ON -DBUILD_SPHINX -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
+    make
+    make docs
+    make sphinx
+    make test
+    make install
+
+:index:`How to run`
+Just navigate to the installation folder and double click on the compiled file **gretl**
+
+To see if any error occurs you can run the executable via a terminal by typing (in the build directory)
+.. code-block:: bash
+
+    ./gretl
+
+:index:`Features`
+-----------------
+- Easy intuitive interface (now in French, Italian, Spanish, Polish, German, Basque, Catalan, Galician, Portuguese, Russian, Turkish, Czech, Traditional Chinese, Albanian, Bulgarian, Greek and Japanese as well as English)
+- A wide variety of estimators: least squares, maximum likelihood, GMM; single-equation and system methods
+- Time series methods: ARIMA, GARCH, VARs and VECMs, unit-root and cointegration tests, Kalman filter, etc.
+- Limited dependent variables: logit, probit, tobit, heckit, interval regression, models for count and duration data, etc.
+- Output models as LaTeX files, in tabular or equation format
+- Integrated powerful scripting language
+- Command loop structure for Monte Carlo simulations and iterative estimation procedures
+- GUI controller for fine-tuning `Gnuplot <http://www.gnuplot.info/>`_ graphs
+- An expanding range of `contributed function packages <http://ricardo.ecn.wfu.edu/gretl/cgi-bin/gretldata.cgi?opt=SHOW_FUNCS>`_
+- Links to `GNU R <http://gretl.sourceforge.net/gretl_and_R.html>`_, `GNU Octave <http://www.gnu.org/software/octave>`_ and `Ox <http://www.doornik.com/>`_ for further data analysis
+
+:index:`Data formats`
+---------------------
+Supported formats include: own XML data files; Comma Separated Values; Excel, Gnumeric and Open Document worksheets; Stata .dta files; SPSS .sav files; Eviews workfiles; JMulTi data files; own format binary databases (allowing mixed data frequencies and series lengths), RATS 4 databases and PC-Give databases. Includes a sample US macro database. See also the `gretl data page <http://gretl.sourceforge.net/gretl_data.html>`_ .
+
+:index:`Acknowledgements`
+-------------------------
+First of all, thanks to Ramu Ramanathan, Professor Emeritus of the University of California, San Diego, for open-sourcing his "ESL" econometric code, which was the starting point for the development of gretl. Professor Ramanathan is author of `Introductory Econometrics <http://econ.ucsd.edu/~rramanat/embook5.htm>`_ (Dryden, currently in its 5th edition). Ramu has also been a very helpful critic over the course of gretl's development.
+
+Many people have sent in useful bug reports and suggestions for gretl's development. We are particularly indebted to Ignacio Díaz-Emparanza, Tadeusz Kufel, Pawel Kufel, Dirk Eddelbuettel, Sven Schreiber and Andreas Rosenblad. A. Talha Yalta plays a helpful role in scrutinizing and reporting on gretl's numerical accuracy.
+
+Many thanks to Ignacio Díaz-Emparanza, Susan Orbe, Michel Robitaille, Florent Bresson, Cristian Rigamonti, Tadeusz and Pawel Kufel, Markus Hahn, Sven Schreiber, Hélio Guilherme, Henrique Andrade, Alexander Gedranovich, Talha Yalta, Y. N. Yang, Pavla Nikolovova, Jan Hanousek, Artur Bala, Manolis Tzagarakis and Ioannis Venetis for their work in translating gretl.
+
+Thanks to William Greene, author of Econometric Analysis, for his permission to include in the gretl package some datasets relating to interesting examples in his text.
+
+Thanks to the good people on comp.lang.c and `gtk-app-devel-list@gnome.org <gtk-app-devel-list@gnome.org>`_ for expert advice on many issues. Thanks to Richard Stallman of the Free Software Foundation for all his work in developing and promoting free software, and more specifically for agreeing to "adopt" gretl as a GNU program.
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

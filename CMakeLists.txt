@@ -6,7 +6,7 @@ project(gretl)
 #################################
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-	message(FATAL_ERROR "In-source builds are not permitted. Make a separate folder for building:\nmkdir build; cd build; cmake ..\nBefore that, remove the files already created:\nrm -rf CMakeCache.txt CMakeFiles")
+    message(FATAL_ERROR "In-source builds are not permitted. Make a separate folder for building:\nmkdir build; cd build; cmake ..\nBefore that, remove the files already created:\nrm -rf CMakeCache.txt CMakeFiles")
 endif(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
@@ -24,83 +24,83 @@ file(WRITE "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/build.h" "\#define BUI
 
 find_package(GTK2)
 if(GTK2_FOUND)
-	include_directories(${GTK2_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${GTK2_LIBRARIES})
+    include_directories(${GTK2_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${GTK2_LIBRARIES})
 else(GTK2_FOUND)
-	find_package(GTK3)
-	if(GTK3_FOUND)
-		include_directories(${GTK3_INCLUDE_DIRS})
-		set(USE_GTK3 ON)
-	endif(GTK3_FOUND)
+    find_package(GTK3)
+    if(GTK3_FOUND)
+        include_directories(${GTK3_INCLUDE_DIRS})
+        set(USE_GTK3 ON)
+    endif(GTK3_FOUND)
 endif(GTK2_FOUND)
 
 find_package(LIBDL)
 if(LIBDL_FOUND)
-	include_directories(${LIBDL_INCLUDE_DIR})
-	set(GRETL_LIBS ${GRETL_LIBS} ${LIBDL_LIBRARIES})
+    include_directories(${LIBDL_INCLUDE_DIR})
+    set(GRETL_LIBS ${GRETL_LIBS} ${LIBDL_LIBRARIES})
 endif(LIBDL_FOUND)
 
 find_package(Gtksourceview2)
 if(Gtksourceview2_FOUND)
-	include_directories(${Gtksourceview2_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${Gtksourceview2_LIBRARIES})
-	set(USE_GTKSOURCEVIEW_2 ON)
+    include_directories(${Gtksourceview2_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${Gtksourceview2_LIBRARIES})
+    set(USE_GTKSOURCEVIEW_2 ON)
 else(Gtksourceview2_FOUND)
-	find_package(Gtksourceview3)
-	if(Gtksourceview3_FOUND)
-		include_directories(${Gtksourceview3_INCLUDE_DIRS})
-		set(GRETL_LIBS ${GRETL_LIBS} ${Gtksourceview3_LIBRARIES})
-		set(USE_GTKSOURCEVIEW_3 ON)
-	endif(Gtksourceview3_FOUND)
+    find_package(Gtksourceview3)
+    if(Gtksourceview3_FOUND)
+        include_directories(${Gtksourceview3_INCLUDE_DIRS})
+        set(GRETL_LIBS ${GRETL_LIBS} ${Gtksourceview3_LIBRARIES})
+        set(USE_GTKSOURCEVIEW_3 ON)
+    endif(Gtksourceview3_FOUND)
 endif(Gtksourceview2_FOUND)
 
 find_package(MPFR)
 if(MPFR_FOUND)
-	include_directories(${MPFR_INCLUDES})
-	set(GRETL_LIBS ${GRETL_LIBS} ${MPFR_LIBRARIES})
-	set(HAVE_MPFR ON)
+    include_directories(${MPFR_INCLUDES})
+    set(GRETL_LIBS ${GRETL_LIBS} ${MPFR_LIBRARIES})
+    set(HAVE_MPFR ON)
 endif(MPFR_FOUND)
 
 find_package(LibXML2)
 if(LIBXML2_FOUND)
-	include_directories(${LibXML2_INCLUDE_DIR})
-	set(GRETL_LIBS ${GRETL_LIBS} ${LibXML2_LIBRARIES})
+    include_directories(${LibXML2_INCLUDE_DIR})
+    set(GRETL_LIBS ${GRETL_LIBS} ${LibXML2_LIBRARIES})
 endif(LIBXML2_FOUND)
 
 find_package(Flite QUIET)
 if(FLITE_FOUND)
-	include_directories(${FLITE_INCLUDE_DIR})
-	set(GRETL_LIBS ${GRETL_LIBS} ${FLITE_LIBRARIES})
-	set(HAVE_FLITE ON)
+    include_directories(${FLITE_INCLUDE_DIR})
+    set(GRETL_LIBS ${GRETL_LIBS} ${FLITE_LIBRARIES})
+    set(HAVE_FLITE ON)
 endif(FLITE_FOUND)
 
 find_package(CURL)
 if(CURL_FOUND)
-	include_directories(${CURL_INCLUDE_DIRS})
-	set(USE_CURL ON)
-	set(GRETL_LIBS ${GRETL_LIBS} ${CURL_LIBRARIES})
+    include_directories(${CURL_INCLUDE_DIRS})
+    set(USE_CURL ON)
+    set(GRETL_LIBS ${GRETL_LIBS} ${CURL_LIBRARIES})
 endif(CURL_FOUND)
 
 find_package(MPI)
 if(MPI_C_FOUND)
-	include_directories(${MPI_C_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${MPI_C_LIBRARIES})
-	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${MPI_C_COMPILE_FLAGS})
-	set(HAVE_MPI ON)
+    include_directories(${MPI_C_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${MPI_C_LIBRARIES})
+    set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${MPI_C_COMPILE_FLAGS})
+    set(HAVE_MPI ON)
 endif(MPI_C_FOUND)
 if(MPI_CXX_FOUND)
-	include_directories(${MPI_CXX_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${MPI_CXX_LIBRARIES})
-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_CXX_COMPILE_FLAGS})
+    include_directories(${MPI_CXX_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${MPI_CXX_LIBRARIES})
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_CXX_COMPILE_FLAGS})
 endif(MPI_CXX_FOUND)
 
 find_package(R)
 if(R_FOUND)
-	include_directories(${R_INCLUDE_DIR})
-	set(USE_RLIB ON)
-	set(RLIBPATH ON)
-	set(GRETL_LIBS ${GRETL_LIBS} ${R_LIBRARIES})
-	message(STATUS "R libraries are ${R_LIBRARIES}")
+    include_directories(${R_INCLUDE_DIR})
+    set(USE_RLIB ON)
+    set(RLIBPATH ON)
+    set(GRETL_LIBS ${GRETL_LIBS} ${R_LIBRARIES})
+    message(STATUS "R libraries are ${R_LIBRARIES}")
 endif(R_FOUND)
 
 find_package(OpenMP)
@@ -112,49 +112,49 @@ endif(OPENMP_FOUND)
 
 find_package(ZLIB)
 if(ZLIB_FOUND)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${ZLIB_LIBRARIES})
-	set(HAVE_ZLIB ON)
+    include_directories(${ZLIB_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${ZLIB_LIBRARIES})
+    set(HAVE_ZLIB ON)
 endif(ZLIB_FOUND)
 
 find_package(Readline)
 if(READLINE_FOUND)
-	include_directories(${Readline_INCLUDE_DIR})
-	set(GRETL_LIBS ${GRETL_LIBS} ${Readline_LIBRARY})
-	set(HAVE_READLINE ON)
+    include_directories(${Readline_INCLUDE_DIR})
+    set(GRETL_LIBS ${GRETL_LIBS} ${Readline_LIBRARY})
+    set(HAVE_READLINE ON)
 endif(READLINE_FOUND)
 
 find_package(LATEX)
 if(LATEX_FOUND)
-	set(HAVE_LATEX ON)
+    set(HAVE_LATEX ON)
 endif(LATEX_FOUND)
 
 find_package(UnixODBC)
 if(UnixODBC_FOUND)
-	include_directories(${UnixODBC_INCLUDE_DIRS})
-	set(GRETL_LIBS ${GRETL_LIBS} ${UnixODBC_LIBRARIES})
+    include_directories(${UnixODBC_INCLUDE_DIRS})
+    set(GRETL_LIBS ${GRETL_LIBS} ${UnixODBC_LIBRARIES})
 endif(UnixODBC_FOUND)
 
 find_package(LAPACK REQUIRED)
 if(LAPACK_FOUND)
-	set(GRETL_LIBS ${GRETL_LIBS} ${LAPACK_LIBRARIES})
+    set(GRETL_LIBS ${GRETL_LIBS} ${LAPACK_LIBRARIES})
 endif(LAPACK_FOUND)
 
 find_package(FFTW REQUIRED)
 if(FFTW_FOUND)
-	include_directories(${FFTW_INCLUDES})
-	set(GRETL_LIBS ${GRETL_LIBS} ${FFTW_LIBRARIES})
+    include_directories(${FFTW_INCLUDES})
+    set(GRETL_LIBS ${GRETL_LIBS} ${FFTW_LIBRARIES})
 endif(FFTW_FOUND)
 
 find_package(GMP)
 if(GMP_FOUND)
-	include_directories(${GMP_INCLUDE_DIR})
-	set(GRETL_LIBS ${GRETL_LIBS} ${GMP_LIBRARIES})
+    include_directories(${GMP_INCLUDE_DIR})
+    set(GRETL_LIBS ${GRETL_LIBS} ${GMP_LIBRARIES})
 endif(GMP_FOUND)
 
 find_package(StandardMathLibrary)
 if(STANDARD_MATH_LIBRARY_FOUND)
-	set(GRETL_LIBS ${GRETL_LIBS} -l${STANDARD_MATH_LIBRARY})
+    set(GRETL_LIBS ${GRETL_LIBS} -l${STANDARD_MATH_LIBRARY})
 endif(STANDARD_MATH_LIBRARY_FOUND)
 
 set(GRETL_PREFIX "${CMAKE_INSTALL_PREFIX}")
@@ -166,14 +166,14 @@ configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/config.
 find_package(Gettext)
 find_package(Msgfmt)
 if(Gettext_FOUND AND Msgfmt_FOUND)
-	message(STATUS "Localization enabled: Building and installing .mo files")
-	add_subdirectory(lang)
+    message(STATUS "Localization enabled: Building and installing .mo files")
+    add_subdirectory(lang)
 else()
-	message(STATUS "Localization disabled: Gettext or Msgfmt missing")
+    message(STATUS "Localization disabled: Gettext or Msgfmt missing")
 endif()
 
 include_directories(
-	include
+    include
 )
 
 # Create .lang file for syntax highlighting
@@ -197,6 +197,7 @@ add_custom_target(CopyTheLangFile ALL
 ## FILES ##
 ###########
 file(GLOB_RECURSE ALL_HEADERS ${PROJECT_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE ALL_SOURCES ${PROJECT_SOURCE_DIR}/src/*.c)
 
 file(GLOB_RECURSE RNG_H ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/rng/*.h)
 file(GLOB_RECURSE RNG_C ${PROJECT_SOURCE_DIR}/src/rng/*.c)
@@ -230,14 +231,49 @@ option(BUILD_DOCS "Use Doxygen to create the HTML based API documentation" OFF)
 if(BUILD_DOCS)
     find_package(Doxygen)
     if(DOXYGEN_FOUND)
-        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${PROJECT_BINARY_DIR}/doc/Doxyfile @ONLY)
-        add_custom_target(
-            docs ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxyfile
-            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/
-            COMMENT "Generating API documentation with Doxygen" VERBATIM
+        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${PROJECT_BINARY_DIR}/doc/Doxygen/Doxyfile @ONLY)
+        add_custom_target(docs 
+                          COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxygen/Doxyfile
+                          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/Doxygen/
+                          COMMENT "Generating API documentation with Doxygen" VERBATIM
         )
     endif(DOXYGEN_FOUND)
 endif(BUILD_DOCS)
+
+option(BUILD_SPHINX "Use sphinx to create the HTML based API documentation" OFF)
+if(BUILD_SPHINX)
+    find_package(Sphinx)
+    if(NOT DEFINED SPHINX_THEME)
+        set(SPHINX_THEME default)
+    endif()
+    if(NOT DEFINED SPHINX_THEME_DIR)
+        set(SPHINX_THEME_DIR)
+    endif()
+
+    # configured documentation tools and intermediate build results
+    set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/_build")
+
+    # Sphinx cache with pickled ReST documents
+    set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/_doctrees")
+
+    # HTML output directory
+    set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/html")
+
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${BINARY_BUILD_DIR}/conf.py" @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst.in" "${BINARY_BUILD_DIR}/index.rst" @ONLY)
+    # Copy the configured files for READTHEDOCS
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py" @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst" @ONLY)
+     
+    add_custom_target(sphinx 
+                      COMMAND ${SPHINX_EXECUTABLE}
+                      -q -b html
+                      -c "${BINARY_BUILD_DIR}"
+                      -d "${SPHINX_CACHE_DIR}"
+                      "${BINARY_BUILD_DIR}"
+                      "${SPHINX_HTML_DIR}"
+                      COMMENT "Building HTML documentation with Sphinx")
+endif(BUILD_SPHINX)
 
 ##############
 ## Building ##
@@ -275,9 +311,9 @@ add_library(complete SHARED ${PROJECT_SOURCE_DIR}/src/executables/complete.c)
 add_library(complete_static STATIC ${PROJECT_SOURCE_DIR}/src/executables/complete.c)
 
 foreach(ITEM ${EXTRA_C})
-	get_filename_component(filename ${ITEM} NAME_WE)
-	add_executable(${filename} ${ITEM})
-	target_link_libraries(${filename} gretl_static)
+    get_filename_component(filename ${ITEM} NAME_WE)
+    add_executable(${filename} ${ITEM})
+    target_link_libraries(${filename} gretl_static)
 endforeach()
 
 add_executable(gretlcli ${PROJECT_SOURCE_DIR}/src/executables/gretlcli.c)
@@ -285,13 +321,13 @@ target_link_libraries(gretlcli gretl_static complete_static plugin_static)
 
 if(MPI_C_FOUND)
     add_executable(gretlcli-mpi ${PROJECT_SOURCE_DIR}/src/executables/gretlcli-mpi.c)
-	target_link_libraries(gretlcli-mpi gretl_static plugin_static)
-	if(MPI_C_COMPILE_FLAGS)
-  		set_target_properties(gretlcli-mpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
-	endif()
-	if(MPI_C_LINK_FLAGS)
-  		set_target_properties(gretlcli-mpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-	endif()
+    target_link_libraries(gretlcli-mpi gretl_static plugin_static)
+    if(MPI_C_COMPILE_FLAGS)
+        set_target_properties(gretlcli-mpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
+    endif()
+    if(MPI_C_LINK_FLAGS)
+        set_target_properties(gretlcli-mpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
+    endif()
 endif(MPI_C_FOUND)
 
 add_executable(gretl_gui ${PROJECT_SOURCE_DIR}/src/executables/gretl_gui.c)
@@ -336,17 +372,17 @@ if(BUILD_TESTS)
 
     # Depends on TestU01 and gcc
     if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-    	find_package(TestU01 QUIET)
-    	if(NOT TestU01_FOUND)
+        find_package(TestU01 QUIET)
+        if(NOT TestU01_FOUND)
             add_subdirectory(cmake/testu01)
-    	endif(NOT TestU01_FOUND)
-    	include_directories(${TestU01_INCLUDE_DIR})
+        endif(NOT TestU01_FOUND)
+        include_directories(${TestU01_INCLUDE_DIR})
 
-    	add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
-    	add_dependencies(rng-test TestU01)
+        add_executable(rng-test ${PROJECT_SOURCE_DIR}/test/rng/gretltest.c)
+        add_dependencies(rng-test TestU01)
         target_link_libraries(rng-test gui2_static gretl_static ${TestU01_LIBRARIES} ${GRETL_LIBS})
 
-    	add_test(NAME rng-test
+        add_test(NAME rng-test
                  COMMAND rng-test)
     endif()
 
@@ -393,45 +429,45 @@ endif()
 ################
 message(STATUS "${PROJECT_NAME} will be installed in ${CMAKE_INSTALL_PREFIX}")
 if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "/usr")
-	# Installing system wide
-	if(Gtksourceview2_FOUND)
-		set(GTK_SYNTAX "gtksourceview-2.0/language-specs/")
-	else(Gtksourceview2_FOUND)
-		if(Gtksourceview3_FOUND)
-			set(GTK_SYNTAX "gtksourceview-3.0/language-specs/")
-		endif(Gtksourceview3_FOUND)
-	endif(Gtksourceview2_FOUND)
-	install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
-			DESTINATION share/${GTK_SYNTAX})
+    # Installing system wide
+    if(Gtksourceview2_FOUND)
+        set(GTK_SYNTAX "gtksourceview-2.0/language-specs/")
+    else(Gtksourceview2_FOUND)
+        if(Gtksourceview3_FOUND)
+            set(GTK_SYNTAX "gtksourceview-3.0/language-specs/")
+        endif(Gtksourceview3_FOUND)
+    endif(Gtksourceview2_FOUND)
+    install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
+            DESTINATION share/${GTK_SYNTAX})
 else()
-	# Installing in user space
-	if(Gtksourceview2_FOUND)
-		set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-2.0/language-specs/")
-	else(Gtksourceview2_FOUND)
-		if(Gtksourceview3_FOUND)
-			set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-3.0/language-specs/")
-		endif(Gtksourceview3_FOUND)
-	endif(Gtksourceview2_FOUND)
-	install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
-			DESTINATION ${GTK_SYNTAX})
+    # Installing in user space
+    if(Gtksourceview2_FOUND)
+        set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-2.0/language-specs/")
+    else(Gtksourceview2_FOUND)
+        if(Gtksourceview3_FOUND)
+            set(GTK_SYNTAX "$ENV{HOME}/.local/share/gtksourceview-3.0/language-specs/")
+        endif(Gtksourceview3_FOUND)
+    endif(Gtksourceview2_FOUND)
+    install(FILES ${PROJECT_BINARY_DIR}/gretl.lang ${PROJECT_BINARY_DIR}/gnuplot.lang
+            DESTINATION ${GTK_SYNTAX})
 endif()
 
 install(TARGETS gretlcli gretl_gui gretlcli-mpi 
-		rng plugin minpack cephes dcmt gretl gui2 complete
-		rng_static plugin_static minpack_static cephes_static 
-		dcmt_static gretl_static gui2_static complete_static
+        rng plugin minpack cephes dcmt gretl gui2 complete
+        rng_static plugin_static minpack_static cephes_static 
+        dcmt_static gretl_static gui2_static complete_static
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-  		DESTINATION include
+        DESTINATION include
 )
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/share/
-		DESTINATION share
+        DESTINATION share
 )
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/etc/
-		DESTINATION etc
+        DESTINATION etc
 )

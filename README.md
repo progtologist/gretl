@@ -70,7 +70,7 @@ make docs
 
 ### Tests Compilation
 
-To build doxygen documentation
+To build and run the tests
 In the build directory type:
 ```Shell
 cmake .. -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
