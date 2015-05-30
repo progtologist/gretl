@@ -112,7 +112,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = ''
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
 # RTD_NEW_THEME = True
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -122,7 +122,7 @@ html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = ['']
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
