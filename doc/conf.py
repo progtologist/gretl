@@ -12,9 +12,18 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# otherwise, readthedocs.org uses their theme by default, so no need to specify it
+
 import sys
 import os
-import sphinx_rtd_theme
+
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -102,7 +111,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = 'default'
+# html_theme = ''
 html_theme = "sphinx_rtd_theme"
 # RTD_NEW_THEME = True
 
@@ -124,7 +133,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '/home/aris/source/c/gretl-cmake/doc/gretl.png'
+html_logo = 'gretl.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -209,7 +218,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = '/home/aris/source/c/gretl-cmake/doc/gretl.png'
+latex_logo = 'gretl.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

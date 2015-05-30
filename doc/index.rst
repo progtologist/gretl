@@ -18,6 +18,7 @@ gretl is a cross-platform software package for econometric analysis, written in 
 :index:`Ubuntu 12.04`
 ^^^^^^^^^^^^^^^^^^^^^
 Gretl requires cmake version >=2.8.11 which is not available in the official ubuntu repositories. To install it you must add a ppa
+
 .. code-block:: bash
     
     sudo add-apt-repository -y ppa:kalakris/cmake 
@@ -31,6 +32,7 @@ The latest LTS includes a newer version of cmake, so no ppa is needed.
 :index:`Dependencies`
 ---------------------
 To install all required and optional dependencies just type
+
 .. code-block:: bash
 
     sudo apt-get install -y cmake gnuplot libjson-glib-dev libfftw3-dev \
@@ -42,6 +44,7 @@ To install all required and optional dependencies just type
 :index:`Compilation`
 --------------------
 You can install the package anywhere you want by specifying the CMAKE_INSTALL_PREFIX variable. 
+
 .. note::
     
     By default the installation folder is /usr/local
@@ -49,6 +52,7 @@ You can install the package anywhere you want by specifying the CMAKE_INSTALL_PR
 If the package is installed in userspace (not system-wide), the syntax highlighting files for GtkSourceView are installed in ~/.local
 
 To install locally in a terminal type:
+
 .. code-block:: bash
 
     git clone git@github.com:progtologist/gretl.git
@@ -62,22 +66,34 @@ To install locally in a terminal type:
 ----------------------
 To build doxygen documentation
 In the build directory type:
+
 .. code-block:: bash
 
     cmake .. -DBUILD_DOCS=ON -DCMAKE_INSTALL_PREFIX=../install
     make docs
+    xdg-open doc/doxygen/html/index.html
 
-To build sphinx documentation
-In the build directory type:
+To build sphinx documentation you need sphinx and the sphinx-rtd-theme. To install them you can use pip - the python package manager. 
+To install them in ubuntu just type:
+
+.. code-block:: bash
+
+    sudo apt-get install -y python-pip
+    sudo pip install sphinx sphinx_rtd_theme
+
+Then, to build the sphinx documentation in the build directory type:
+
 .. code-block:: bash
 
     cmake .. -DBUILD_SPHINX=ON -DCMAKE_INSTALL_PREFIX=../install
     make sphinx
+    xdg-open doc/sphinx/html/index.html
 
 :index:`Run tests`
 ------------------
 To build and run the tests
 In the build directory type:
+
 .. code-block:: bash
 
     cmake .. -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
@@ -87,6 +103,7 @@ In the build directory type:
 ---------------------------------
 To build coverage you must have lcov installed and compile with gcc only (clang is not supported)
 In the build directory type:
+
 .. code-block:: bash
     
     cmake .. -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=../install
@@ -100,6 +117,7 @@ In the build directory type:
 ---------------------------
 To build everything (without debugging symbols)
 In the build directory type:
+
 .. code-block:: bash
     
     cmake .. -DBUILD_DOCS=ON -DBUILD_SPHINX -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=../install
@@ -146,10 +164,5 @@ Thanks to William Greene, author of Econometric Analysis, for his permission to 
 
 Thanks to the good people on comp.lang.c and `gtk-app-devel-list@gnome.org <gtk-app-devel-list@gnome.org>`_ for expert advice on many issues. Thanks to Richard Stallman of the Free Software Foundation for all his work in developing and promoting free software, and more specifically for agreeing to "adopt" gretl as a GNU program.
 
-Indices and tables
-==================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 

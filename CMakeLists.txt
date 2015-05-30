@@ -231,10 +231,10 @@ option(BUILD_DOCS "Use Doxygen to create the HTML based API documentation" OFF)
 if(BUILD_DOCS)
     find_package(Doxygen)
     if(DOXYGEN_FOUND)
-        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${PROJECT_BINARY_DIR}/doc/Doxygen/Doxyfile @ONLY)
+        configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${PROJECT_BINARY_DIR}/doc/doxygen/Doxyfile @ONLY)
         add_custom_target(docs 
-                          COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxygen/Doxyfile
-                          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/Doxygen/
+                          COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/doxygen/Doxyfile
+                          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/doxygen/
                           COMMENT "Generating API documentation with Doxygen" VERBATIM
         )
     endif(DOXYGEN_FOUND)
@@ -243,15 +243,9 @@ endif(BUILD_DOCS)
 option(BUILD_SPHINX "Use sphinx to create the HTML based API documentation" OFF)
 if(BUILD_SPHINX)
     find_package(Sphinx)
-    if(NOT DEFINED SPHINX_THEME)
-        set(SPHINX_THEME default)
-    endif()
-    if(NOT DEFINED SPHINX_THEME_DIR)
-        set(SPHINX_THEME_DIR)
-    endif()
 
     # configured documentation tools and intermediate build results
-    set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/_build")
+    set(BINARY_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/doc")
 
     # Sphinx cache with pickled ReST documents
     set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/_doctrees")
@@ -259,8 +253,6 @@ if(BUILD_SPHINX)
     # HTML output directory
     set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/sphinx/html")
 
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${BINARY_BUILD_DIR}/conf.py" @ONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst.in" "${BINARY_BUILD_DIR}/index.rst" @ONLY)
     # Copy the configured files for READTHEDOCS
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py" @ONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/index.rst" @ONLY)
