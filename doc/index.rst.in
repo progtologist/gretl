@@ -131,6 +131,7 @@ In the build directory type:
 Just navigate to the installation folder and double click on the compiled file **gretl**
 
 To see if any error occurs you can run the executable via a terminal by typing (in the build directory)
+
 .. code-block:: bash
 
     ./gretl

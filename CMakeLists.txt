@@ -336,7 +336,7 @@ target_link_libraries(mknews gui2_static gretl_static)
 ## Testing ##
 #############
 option(BUILD_TESTS "Use Gtest to create the test cases for the code" OFF)
-if(BUILD_TESTS)
+if(BUILD_TESTS OR ENABLE_COVERAGE)
     enable_testing()
     add_subdirectory(cmake/gtest)
 
@@ -390,7 +390,7 @@ if(BUILD_TESTS)
         add_custom_command(TARGET ${filename} PRE_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/test/gtests/dataset.gdt ${PROJECT_BINARY_DIR}/dataset.gdt)
     endforeach()
-endif(BUILD_TESTS)
+endif(BUILD_TESTS OR ENABLE_COVERAGE)
 
 ##############
 ## Coverage ##

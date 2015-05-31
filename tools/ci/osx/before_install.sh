@@ -2,3 +2,5 @@
 
 mkdir dependencies
 mkdir build
+
+brew update
