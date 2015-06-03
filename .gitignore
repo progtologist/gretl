@@ -1,4 +1,4 @@
 build
 include/gretl/build.h
 include/gretl/config.h
-CMakeLists.txt.user
+CMakeLists.txt.user*
