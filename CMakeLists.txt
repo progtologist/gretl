@@ -338,6 +338,7 @@ target_link_libraries(mknews gui2_static gretl_static)
 option(BUILD_TESTS "Use Gtest to create the test cases for the code" OFF)
 if(BUILD_TESTS OR ENABLE_COVERAGE)
     enable_testing()
+    find_package(Threads REQUIRED)
     add_subdirectory(cmake/gtest)
 
     add_executable(nistcheck ${PROJECT_SOURCE_DIR}/test/nist/nistcheck.c)
@@ -384,7 +385,9 @@ if(BUILD_TESTS OR ENABLE_COVERAGE)
         get_filename_component(filename ${ITEM} NAME_WE)
         add_executable(${filename} ${ITEM})
         add_dependencies(${filename} googletest)
-        target_link_libraries(${filename} ${GTEST_LIBRARIES} gretl_static)
+        target_link_libraries(${filename} ${GTEST_LIBRARIES} 
+                                          ${CMAKE_THREAD_LIBS_INIT} 
+                                          gretl_static)
         add_test(NAME ${filename}
                  COMMAND ${filename})
         add_custom_command(TARGET ${filename} PRE_BUILD

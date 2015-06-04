@@ -37,6 +37,9 @@ So far it has been successfully tested under
    - clang 3.4
  - Ubuntu Linux 14.04 x86_64
    - gcc 4.8
+   - clang 3.4
+   - clang 3.5
+   - clang 3.6
 
 **OSX**
 
