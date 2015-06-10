@@ -1,6 +1,6 @@
 # Gretl [![Build Status](https://img.shields.io/travis/progtologist/gretl.svg)](https://travis-ci.org/progtologist/gretl)
 
-[![Documentation Status](https://readthedocs.org/projects/gretl/badge/?version=latest)](https://readthedocs.org/projects/gretl/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/gretl/badge/?version=latest)](https://gretl.readthedocs.org/)
 [![Open Issues](https://img.shields.io/github/issues/progtologist/gretl.svg)](https://github.com/progtologist/gretl/issues)
 [![Coverage Status](https://img.shields.io/coveralls/progtologist/gretl/master.svg)](https://coveralls.io/r/progtologist/gretl?branch=master)
 [![License](https://img.shields.io/github/license/progtologist/gretl.svg)](https://github.com/progtologist/gretl/blob/master/LICENSE.md)
